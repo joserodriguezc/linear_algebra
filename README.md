@@ -10,4 +10,4 @@ and dimensionality reduction.
 - The in-grained use of linear algebra notation and methods in subfields such as deep
 learning, natural language processing and recommender systems.
 
-Brownlee, John. (2021) Basics of Linear Algebra for Machine Learning. Machine Learning Mastering.
+Brownlee, John. (2021) *Basics of Linear Algebra for Machine Learning*. Machine Learning Mastering.
