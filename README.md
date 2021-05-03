@@ -10,4 +10,16 @@ and dimensionality reduction.
 - The in-grained use of linear algebra notation and methods in subfields such as deep
 learning, natural language processing and recommender systems.
 
+Some examples of LA in ML are:
+1. Dataset and Data Files
+2. Images and Photographs
+3. One Hot Encoding
+4. Linear Regression
+5. Regularization
+6. Principal Component Analysis
+7. Singular-Value Decomposition
+8. Latent Semantic Analysis
+9. Recommender Systems
+10. Deep Learning
+
 Brownlee, John. (2021) *Basics of Linear Algebra for Machine Learning*. Machine Learning Mastering.
