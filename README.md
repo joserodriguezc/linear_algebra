@@ -1,7 +1,7 @@
 # linear_algebra
 This repository contains fundamental aspects of linear algebra (LA) to understand machine learning (ML) algorithms
 
-Importances aspects of LA in ML (Brownlee, 2021):
+Importances aspects of LA in ML:
 
 - The use of linear algebra structures when working with data such as tabular datasets and
 images.
@@ -22,4 +22,4 @@ Some examples of LA in ML are:
 9. Recommender Systems
 10. Deep Learning
 
-Brownlee, John. (2021) *Basics of Linear Algebra for Machine Learning*. Machine Learning Mastering.
+Based on: Brownlee, John. (2021) *Basics of Linear Algebra for Machine Learning*. Machine Learning Mastering.
