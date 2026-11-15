@@ -1,23 +1,20 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentType } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getStage, neighbors, parts, stageLoader, stages, type Stage } from '../course/curriculum'
+import { getStage, neighbors, parts, stageLoader, stages } from '../course/curriculum'
 import { useProgress } from '../lib/progress'
 import { mdxComponents } from '../mdxComponents'
 
 type MdxContent = ComponentType<{ components?: Record<string, unknown> }>
 
 /**
- * Un componente lazy por etapa, creado una sola vez. Crearlo durante el render (p. ej. con useMemo)
- * rompe la navegación: React Router navega dentro de una transición, React descarta y reintenta el
- * render mientras el MDX carga, y cada reintento crearía un lazy nuevo que vuelve a suspenderse.
+ * Un componente lazy por etapa, creado UNA vez al cargar el módulo. Crearlo durante el render rompe la
+ * navegación: React Router navega dentro de una transición, React descarta y reintenta el render
+ * mientras el MDX carga, y cada reintento crearía un lazy nuevo que vuelve a suspenderse.
  */
-const contentCache = new Map<number, MdxContent | null>()
-function getContent(stage: Stage): MdxContent | null {
-  if (!contentCache.has(stage.id)) {
-    const loader = stageLoader(stage)
-    contentCache.set(stage.id, loader ? (lazy(loader) as unknown as MdxContent) : null)
-  }
-  return contentCache.get(stage.id)!
+const STAGE_CONTENT = new Map<number, MdxContent>()
+for (const s of stages) {
+  const loader = stageLoader(s)
+  if (loader) STAGE_CONTENT.set(s.id, lazy(loader) as unknown as MdxContent)
 }
 
 export function StagePage() {
@@ -27,7 +24,7 @@ export function StagePage() {
   const articleRef = useRef<HTMLElement>(null)
   const [toc, setToc] = useState<{ id: string; text: string; icon: string }[]>([])
 
-  const Content = stage ? getContent(stage) : null
+  const Content = stage ? STAGE_CONTENT.get(stage.id) : undefined
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -136,6 +133,8 @@ export function StagePage() {
         <article ref={articleRef} className="lesson">
           {Content ? (
             <Suspense fallback={<p className="text-slate-500">Cargando etapa…</p>}>
+              {/* Falso positivo: Content sale de STAGE_CONTENT, creado una sola vez al cargar el módulo */}
+              {/* oxlint-disable-next-line react/static-components */}
               <Content components={mdxComponents} />
             </Suspense>
           ) : (

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { det2, fmt, type Vec2 } from '../../lib/linalg'
-import { Readout, Slider, VizLayout, texMat } from './controls'
+import { Readout, Slider, VizLayout } from './controls'
+import { texMat } from '../../lib/tex'
 import { Dot, Label, Plane, Segment } from './plane'
 
 type Eq = { a: number; b: number; c: number }

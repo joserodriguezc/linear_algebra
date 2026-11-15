@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { fmt, qr2, type Vec2 } from '../../lib/linalg'
-import { Readout, Segmented, VizLayout, texMat } from './controls'
+import { Readout, Segmented, VizLayout } from './controls'
+import { texMat } from '../../lib/tex'
 import { Arrow, Handle, Plane, Polyline, Segment } from './plane'
 
 type Stage = 'a' | 'q1' | 'proj' | 'q2'
