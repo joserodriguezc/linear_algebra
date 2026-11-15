@@ -1,0 +1,123 @@
+import { quiz } from '../quizzes/13'
+import crear from '../snippets/13/01_crear.py?raw'
+import aritmetica from '../snippets/13/02_aritmetica.py?raw'
+import producto from '../snippets/13/03_producto_tensorial.py?raw'
+import imagenes from '../snippets/13/04_imagenes.py?raw'
+import einsum from '../snippets/13/05_einsum.py?raw'
+
+<Section kind="why">
+
+No por casualidad la librería de deep learning de Google se llama **TensorFlow**: las redes neuronales trabajan con **tensores**, la generalización de vectores y matrices a cualquier número de dimensiones.
+
+- Una imagen en color es un tensor 3D: alto × ancho × canales (RGB).
+- Un lote de imágenes es 4D: lote × alto × ancho × canales.
+- Un vídeo o una serie temporal multivariada añaden más ejes.
+
+</Section>
+
+<Section kind="intuition">
+
+Un tensor es un array con $n$ ejes. Un escalar tiene 0, un vector 1, una matriz 2 y un tensor 3D se puede imaginar como una **pila de matrices** (capas). Cada eje responde a una pregunta: ¿qué capa?, ¿qué fila?, ¿qué columna?
+
+Indexar funciona igual que con matrices, pero con un índice más. Prueba distintas expresiones:
+
+<Figure title="Explorador de tensores 3D" caption="Un índice entero en un eje fija ese eje y lo elimina del resultado; ':' lo recorre entero.">
+  <TensorExplorer />
+</Figure>
+
+Las operaciones **elemento a elemento** (suma, resta, Hadamard, división) funcionan exactamente igual que con vectores y matrices: misma forma, posición a posición.
+
+El **producto tensorial** es diferente: cada elemento del primer tensor multiplica a **todo** el segundo, y las dimensiones se concatenan. Con dos vectores se obtiene una tabla de multiplicar.
+
+</Section>
+
+<Section kind="formal">
+
+<Formula label="Tensor de orden 3" tex="T \in \mathbb{R}^{n_1\times n_2\times n_3},\qquad T = [\,t_{ijk}\,]" reading="T pertenece a R a la n sub 1 por n sub 2 por n sub 3: es un tensor de tres ejes de números reales, cuyo elemento genérico es t sub i j k" />
+
+La notación matemática y la de NumPy coinciden, salvo que NumPy cuenta desde 0: $t_{ijk}$ = `T[i-1, j-1, k-1]`.
+
+<Formula label="Operaciones elemento a elemento (misma forma)" tex="(A \pm B)_{ijk} = a_{ijk} \pm b_{ijk},\qquad (A \circ B)_{ijk} = a_{ijk}\, b_{ijk},\qquad (A \oslash B)_{ijk} = \frac{a_{ijk}}{b_{ijk}}" reading="el elemento i j k de A más (o menos) B es a sub i j k más (o menos) b sub i j k; el de A Hadamard B es a sub i j k por b sub i j k; y el de A dividido elemento a elemento entre B es a sub i j k dividido entre b sub i j k" />
+
+<Formula label="Producto tensorial (exterior)" tex="(a \otimes b)_{ij} = a_i\, b_j,\qquad a = \begin{bmatrix}a_1\\a_2\end{bmatrix},\ b = \begin{bmatrix}b_1\\b_2\end{bmatrix} \;\Rightarrow\; a\otimes b = \begin{bmatrix}a_1b_1 & a_1b_2\\ a_2b_1 & a_2b_2\end{bmatrix}" reading="el elemento i j de a producto tensorial b es igual a a sub i por b sub j; para vectores de dos componentes, a tensorial b es la matriz cuyas filas son a sub 1 por b sub 1, a sub 1 por b sub 2, y a sub 2 por b sub 1, a sub 2 por b sub 2">
+  En general, un tensor de forma $(p_1,\dots,p_r)$ por otro de forma $(q_1,\dots,q_s)$ da forma $(p_1,\dots,p_r,q_1,\dots,q_s)$. En NumPy: `tensordot(A, B, axes=0)`.
+</Formula>
+
+`tensordot` con `axes=1` **contrae** (multiplica y suma) el último eje de A con el primero de B: para matrices es el producto matricial. `einsum` permite expresar cualquier contracción indicando los índices, como `"ik,kj->ij"`.
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Calcula $a \otimes b$ con $a = (1, 2)$ y $b = (3, 4)$, y di qué forma tendría el producto tensorial de dos matrices $2\times2$.
+</Problem>
+<Step>
+Con $a = \begin{bmatrix}1\\2\end{bmatrix}$ y $b = \begin{bmatrix}3\\4\end{bmatrix}$, cada elemento de $a$ multiplica a todo $b$:
+
+$$
+\text{fila 1} = 1\cdot\begin{bmatrix}3 & 4\end{bmatrix} = \begin{bmatrix}3 & 4\end{bmatrix},\qquad \text{fila 2} = 2\cdot\begin{bmatrix}3 & 4\end{bmatrix} = \begin{bmatrix}6 & 8\end{bmatrix}
+$$
+
+$$
+a\otimes b = \begin{bmatrix}3&4\\6&8\end{bmatrix}
+$$
+</Step>
+<Step>
+Es lo mismo que el producto matricial de $a$ como columna por $b$ como fila, $ab^T$, de forma $(2\times1)(1\times2) = 2\times2$:
+
+$$
+ab^T = \begin{bmatrix}1\\2\end{bmatrix}\begin{bmatrix}3 & 4\end{bmatrix} = \begin{bmatrix}1\cdot3 & 1\cdot4\\ 2\cdot3 & 2\cdot4\end{bmatrix} = \begin{bmatrix}3&4\\6&8\end{bmatrix}
+$$
+</Step>
+<Step>
+Para dos matrices $2\times2$ las formas se concatenan: $(2, 2) \otimes (2, 2) \to (2, 2, 2, 2)$, es decir, 16 elementos. Con $M = \begin{bmatrix}1&2\\3&4\end{bmatrix}$, el elemento $(i, j)$ de $M$ multiplica a toda la matriz $M$; cada bloque es una de las cuatro "capas" $2\times2$ del tensor:
+
+$$
+M \otimes M = \begin{bmatrix} 1\cdot M & 2\cdot M\\ 3\cdot M & 4\cdot M \end{bmatrix} = \left[\begin{array}{cc|cc} 1&2&2&4\\ 3&4&6&8\\ \hline 3&6&4&8\\ 9&12&12&16 \end{array}\right]
+$$
+
+En NumPy, `T = tensordot(M, M, axes=0)` y, por ejemplo, `T[1, 0]` es el bloque $3M$.
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="Crear e indexar un tensor" code={crear} />
+<PyCell title="Aritmética de tensores" code={aritmetica} />
+<PyCell title="Producto tensorial" code={producto} />
+<PyCell title="tensordot y einsum" code={einsum} />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz stageId={13} questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+En deep learning casi todo es un tensor: los datos de entrada, los pesos de las capas convolucionales (alto del filtro × ancho × canales de entrada × canales de salida) y los gradientes. Las operaciones de la etapa 6 (broadcasting) y las reducciones con `axis` funcionan igual en NumPy, PyTorch y TensorFlow.
+
+<PyCell title="Un lote de imágenes es un tensor 4D" code={imagenes} />
+
+<KeyTakeaways>
+- Un tensor es un array de $n$ dimensiones: vectores y matrices son tensores de orden 1 y 2.
+- Se indexa con un índice por eje; `shape` describe el tamaño de cada eje.
+- La aritmética elemento a elemento es igual que con matrices.
+- El producto tensorial $\otimes$ concatena las formas; `tensordot` y `einsum` generalizan el producto matricial.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Crea un tensor `(2, 3, 4)` con `arange(24).reshape(2, 3, 4)` y calcula su suma por cada eje con `sum(axis=k)`.
+2. Reescribe el producto punto, el producto matriz-vector y el producto exterior con `einsum`.
+3. Carga una imagen con matplotlib y explora su forma y sus canales.
+
+</Section>

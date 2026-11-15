@@ -1,0 +1,139 @@
+import { quiz } from '../quizzes/08'
+import l1 from '../snippets/08/01_l1.py?raw'
+import l2 from '../snippets/08/02_l2.py?raw'
+import lmax from '../snippets/08/03_max.py?raw'
+import distancias from '../snippets/08/04_distancias.py?raw'
+import regularizacion from '../snippets/08/05_regularizacion.py?raw'
+
+<Section kind="why">
+
+¿Cuán "grande" es un vector? La respuesta, llamada **norma**, aparece por todas partes en ML:
+
+- **Distancias**: k vecinos más cercanos y k-means agrupan por la norma de la diferencia entre puntos.
+- **Errores**: el error cuadrático medio es una norma $L^2$ al cuadrado (dividida por $n$); el error absoluto medio, una $L^1$.
+- **Regularización**: Ridge penaliza $\|w\|_2^2$ y Lasso penaliza $\|w\|_1$ para evitar el sobreajuste.
+- **Normalización**: dividir un vector por su norma lo deja de longitud 1 (embeddings, similitud coseno).
+
+</Section>
+
+<Section kind="intuition">
+
+Medir la longitud de una flecha parece tener una sola respuesta, pero depende de **cómo te puedes mover**:
+
+- $L^2$ (euclídea): en línea recta, "a vuelo de pájaro".
+- $L^1$ (Manhattan): solo por calles horizontales y verticales, como un taxi en una ciudad cuadriculada.
+- $L^\infty$ (máxima): solo cuenta el desplazamiento más largo de todos los ejes.
+
+Arrastra $v$. Cada contorno une todos los puntos con **la misma norma que $v$**:
+
+<Figure title="Tres formas de medir el mismo vector">
+  <NormBalls />
+</Figure>
+
+Las **bolas unidad** (los puntos con norma 1) explican por qué Lasso produce pesos exactamente cero: el rombo $L^1$ tiene **esquinas sobre los ejes**, donde alguna coordenada vale 0.
+
+<Figure title="Bolas unidad">
+  <NormBalls unit />
+</Figure>
+
+</Section>
+
+<Section kind="formal">
+
+Una norma $\|\cdot\|$ asigna a cada vector un número no negativo, que solo es 0 para el vector nulo, escala con $\|s\,v\| = |s|\,\|v\|$ y cumple la desigualdad triangular $\|a + b\| \le \|a\| + \|b\|$.
+
+<Formula label="Norma L¹" tex="\|v\|_1 = |v_1| + |v_2| + \cdots + |v_n| = \sum_{i=1}^{n} |v_i|" reading="la norma uno de v es igual al valor absoluto de v sub 1, más el valor absoluto de v sub 2, más … más el valor absoluto de v sub n; es decir, la sumatoria, para i desde 1 hasta n, del valor absoluto de v sub i" />
+
+<Formula label="Norma L² (euclídea)" tex="\|v\|_2 = \sqrt{v_1^2 + v_2^2 + \cdots + v_n^2} = \sqrt{v \cdot v}" reading="la norma dos de v es igual a la raíz cuadrada de v sub 1 al cuadrado, más v sub 2 al cuadrado, más … más v sub n al cuadrado; que es lo mismo que la raíz cuadrada de v punto v">
+  Es la norma por defecto: a menudo se escribe solo $\|v\|$. Su cuadrado $\|v\|_2^2 = v\cdot v$ es más fácil de derivar, por eso aparece en mínimos cuadrados y en Ridge.
+</Formula>
+
+<Formula label="Norma máxima (L∞)" tex="\|v\|_\infty = \max_i |v_i|" reading="la norma infinito de v es igual al máximo, entre todos los índices i, del valor absoluto de v sub i" />
+
+Las tres son casos particulares de la norma $L^p$ (con $p = 1$, $p = 2$ y $p \to \infty$):
+
+<Formula label="Norma Lᵖ" tex="\|v\|_p = \left(\sum_{i=1}^{n} |v_i|^p\right)^{1/p}" reading="la norma p de v es igual a la sumatoria, para i desde 1 hasta n, del valor absoluto de v sub i elevado a p, y todo ello elevado a uno partido por p" />
+
+<Formula label="Relación entre normas" tex="\|v\|_\infty \le \|v\|_2 \le \|v\|_1" reading="la norma infinito de v es menor o igual que la norma dos de v, que a su vez es menor o igual que la norma uno de v" />
+
+La **distancia** entre dos puntos es la norma de su diferencia:
+
+<Formula label="Distancia" tex="d(p, q) = \|p - q\|" reading="la distancia entre p y q es igual a la norma de p menos q" />
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Calcula las tres normas de $v = (1, -2, 2)$ y normalízalo con la norma L².
+</Problem>
+<Step>
+Con $v = \begin{bmatrix}1\\-2\\2\end{bmatrix}$:
+
+$$
+\|v\|_1 = |1| + |-2| + |2| = 5
+$$
+</Step>
+<Step>
+$\|v\|_2 = \sqrt{1^2 + (-2)^2 + 2^2} = \sqrt{9} = 3$
+</Step>
+<Step>
+$\|v\|_\infty = \max(1, 2, 2) = 2$. Se cumple $2 \le 3 \le 5$.
+</Step>
+<Step>
+Vector unitario (misma dirección, longitud 1):
+
+$$
+\hat{v} = \frac{v}{\|v\|_2} = \frac{1}{3}\begin{bmatrix}1\\-2\\2\end{bmatrix} = \begin{bmatrix}1/3\\-2/3\\2/3\end{bmatrix}
+$$
+
+Comprobación: $\|\hat v\|_2^2 = \tfrac{1}{9} + \tfrac{4}{9} + \tfrac{4}{9} = 1$ ✓
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="Norma L¹" code={l1} />
+<PyCell title="Norma L²" code={l2} />
+<PyCell title="Norma máxima" code={lmax} />
+<PyCell title="Distancias entre puntos" code={distancias} />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz stageId={8} questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+En la regresión regularizada se minimiza el error más una penalización sobre el tamaño de los pesos:
+
+$$
+\underbrace{\|y - Xw\|_2^2}_{\text{error}} + \alpha\,\|w\|_2^2 \;\;(\text{Ridge}) \qquad\qquad \|y - Xw\|_2^2 + \alpha\,\|w\|_1 \;\;(\text{Lasso})
+$$
+
+En el siguiente ejemplo solo 3 de las 6 características influyen de verdad. Observa qué hace cada penalización con los pesos de las características irrelevantes:
+
+<PyCell title="Ridge (L²) frente a Lasso (L¹)" code={regularizacion} hint="Lasso pone a exactamente 0 los pesos de las características irrelevantes; Ridge solo los hace pequeños." />
+
+<KeyTakeaways>
+- Una norma mide la magnitud de un vector; la distancia es la norma de una diferencia.
+- $L^1$ = suma de absolutos; $L^2$ = raíz de la suma de cuadrados; $L^\infty$ = máximo absoluto.
+- `norm(v)` es $L^2$; `norm(v, 1)` y `norm(v, inf)` dan las otras.
+- La forma de la bola unidad explica el comportamiento de Ridge y Lasso.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Implementa las tres normas a mano con listas de Python.
+2. Calcula la norma $L^p$ para $p = 0.5, 1, 2, 4, 10$ de un mismo vector y observa la tendencia hacia $L^\infty$.
+3. Programa k vecinos más cercanos con distancia $L^1$ y $L^2$ y compara las predicciones.
+
+</Section>

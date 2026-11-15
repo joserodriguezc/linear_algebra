@@ -1,0 +1,131 @@
+import { quiz } from '../quizzes/06'
+import escalar from '../snippets/06/01_escalar.py?raw'
+import vector from '../snippets/06/02_vector_a_matriz.py?raw'
+import error from '../snippets/06/03_error.py?raw'
+import columna from '../snippets/06/04_columna.py?raw'
+import estandarizar from '../snippets/06/05_estandarizar.py?raw'
+
+<Section kind="why">
+
+Matemáticamente solo se pueden sumar arrays **de la misma forma**. Pero en la práctica queremos constantemente operar arrays de formas distintas: restar la media de cada columna a toda la tabla, sumar el sesgo $b$ a la salida de una capa para todo un lote, dividir cada imagen por 255…
+
+El **broadcasting** de NumPy (y de PyTorch y TensorFlow, que usan la misma regla) permite hacerlo sin bucles ni copias. Entender su regla evita tanto errores como resultados silenciosamente incorrectos.
+
+</Section>
+
+<Section kind="intuition">
+
+La idea: cuando un array tiene una dimensión de tamaño 1 (o le falta), NumPy hace **como si lo replicara** a lo largo de esa dimensión hasta que encaje con el otro. Un escalar se "pinta" sobre todo el array; un vector fila se repite en cada fila.
+
+Elige la forma de A y de B, y mira cómo se compara cada dimensión **empezando por la derecha**:
+
+<Figure title="Broadcasting paso a paso">
+  <BroadcastingGrid />
+</Figure>
+
+<Callout kind="warning">
+El broadcasting puede "funcionar" cuando no querías. Si `y_pred` tiene forma `(100, 1)` e `y` forma `(100,)`, `y_pred - y` no da error: produce una matriz `(100, 100)`. Comprueba siempre las formas.
+</Callout>
+
+</Section>
+
+<Section kind="formal">
+
+Dados dos arrays con formas $(a_1, \dots, a_p)$ y $(b_1, \dots, b_q)$:
+
+1. Se alinean **por la derecha** y a la forma más corta se le añaden 1 por la izquierda.
+2. En cada eje, los tamaños deben ser **iguales**, o **uno de ellos 1**.
+3. El resultado tiene en cada eje el máximo de los dos tamaños.
+
+<Formula label="Forma resultante (por eje k, alineados a la derecha)" tex="r_k = \max(a_k, b_k) \quad\text{válido si}\quad a_k = b_k \ \lor\ a_k = 1 \ \lor\ b_k = 1" reading="r sub k es igual al máximo entre a sub k y b sub k, y es válido si a sub k es igual a b sub k, o a sub k es igual a 1, o b sub k es igual a 1" />
+
+| A | B | Resultado |
+|---|---|---|
+| `(2, 3)` | escalar `()` | `(2, 3)` |
+| `(2, 3)` | `(3,)` | `(2, 3)` |
+| `(2, 3)` | `(2, 1)` | `(2, 3)` |
+| `(4, 1)` | `(1, 5)` | `(4, 5)` |
+| `(2, 3)` | `(2,)` | ❌ error: 3 ≠ 2 |
+| `(2, 3)` | `(4,)` | ❌ error: 3 ≠ 4 |
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Sean
+
+$$
+A = \begin{bmatrix}1&2&3\\4&5&6\end{bmatrix},\qquad b = \begin{bmatrix}10&20&30\end{bmatrix},\qquad c = \begin{bmatrix}100&200\end{bmatrix}
+$$
+
+Calcula `A + b` y `A + c`. ¿Cómo arreglar el segundo para sumar 100 a la primera fila y 200 a la segunda?
+</Problem>
+<Step>
+Formas: `(2, 3)` y `(3,)`. Desde la derecha: 3 = 3 ✓; el vector no tiene eje de filas, se trata como 1 y se estira a 2 ✓. Resultado `(2, 3)`:
+
+$$
+\begin{bmatrix}1&2&3\\4&5&6\end{bmatrix} + \begin{bmatrix}10&20&30\\ \color{gray}10&\color{gray}20&\color{gray}30\end{bmatrix} = \begin{bmatrix}11&22&33\\14&25&36\end{bmatrix}
+$$
+</Step>
+<Step>
+Formas: `(2, 3)` y `(2,)`. Desde la derecha: 3 vs 2 ✗. **Error**, aunque intuitivamente "hay 2 filas y 2 números": NumPy intenta alinear $c$ con las **columnas** de $A$, y hay 3 columnas pero solo 2 números.
+
+$$
+\underbrace{\begin{bmatrix}1&2&3\\4&5&6\end{bmatrix}}_{(2,\,3)} + \underbrace{\begin{bmatrix}100&200\end{bmatrix}}_{(2,)} \;\Rightarrow\; \text{ValueError}
+$$
+</Step>
+<Step>
+Convertimos el vector en **columna** con `c.reshape(2, 1)`. Formas `(2, 3)` y `(2, 1)`: 3 vs 1 ✓ (se estira la columna), 2 vs 2 ✓.
+
+$$
+c' = \begin{bmatrix}100\\200\end{bmatrix}
+$$
+
+$$
+\begin{bmatrix}1&2&3\\4&5&6\end{bmatrix} + \begin{bmatrix}100&\color{gray}100&\color{gray}100\\200&\color{gray}200&\color{gray}200\end{bmatrix} = \begin{bmatrix}101&102&103\\204&205&206\end{bmatrix}
+$$
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="Escalar sobre arrays" code={escalar} />
+<PyCell title="Vector sobre matriz" code={vector} />
+<PyCell title="Cuando el broadcasting falla" code={error} />
+<PyCell title="Vectores columna y producto exterior" code={columna} />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz stageId={6} questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+La **estandarización** de características, uno de los preprocesados más comunes, es broadcasting puro: $Z = (X - \mu)/\sigma$, con $X$ de forma `(n, d)` y $\mu, \sigma$ de forma `(d,)`.
+
+<PyCell title="Estandarizar un dataset" code={estandarizar} />
+
+Lo mismo ocurre en una capa densa de una red neuronal: `X @ W + b` suma el vector de sesgos `b` (forma `(salidas,)`) a cada fila del lote.
+
+<KeyTakeaways>
+- Se comparan las dimensiones desde la derecha: deben ser iguales o una de ellas 1.
+- Las dimensiones de tamaño 1 (o ausentes) se estiran sin copiar memoria.
+- Usa `reshape(-1, 1)` o `[:, None]` para convertir un vector en columna.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Crea tres ejemplos propios de broadcasting entre arrays 1D y 2D.
+2. Normaliza las filas de una matriz para que cada una sume 1: `M / M.sum(axis=1, keepdims=True)`.
+3. Construye una tabla de multiplicar 10×10 con un solo producto y broadcasting.
+
+</Section>

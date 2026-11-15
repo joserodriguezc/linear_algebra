@@ -1,0 +1,131 @@
+import { quiz } from '../quizzes/10'
+import triangulares from '../snippets/10/01_triangulares.py?raw'
+import diagonal from '../snippets/10/02_diagonal.py?raw'
+import identidad from '../snippets/10/03_identidad.py?raw'
+import simetrica from '../snippets/10/04_simetrica.py?raw'
+import ortogonal from '../snippets/10/05_ortogonal.py?raw'
+import rotacion from '../snippets/10/06_rotacion.py?raw'
+
+<Section kind="why">
+
+Algunas matrices tienen una **estructura** especial que las hace más fáciles de interpretar y mucho más baratas de calcular. Reconocerlas es clave para leer artículos de ML y entender los algoritmos:
+
+- La **matriz de covarianza** (etapa 17) siempre es **simétrica**.
+- Las descomposiciones LU, QR y Cholesky (etapa 14) producen matrices **triangulares** y **ortogonales**.
+- La eigendescomposición y la SVD (etapas 15 y 16) expresan cualquier matriz con matrices **ortogonales** y **diagonales**.
+
+</Section>
+
+<Section kind="intuition">
+
+Cada tipo se reconoce por **dónde están los ceros** o por **qué simetría tiene**. Explora la galería: las propiedades de la derecha se comprueban en vivo sobre la matriz mostrada.
+
+<Figure title="Galería de tipos de matrices">
+  <MatrixTypeGallery />
+</Figure>
+
+Geométricamente, algunos tipos tienen un significado muy claro:
+
+- **Diagonal**: estira o encoge cada eje por separado, sin girar nada.
+- **Identidad**: no hace nada; es el "1" de las matrices.
+- **Ortogonal**: rota o refleja **sin deformar**: conserva longitudes y ángulos (el cuadrado sigue siendo un cuadrado de área 1).
+
+<Figure title="Diagonal, ortogonal y otras transformaciones" caption="Prueba los ejemplos de escala (diagonal), rotación y reflexión (ortogonales), y compáralos con la cizalla, que deforma.">
+  <MatrixTransform2D initial="rotacion" presets={['identidad', 'escala', 'rotacion', 'reflexion', 'cizalla', 'simetrica']} showDet={false} />
+</Figure>
+
+</Section>
+
+<Section kind="formal">
+
+Sea $M$ una matriz $n\times n$ (**cuadrada**). Su **diagonal principal** son los elementos $m_{11}, m_{22}, \dots, m_{nn}$.
+
+| Tipo | Condición | NumPy |
+|---|---|---|
+| Simétrica | $M = M^T$, es decir, $m_{ij} = m_{ji}$ | `(M == M.T).all()` |
+| Triangular inferior | $m_{ij} = 0$ si $j > i$ | `tril(M)` |
+| Triangular superior | $m_{ij} = 0$ si $j < i$ | `triu(M)` |
+| Diagonal | $m_{ij} = 0$ si $i \ne j$ | `diag(v)` |
+| Identidad $I$ | diagonal de unos | `identity(n)` |
+| Ortogonal | $Q^TQ = QQ^T = I$ | `Q.T @ Q` |
+
+<Formula label="Matriz identidad" tex="I_3 = \begin{bmatrix}1&0&0\\0&1&0\\0&0&1\end{bmatrix},\qquad IA = AI = A,\qquad Iv = v" reading="I sub 3 es la matriz de 3 por 3 con unos en la diagonal y ceros fuera de ella; I por A es igual a A por I, que es igual a A; e I por v es igual a v" />
+
+<Formula label="Matriz ortogonal" tex="Q^T Q = I \quad\Longrightarrow\quad Q^{-1} = Q^T,\qquad \|Qv\|_2 = \|v\|_2" reading="Q transpuesta por Q es igual a la identidad; esto implica que la inversa de Q es igual a Q transpuesta, y que la norma dos de Q por v es igual a la norma dos de v">
+  Sus columnas son vectores **ortonormales**: de longitud 1 y perpendiculares entre sí (producto punto 0). Invertirla solo cuesta transponerla, por eso es tan apreciada en cálculo numérico.
+</Formula>
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Comprueba que $Q = \begin{bmatrix}0.6 & -0.8\\ 0.8 & 0.6\end{bmatrix}$ es ortogonal y calcula su inversa sin aplicar ninguna fórmula de inversión.
+</Problem>
+<Step>
+Columnas de $Q$:
+
+$$
+q_1 = \begin{bmatrix}0.6\\0.8\end{bmatrix},\qquad q_2 = \begin{bmatrix}-0.8\\0.6\end{bmatrix}
+$$
+
+Longitudes: $\|q_1\|^2 = 0.36 + 0.64 = 1$ y $\|q_2\|^2 = 0.64 + 0.36 = 1$.
+</Step>
+<Step>
+Perpendicularidad: $q_1 \cdot q_2 = 0.6\cdot(-0.8) + 0.8\cdot0.6 = -0.48 + 0.48 = 0$ ✓. Las columnas son ortonormales, así que $Q$ es ortogonal.
+</Step>
+<Step>
+Por tanto $Q^{-1} = Q^T = \begin{bmatrix}0.6 & 0.8\\ -0.8 & 0.6\end{bmatrix}$.
+</Step>
+<Step>
+Comprobación:
+
+$$
+Q^TQ = \begin{bmatrix}0.6 & 0.8\\ -0.8 & 0.6\end{bmatrix}\begin{bmatrix}0.6 & -0.8\\ 0.8 & 0.6\end{bmatrix} = \begin{bmatrix}0.36+0.64 & -0.48+0.48\\ -0.48+0.48 & 0.64+0.36\end{bmatrix} = \begin{bmatrix}1&0\\0&1\end{bmatrix} = I \ \checkmark
+$$
+
+Es una rotación de unos $53.1^\circ$ ($\cos\theta = 0.6$).
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="Triangulares" code={triangulares} />
+<PyCell title="Diagonal" code={diagonal} />
+<PyCell title="Identidad" code={identidad} />
+<PyCell title="Simétrica" code={simetrica} />
+<PyCell title="Ortogonal: la inversa es la transpuesta" code={ortogonal} />
+<PyCell title="Las rotaciones conservan longitudes" code={rotacion} />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz stageId={10} questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+- $X^TX$ (la *matriz de Gram*) es simétrica y aparece en la ecuación normal de la regresión lineal (etapa 19).
+- La matriz de covarianza es simétrica; por eso sus vectores propios son ortogonales, y en eso se basa PCA (etapa 18).
+- Las matrices ortogonales se usan para inicializar pesos de redes recurrentes porque no explotan ni se desvanecen al multiplicarse muchas veces.
+
+<KeyTakeaways>
+- Simétrica: $M = M^T$. Triangular: ceros por encima o por debajo de la diagonal. Diagonal: solo la diagonal.
+- La identidad es el elemento neutro: $IA = A$.
+- Ortogonal: columnas ortonormales, $Q^{-1} = Q^T$; rota o refleja sin deformar.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Escribe una función que diga si una matriz es simétrica, triangular, diagonal u ortogonal.
+2. Comprueba que el producto de dos matrices ortogonales es ortogonal.
+3. Construye la matriz de rotación de $\theta$ grados y verifica que su determinante es 1.
+
+</Section>

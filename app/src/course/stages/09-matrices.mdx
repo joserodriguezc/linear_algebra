@@ -1,0 +1,144 @@
+import { quiz } from '../quizzes/09'
+import definir from '../snippets/09/01_definir.py?raw'
+import aritmetica from '../snippets/09/02_aritmetica.py?raw'
+import matmul from '../snippets/09/03_matmul.py?raw'
+import matmulError from '../snippets/09/04_matmul_error.py?raw'
+import matvec from '../snippets/09/05_matvec.py?raw'
+import escalar from '../snippets/09/06_escalar.py?raw'
+import noConmutativo from '../snippets/09/07_no_conmutativo.py?raw'
+import transformacion from '../snippets/09/08_transformacion.py?raw'
+
+<Section kind="why">
+
+Una matriz es una tabla de números, y en ML es **la** estructura de datos: el dataset `X` (muestras × características), los pesos `W` de una capa de una red neuronal, una imagen en escala de grises, la matriz de covarianza…
+
+El **producto matricial** es la operación más importante del curso. Una predicción de regresión lineal para todo un dataset es $\hat{y} = Xw$; una capa densa es $XW + b$; el entrenamiento de una red neuronal es, en gran parte, miles de productos matriciales (por eso las GPU, especializadas en ellos, aceleran tanto el deep learning).
+
+</Section>
+
+<Section kind="intuition">
+
+Hay dos formas complementarias de entender el producto matricial.
+
+**1. Como muchos productos punto.** Cada elemento $c_{ij}$ del resultado es el producto punto de la **fila $i$ de A** con la **columna $j$ de B**. Pasa el ratón por las celdas de $C$:
+
+<Figure title="El producto matricial celda a celda">
+  <MatMulVisualizer />
+</Figure>
+
+**2. Como una transformación del espacio.** Una matriz $2\times2$ mueve cada punto del plano: $v \mapsto Av$. Las columnas de $A$ dicen **a dónde van los vectores base** $\hat\imath = (1,0)$ y $\hat\jmath = (0,1)$, y el resto de la cuadrícula los sigue. Multiplicar matrices es encadenar transformaciones.
+
+<Figure title="La matriz como transformación" caption="Mueve el control de animación t para ver la transformación desde la identidad. Arrastra v para ver a dónde lo lleva A.">
+  <MatrixTransform2D showDet={false} />
+</Figure>
+
+</Section>
+
+<Section kind="formal">
+
+<Formula label="Matriz" tex="A \in \mathbb{R}^{m\times n},\qquad A = \begin{bmatrix} a_{11} & \cdots & a_{1n} \\ \vdots & \ddots & \vdots \\ a_{m1} & \cdots & a_{mn} \end{bmatrix}" reading="A pertenece a R a la m por n: es una matriz de números reales con m filas y n columnas, cuyo elemento a sub i j está en la fila i y la columna j" />
+
+**Operaciones elemento a elemento** (misma forma): suma $A+B$, resta $A-B$, producto de Hadamard $A \circ B$ y división, igual que con vectores.
+
+<Formula label="Producto matricial" tex="C = AB,\qquad c_{ij} = \sum_{k=1}^{n} a_{ik}\, b_{kj},\qquad (m\times n)\cdot(n\times p) \to (m\times p)" reading="C es igual a A por B, donde c sub i j es igual a la sumatoria, para k desde 1 hasta n, de a sub i k por b sub k j; una matriz de m por n multiplicada por una de n por p da una matriz de m por p">
+  Las dimensiones **interiores** deben coincidir. En NumPy: `A @ B` o `A.dot(B)`. ¡No confundir con `A * B`, que es Hadamard!
+</Formula>
+
+<Formula label="Matriz por vector" tex="Av = \begin{bmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \\ a_{31} & a_{32} \end{bmatrix}\begin{bmatrix} v_1 \\ v_2 \end{bmatrix} = \begin{bmatrix} a_{11}v_1 + a_{12}v_2 \\ a_{21}v_1 + a_{22}v_2 \\ a_{31}v_1 + a_{32}v_2 \end{bmatrix} = v_1\begin{bmatrix}a_{11}\\a_{21}\\a_{31}\end{bmatrix} + v_2\begin{bmatrix}a_{12}\\a_{22}\\a_{32}\end{bmatrix}" reading="A por v es el vector cuyas componentes son a sub 1 1 por v sub 1 más a sub 1 2 por v sub 2, y lo mismo con cada fila; lo que equivale a v sub 1 por la primera columna de A, más v sub 2 por la segunda columna de A">
+  Dos lecturas: un producto punto por fila, o una **combinación lineal de las columnas** de $A$ con pesos $v_i$.
+</Formula>
+
+<Formula label="Matriz por escalar" tex="sA = \big[s\,a_{ij}\big]" reading="s por A es la matriz cuyos elementos son s por a sub i j" />
+
+Propiedades clave:
+
+- **No conmutativo**: en general $AB \ne BA$ (y a veces solo una de las dos existe).
+- **Asociativo**: $(AB)C = A(BC)$.
+- **Distributivo**: $A(B + C) = AB + AC$.
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Calcula $C = AB$ con $A = \begin{bmatrix}1&2\\3&4\\5&6\end{bmatrix}$ y $B = \begin{bmatrix}1&2\\3&4\end{bmatrix}$.
+</Problem>
+<Step>
+Formas: $(3\times\mathbf{2})\cdot(\mathbf{2}\times 2)$. Las interiores coinciden, así que el resultado es $3\times2$.
+</Step>
+<Step>
+Fila 1 de A con cada columna de B:
+
+$$
+c_{11} = \begin{bmatrix}1 & 2\end{bmatrix}\begin{bmatrix}1\\3\end{bmatrix} = 1\cdot1 + 2\cdot3 = 7 \qquad c_{12} = \begin{bmatrix}1 & 2\end{bmatrix}\begin{bmatrix}2\\4\end{bmatrix} = 1\cdot2 + 2\cdot4 = 10
+$$
+</Step>
+<Step>
+Fila 2:
+
+$$
+c_{21} = \begin{bmatrix}3 & 4\end{bmatrix}\begin{bmatrix}1\\3\end{bmatrix} = 3 + 12 = 15 \qquad c_{22} = \begin{bmatrix}3 & 4\end{bmatrix}\begin{bmatrix}2\\4\end{bmatrix} = 6 + 16 = 22
+$$
+</Step>
+<Step>
+Fila 3:
+
+$$
+c_{31} = \begin{bmatrix}5 & 6\end{bmatrix}\begin{bmatrix}1\\3\end{bmatrix} = 5 + 18 = 23 \qquad c_{32} = \begin{bmatrix}5 & 6\end{bmatrix}\begin{bmatrix}2\\4\end{bmatrix} = 10 + 24 = 34
+$$
+
+Reuniendo los seis productos:
+
+$$
+C = \begin{bmatrix}7&10\\15&22\\23&34\end{bmatrix}
+$$
+</Step>
+<Step>
+¿Y $BA$? Sería $(2\times\mathbf{2})\cdot(\mathbf{3}\times2)$: las interiores no coinciden, **no existe**.
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="Definir una matriz" code={definir} />
+<PyCell title="Aritmética elemento a elemento" code={aritmetica} />
+<PyCell title="Producto matricial" code={matmul} />
+<PyCell title="El orden importa" code={matmulError} />
+<PyCell title="Matriz por vector" code={matvec} />
+<PyCell title="Matriz por escalar" code={escalar} />
+<PyCell title="AB ≠ BA" code={noConmutativo} />
+<PyCell title="Transformar un cuadrado" code={transformacion} hint="La celda dibuja con matplotlib; la imagen aparece bajo el código." />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz stageId={9} questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+- **Predicciones en lote**: con `X` de forma `(n, d)` y pesos `w` de forma `(d,)`, `X @ w` da las $n$ predicciones de una vez: cada una es un producto punto (etapa 7).
+- **Capas de una red**: una capa densa transforma el lote $X$ `(n, d)` en $XW + b$ `(n, h)`, con $W$ de forma `(d, h)`. Encadenar capas es encadenar productos matriciales, con una función no lineal entre ellos.
+- **Transformaciones**: rotar, escalar o proyectar datos (como hará PCA) es multiplicar por una matriz.
+
+<KeyTakeaways>
+- `+ - * /` entre matrices son elemento a elemento; `@` es el producto matricial.
+- $c_{ij}$ = fila $i$ de A · columna $j$ de B; las dimensiones interiores deben coincidir.
+- $Av$ es una combinación lineal de las columnas de $A$.
+- Una matriz es una transformación lineal; sus columnas son las imágenes de los vectores base.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Implementa el producto matricial con tres bucles `for` y compara su resultado y su velocidad con `@`.
+2. Comprueba numéricamente la asociatividad $(AB)C = A(BC)$ con matrices aleatorias.
+3. Escribe la rotación de 90° como matriz y verifica que aplicarla 4 veces da la identidad.
+
+</Section>
