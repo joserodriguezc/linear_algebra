@@ -5,3 +5,6 @@ __pycache__/
 
 # Material de referencia local (no se versiona)
 docs/*.pdf
+
+# Configuración local del editor
+.vscode/
