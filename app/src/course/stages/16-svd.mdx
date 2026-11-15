@@ -1,0 +1,153 @@
+import { quiz } from '../quizzes/16'
+import svd from '../snippets/16/01_svd.py?raw'
+import reconstruir from '../snippets/16/02_reconstruir.py?raw'
+import cuadrada from '../snippets/16/03_reconstruir_cuadrada.py?raw'
+import pinv from '../snippets/16/04_pseudoinversa.py?raw'
+import pinvSvd from '../snippets/16/05_pseudoinversa_svd.py?raw'
+import reduccion from '../snippets/16/06_reduccion.py?raw'
+import truncated from '../snippets/16/07_truncated_svd.py?raw'
+import imagen from '../snippets/16/08_imagen.py?raw'
+import recomendador from '../snippets/16/09_recomendador.py?raw'
+
+<Section kind="why">
+
+La eigendescomposición solo funciona con algunas matrices cuadradas. La **descomposición en valores singulares (SVD)** funciona con **cualquier** matriz, incluso rectangular, y es la herramienta más versátil del álgebra lineal aplicada:
+
+- **Reducción de dimensionalidad** y compresión: quedarse con la información esencial de un dataset o una imagen.
+- **Pseudoinversa**: resolver mínimos cuadrados (regresión lineal) de forma robusta.
+- **Sistemas de recomendación**: descubrir "gustos latentes" en la matriz usuarios × productos (el famoso premio Netflix).
+- **Análisis semántico latente (LSA)**: encontrar temas en una matriz documentos × palabras.
+- **Rango numérico** y eliminación de ruido.
+
+</Section>
+
+<Section kind="intuition">
+
+La SVD afirma algo sorprendente: **toda transformación lineal es girar, estirar los ejes y volver a girar**. En 2D, el círculo unidad siempre se convierte en una elipse; los semiejes de esa elipse miden los **valores singulares** $\sigma_1 \ge \sigma_2 \ge 0$.
+
+<Figure title="La SVD es girar · estirar · girar" caption="Elige una etapa y mueve la animación. Prueba la matriz de rango 1: la elipse se aplasta en un segmento (σ₂ = 0).">
+  <SVDGeometry />
+</Figure>
+
+La segunda gran idea: la SVD escribe la matriz como una **suma de capas** $\sigma_1 u_1 v_1^T + \sigma_2 u_2 v_2^T + \dots$, ordenadas de más a menos importante. Si nos quedamos con las $k$ primeras obtenemos la **mejor aproximación posible de rango $k$**. Con una imagen se ve muy claro:
+
+<Figure title="Comprimir una imagen con SVD">
+  <SVDImageCompression />
+</Figure>
+
+</Section>
+
+<Section kind="formal">
+
+<Formula label="Descomposición en valores singulares" tex="A = U\,\Sigma\,V^T,\qquad A \in \mathbb{R}^{m\times n}" reading="A es igual a U por sigma mayúscula por V transpuesta, donde A es una matriz de m filas y n columnas de números reales">
+  $U$ ($m\times m$) y $V$ ($n\times n$) son **ortogonales**: sus columnas $u_i$ y $v_i$ son los vectores singulares izquierdos y derechos. $\Sigma$ ($m\times n$) es diagonal, con los **valores singulares** $\sigma_1 \ge \sigma_2 \ge \dots \ge 0$. En NumPy y SciPy, `svd` devuelve $\Sigma$ como un vector `s`.
+</Formula>
+
+<Formula label="La SVD como suma de capas de rango 1" tex="A = \sum_{i=1}^{r} \sigma_i\, u_i\, v_i^T" reading="A es igual a la sumatoria, para i desde 1 hasta r, de sigma sub i por u sub i por v sub i transpuesta, siendo r el rango de A">
+  Cada $u_i v_i^T$ es una matriz de rango 1 (columna por fila). El rango de $A$ es el número de valores singulares no nulos.
+</Formula>
+
+<Formula label="Aproximación de rango k (SVD truncada)" tex="A_k = \sum_{i=1}^{k} \sigma_i\, u_i\, v_i^T \approx A" reading="A sub k es la sumatoria, para i desde 1 hasta k, de sigma sub i por u sub i por v sub i transpuesta, y es aproximadamente igual a A">
+  Es la mejor aproximación de rango $k$ posible (teorema de Eckart-Young). Guardarla cuesta $k(m + n + 1)$ números en lugar de $mn$.
+</Formula>
+
+<Formula label="Relación con la eigendescomposición" tex="A^TA = V\,\Sigma^T\Sigma\,V^T \;\Rightarrow\; \sigma_i = \sqrt{\lambda_i(A^TA)}" reading="A transpuesta por A es igual a V por sigma mayúscula transpuesta por sigma mayúscula por V transpuesta; por tanto, sigma sub i es la raíz cuadrada del i-ésimo valor propio de A transpuesta por A" />
+
+<Formula label="Pseudoinversa (Moore-Penrose)" tex="A^+ = V\,\Sigma^+\,U^T" reading="la pseudoinversa de A es igual a V por sigma mayúscula más por U transpuesta">
+  $\Sigma^+$ se obtiene transponiendo $\Sigma$ y sustituyendo cada $\sigma_i \ne 0$ por $1/\sigma_i$. Si $A$ es invertible, $A^+ = A^{-1}$. Para un sistema sin solución exacta, $x = A^+b$ es la solución de **mínimos cuadrados** (y de norma mínima).
+</Formula>
+
+<Formula label="Reducción de dimensionalidad" tex="T = U_k\,\Sigma_k = A\,V_k" reading="T es igual a U sub k por sigma mayúscula sub k, que es igual a A por V sub k">
+  $V_k$ son las $k$ primeras columnas de $V$. Cada fila de $A$ ($n$ características) pasa a tener solo $k$: sus coordenadas en las $k$ direcciones más importantes.
+</Formula>
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Calcula la SVD de $A = \begin{bmatrix}3&0\\4&5\end{bmatrix}$ usando $A^TA$.
+</Problem>
+<Step>
+$A^TA = \begin{bmatrix}3&4\\0&5\end{bmatrix}\begin{bmatrix}3&0\\4&5\end{bmatrix} = \begin{bmatrix}25&20\\20&25\end{bmatrix}$
+</Step>
+<Step>
+Valores propios de $A^TA$: $(25-\lambda)^2 - 400 = 0$, así que $25 - \lambda = \pm 20$, con $\lambda_1 = 45$ y $\lambda_2 = 5$.
+
+Valores singulares: $\sigma_1 = \sqrt{45} = 3\sqrt5 \approx 6.708$ y $\sigma_2 = \sqrt5 \approx 2.236$.
+</Step>
+<Step>
+Vectores propios de $A^TA$ (las columnas de $V$):
+
+$$
+v_1 = \frac{1}{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix}\ (\lambda = 45),\qquad v_2 = \frac{1}{\sqrt2}\begin{bmatrix}-1\\1\end{bmatrix}\ (\lambda = 5),\qquad V = \frac{1}{\sqrt2}\begin{bmatrix}1&-1\\1&1\end{bmatrix}
+$$
+</Step>
+<Step>
+Columnas de $U$: $u_i = \dfrac{A v_i}{\sigma_i}$.
+
+$$
+Av_1 = \frac{1}{\sqrt2}\begin{bmatrix}3\\9\end{bmatrix} \;\Rightarrow\; u_1 = \frac{1}{3\sqrt5}\cdot\frac{1}{\sqrt2}\begin{bmatrix}3\\9\end{bmatrix} = \frac{1}{\sqrt{10}}\begin{bmatrix}1\\3\end{bmatrix}
+$$
+
+$$
+Av_2 = \frac{1}{\sqrt2}\begin{bmatrix}-3\\1\end{bmatrix} \;\Rightarrow\; u_2 = \frac{1}{\sqrt5}\cdot\frac{1}{\sqrt2}\begin{bmatrix}-3\\1\end{bmatrix} = \frac{1}{\sqrt{10}}\begin{bmatrix}-3\\1\end{bmatrix}
+$$
+</Step>
+<Step>
+La SVD completa:
+
+$$
+A = \underbrace{\frac{1}{\sqrt{10}}\begin{bmatrix}1&-3\\3&1\end{bmatrix}}_{U}\underbrace{\begin{bmatrix}3\sqrt5&0\\0&\sqrt5\end{bmatrix}}_{\Sigma}\underbrace{\frac{1}{\sqrt2}\begin{bmatrix}1&1\\-1&1\end{bmatrix}}_{V^T}
+$$
+
+Comprobaciones: $u_1 \cdot u_2 = \tfrac{1}{10}(-3 + 3) = 0$ ✓ y $\sigma_1\sigma_2 = \sqrt{45}\sqrt5 = 15 = |\det A|$ ✓. Puedes verlo en la figura de arriba con el ejemplo `[[3,0],[4,5]]`.
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="SVD con SciPy" code={svd} />
+<PyCell title="Reconstruir una matriz rectangular" code={reconstruir} />
+<PyCell title="Reconstruir una matriz cuadrada" code={cuadrada} />
+<PyCell title="Pseudoinversa con pinv" code={pinv} />
+<PyCell title="Pseudoinversa a mano con la SVD" code={pinvSvd} />
+<PyCell title="Reducción de dimensionalidad" code={reduccion} />
+<PyCell title="TruncatedSVD de scikit-learn" code={truncated} />
+<PyCell title="Comprimir una imagen" code={imagen} />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz stageId={16} questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+**Recomendadores por factorización.** Si los gustos de los usuarios dependen de unos pocos factores latentes ("acción", "drama"…), la matriz de valoraciones tiene rango bajo. La SVD truncada descubre esos factores y rellena los huecos con predicciones:
+
+<PyCell title="Un recomendador de rango 2" code={recomendador} hint="Al usuario 0 le gustan las películas 0 y 1 (acción): el modelo predice que la película 2 (drama) no le gustará." />
+
+**PCA**, que veremos en la etapa 18, es una SVD de los datos centrados. **LSA** (análisis semántico latente) aplica la SVD truncada a una matriz TF-IDF documentos × palabras para encontrar temas.
+
+<KeyTakeaways>
+- Toda matriz cumple $A = U\Sigma V^T$: girar, estirar y girar; $\sigma_1 \ge \sigma_2 \ge \dots \ge 0$.
+- La SVD truncada $A_k$ es la mejor aproximación de rango $k$: comprime y elimina ruido.
+- La pseudoinversa $A^+ = V\Sigma^+U^T$ resuelve mínimos cuadrados con matrices no cuadradas o singulares.
+- $\sigma_i^2$ son los valores propios de $A^TA$; el rango es el número de $\sigma_i$ no nulos.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Carga una foto propia en escala de grises, comprímela con $k = 5, 20, 50$ y calcula el error relativo $\|A - A_k\|_F / \|A\|_F$.
+2. Comprueba numéricamente que `pinv(A) @ b` da la misma solución que `np.linalg.lstsq(A, b)`.
+3. Aplica `TruncatedSVD` a una matriz TF-IDF de varios textos y observa qué palabras pesan más en cada componente.
+
+</Section>
