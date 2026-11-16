@@ -1,0 +1,128 @@
+import { quiz } from '../quizzes/algebra-lineal-y-ml'
+import notacion from '../snippets/algebra-lineal-y-ml/01_notacion.py?raw'
+import bucles from '../snippets/algebra-lineal-y-ml/02_bucles_vs_vectorizado.py?raw'
+import minimos from '../snippets/algebra-lineal-y-ml/03_minimos_cuadrados.py?raw'
+
+<Section kind="why">
+
+Es habitual oír que "antes de hacer machine learning hay que dominar el álgebra lineal". Este curso propone otro camino: **no empieces por la teoría abstracta**, empieza por los resultados y profundiza en el álgebra lineal cuando ya sabes para qué sirve. Y cuando lo hagas, céntrate en **la parte que realmente se usa en ML**, no en todo un curso universitario.
+
+Esta etapa responde a dos preguntas: ¿qué partes del álgebra lineal necesito? y ¿por qué merece la pena aprenderlas?
+
+</Section>
+
+<Section kind="intuition">
+
+Hay cinco áreas clave. Explora cada una y en qué etapas del curso la verás:
+
+<Figure title="Mapa del curso: las áreas del álgebra lineal que necesitas">
+  <CourseMap />
+</Figure>
+
+La primera razón para aprender álgebra lineal es poder **leer**: los artículos, la documentación y los libros de ML están escritos en su notación. La segunda, **pensar en vectores**: escribir `X @ w` en lugar de bucles anidados hace el código más corto, más parecido a las fórmulas y muchísimo más rápido.
+
+<Callout kind="tip" title="Cómo leer este curso">
+Cada etapa va de lo concreto a lo abstracto: primero el **porqué**, después la **intuición** con gráficos interactivos, luego las **fórmulas** (siempre con cómo se leen y qué significa cada símbolo), un **ejemplo a mano**, el **código** y las **preguntas**. Si una fórmula se te resiste, vuelve a la figura.
+</Callout>
+
+</Section>
+
+<Section kind="formal">
+
+Una pequeña guía de la notación que encontrarás en todo el curso (y en los textos de ML):
+
+<Formula label="Escalares, vectores y matrices" tex="s \in \mathbb{R},\qquad a \in \mathbb{R}^{n},\qquad A \in \mathbb{R}^{m\times n},\qquad a_i,\ a_{ij}" reading="s es un número real; a es un vector de n números reales; A es una matriz de m filas y n columnas de números reales; a sub i es el elemento i del vector y a sub i j el elemento de la fila i y columna j de la matriz">
+  Convención habitual: minúsculas para escalares y vectores, **mayúsculas para matrices**. Los vectores se consideran columnas.
+</Formula>
+
+<Formula label="Tres formas de escribir el producto punto" tex="a \cdot b = a^T b = \sum_{i=1}^{n} a_i\, b_i" reading="a punto b es igual a a transpuesta por b, que es igual a la sumatoria, para i desde 1 hasta n, de a sub i por b sub i">
+  En NumPy, las tres son `a @ b`. Saber que son lo mismo es la mitad del trabajo de leer un artículo.
+</Formula>
+
+<Formula label="Un modelo lineal (aritmética)" tex="\hat{y} = X\,b" reading="y sombrero (las predicciones) es igual a la matriz de datos X por el vector de coeficientes b" />
+
+<Formula label="Mínimos cuadrados" tex="\min_b \|y - X\,b\|_2^2" reading="el mínimo, variando b, de la norma dos al cuadrado de y menos X por b">
+  Encontrar los coeficientes que hacen mínimo el error al cuadrado: la regresión lineal (<StageRef slug="regresion-lineal" />).
+</Formula>
+
+<Formula label="Factorización" tex="A = U\,\Sigma\,V^T" reading="A es igual a U por sigma mayúscula por V transpuesta">
+  Un ejemplo de descomposición de una matriz en piezas más simples: la SVD (<StageRef slug="svd" />), base de PCA y de los recomendadores.
+</Formula>
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Traduce a NumPy la fórmula del error de un modelo lineal, $E = \|y - Xb\|_2^2$, con `X` de forma `(n, p)`, `b` de forma `(p,)` e `y` de forma `(n,)`.
+</Problem>
+<Step>
+$Xb$ es un producto matriz-vector: `X @ b`, de forma `(n,)` (una predicción por fila).
+</Step>
+<Step>
+$y - Xb$ es una resta elemento a elemento entre vectores de la misma forma: `r = y - X @ b`, los residuos.
+</Step>
+<Step>
+$\|r\|_2^2$ es la norma $L^2$ al cuadrado, es decir, la suma de los cuadrados, que es el producto punto de $r$ consigo mismo: `r @ r`, o también `np.sum(r**2)` o `np.linalg.norm(r)**2`.
+</Step>
+<Step>
+En una línea: `E = (y - X @ b) @ (y - X @ b)`. Una fórmula de artículo se ha convertido en código sin bucles, gracias a conocer la notación.
+</Step>
+<Step>
+**Con números**: 3 observaciones y 2 características.
+
+$$
+X = \begin{bmatrix}1&2\\3&4\\5&6\end{bmatrix},\qquad b = \begin{bmatrix}1\\0.5\end{bmatrix},\qquad y = \begin{bmatrix}3\\5\\7\end{bmatrix}
+$$
+
+$$
+Xb = \begin{bmatrix}1 + 1\\ 3 + 2\\ 5 + 3\end{bmatrix} = \begin{bmatrix}2\\5\\8\end{bmatrix},\qquad r = y - Xb = \begin{bmatrix}1\\0\\-1\end{bmatrix},\qquad E = r \cdot r = 1 + 0 + 1 = 2
+$$
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="De la notación a NumPy" code={notacion} />
+<PyCell title="Pensar en vectores: bucle frente a NumPy" code={bucles} />
+<PyCell title="Un adelanto: mínimos cuadrados" code={minimos} />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+Las cinco áreas en una frase cada una:
+
+1. **Notación**: el idioma de los artículos y la documentación.
+2. **Aritmética**: lo que hace un modelo al predecir y una red neuronal en cada capa.
+3. **Estadística**: describir los datos con vectores y matrices (media, covarianza).
+4. **Factorización**: descomponer matrices para resolver, comprimir y reducir dimensiones.
+5. **Mínimos cuadrados**: ajustar modelos a datos.
+
+Y una razón más: el álgebra lineal es útil (y bonita) mucho más allá del ML, en gráficos 3D, física, ingeniería o economía.
+
+<KeyTakeaways>
+- No hace falta todo el álgebra lineal: notación, aritmética, estadística, factorización y mínimos cuadrados.
+- Aprender de arriba abajo: primero para qué sirve cada idea, luego cómo funciona.
+- Leer la notación permite traducir directamente las fórmulas a NumPy.
+- El código vectorizado es más corto y mucho más rápido que los bucles.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Elige un artículo o tutorial de ML y anota tres fórmulas que no entiendas; vuelve a ellas al terminar el curso.
+2. Traduce a NumPy la fórmula de la regresión Ridge: $\|y - Xb\|_2^2 + \alpha\|b\|_2^2$.
+3. Repite la comparación bucle frente a NumPy con un producto matricial $200\times200$.
+
+</Section>

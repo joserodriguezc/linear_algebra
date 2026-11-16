@@ -1,0 +1,173 @@
+import { quiz } from '../quizzes/vectores'
+import definir from '../snippets/vectores/01_definir.py?raw'
+import aritmetica from '../snippets/vectores/02_aritmetica.py?raw'
+import punto from '../snippets/vectores/03_producto_punto.py?raw'
+import escalar from '../snippets/vectores/04_escalar.py?raw'
+import angulo from '../snippets/vectores/05_angulo.py?raw'
+import neurona from '../snippets/vectores/06_neurona.py?raw'
+import reto from '../snippets/vectores/07_reto_listas.py?raw'
+
+<Section kind="why">
+
+En machine learning casi todo es un vector. Una fila de un dataset (las características de una casa: metros cuadrados, habitaciones, garaje) es un vector. Los **pesos** de un modelo lineal son un vector. La **variable objetivo** de todo un dataset suele escribirse como el vector $y$. Una palabra en un modelo de lenguaje se representa con un vector (un *embedding*).
+
+Y la operación estrella de esta etapa, el **producto punto**, es literalmente lo que calcula una neurona o una regresión lineal para hacer una predicción: $\hat{y} = w \cdot x + b$.
+
+</Section>
+
+<Section kind="intuition">
+
+Hay tres formas de pensar en un vector, y conviene tenerlas todas a mano:
+
+1. **Lista de números**: $v = (v_1, v_2, v_3)$. Es la visión de NumPy y de los datos.
+2. **Punto** en un espacio de $n$ dimensiones: $(3, 1)$ es un lugar en el plano.
+3. **Flecha** desde el origen, con dirección y magnitud: la visión geométrica.
+
+En 2D podemos *ver* las operaciones. Arrastra los puntos de los vectores $a$ y $b$:
+
+<Figure title="Suma, resta y escalado de vectores" caption="Arrastra los círculos (o selecciónalos con Tab y usa las flechas del teclado).">
+  <VectorPlayground />
+</Figure>
+
+- **Sumar** es encadenar flechas: camina por $a$ y luego por $b$.
+- **Restar** $a - b$ da la flecha que va *de la punta de $b$ a la punta de $a$*: es la diferencia entre dos puntos de datos.
+- **Escalar** estira o encoge la flecha sin sacarla de su recta.
+
+<Callout kind="tip">
+Los dibujos en 2D son una analogía. En ML los vectores suelen tener cientos o miles de componentes, pero las reglas son exactamente las mismas: todo se hace **componente a componente**.
+</Callout>
+
+El **producto punto** responde a la pregunta: *¿cuánto apunta $a$ en la dirección de $b$?*
+
+<Figure title="El producto punto como proyección">
+  <DotProductProjection />
+</Figure>
+
+</Section>
+
+<Section kind="formal">
+
+Un vector de $n$ componentes reales se escribe en fila o en columna:
+
+<Formula label="Vector" tex="v = (v_1, v_2, \dots, v_n) \qquad\text{o}\qquad v = \begin{pmatrix} v_1 \\ v_2 \\ \vdots \\ v_n \end{pmatrix}, \quad v \in \mathbb{R}^n" reading="v es igual a la lista ordenada v sub 1, v sub 2, hasta v sub n (escrita en fila o en columna), y v pertenece a R a la n: el conjunto de todos los vectores de n componentes, cada una un número real (R representa los números reales)" />
+
+Las operaciones aritméticas entre vectores de **igual longitud** se aplican elemento a elemento:
+
+<Formula label="Aritmética vectorial" tex="a \pm b = (a_1 \pm b_1,\ \dots,\ a_n \pm b_n) \qquad a \circ b = (a_1 b_1,\ \dots,\ a_n b_n) \qquad \frac{a}{b} = \left(\frac{a_1}{b_1},\ \dots,\ \frac{a_n}{b_n}\right)" reading="a más (o menos) b es el vector de componentes a sub i más (o menos) b sub i; a Hadamard b es el vector de los productos a sub i por b sub i; y a dividido entre b es el vector de los cocientes a sub i entre b sub i, para i desde 1 hasta n">
+  $a \circ b$ es el *producto de Hadamard* (elemento a elemento); en NumPy es `a * b`.
+</Formula>
+
+<Formula label="Multiplicación por un escalar" tex="s\,v = (s\,v_1,\ s\,v_2,\ \dots,\ s\,v_n)" reading="s por v es el vector cuyos componentes son s por v sub 1, s por v sub 2, hasta s por v sub n" />
+
+<Formula label="Producto punto (producto escalar)" tex="a \cdot b = \sum_{i=1}^{n} a_i b_i = a_1 b_1 + a_2 b_2 + \dots + a_n b_n" reading="a punto b es igual a la sumatoria, para i desde 1 hasta n, de a sub i por b sub i; es decir, a sub 1 por b sub 1, más a sub 2 por b sub 2, más … más a sub n por b sub n">
+  El resultado es un **número**, no un vector. Geométricamente: $a \cdot b = \|a\|\,\|b\|\cos\theta$, donde $\theta$ es el ángulo entre ambos y $\|\cdot\|$ es la longitud (la norma $L^2$ de la próxima etapa).
+</Formula>
+
+Consecuencias útiles de la versión geométrica:
+
+| Signo de $a\cdot b$ | Ángulo | Interpretación |
+|---|---|---|
+| positivo | $\theta < 90^\circ$ | apuntan en direcciones parecidas |
+| cero | $\theta = 90^\circ$ | perpendiculares (**ortogonales**) |
+| negativo | $\theta > 90^\circ$ | apuntan en direcciones opuestas |
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Sean $a = (1, 2, 3)$ y $b = (4, -1, 2)$. Calcula $a + b$, $a - b$, $2a$, $a \circ b$ y $a \cdot b$. ¿Forman un ángulo agudo u obtuso?
+</Problem>
+<Step>
+Escribimos los vectores como columnas:
+
+$$
+a = \begin{bmatrix}1\\2\\3\end{bmatrix},\qquad b = \begin{bmatrix}4\\-1\\2\end{bmatrix}
+$$
+
+**Suma y resta**, componente a componente:
+
+$$
+a + b = \begin{bmatrix}1+4\\2-1\\3+2\end{bmatrix} = \begin{bmatrix}5\\1\\5\end{bmatrix},\qquad a - b = \begin{bmatrix}1-4\\2+1\\3-2\end{bmatrix} = \begin{bmatrix}-3\\3\\1\end{bmatrix}
+$$
+</Step>
+<Step>
+**Escalar**:
+
+$$
+2a = \begin{bmatrix}2\cdot1\\2\cdot2\\2\cdot3\end{bmatrix} = \begin{bmatrix}2\\4\\6\end{bmatrix}
+$$
+</Step>
+<Step>
+**Hadamard** (multiplicar posición a posición):
+
+$$
+a \circ b = \begin{bmatrix}1\cdot4\\2\cdot(-1)\\3\cdot2\end{bmatrix} = \begin{bmatrix}4\\-2\\6\end{bmatrix}
+$$
+</Step>
+<Step>
+**Producto punto**: es la *suma* del Hadamard, y el resultado es un número, no un vector.
+
+$$
+a \cdot b = a^Tb = \begin{bmatrix}1 & 2 & 3\end{bmatrix}\begin{bmatrix}4\\-1\\2\end{bmatrix} = 4 + (-2) + 6 = 8
+$$
+</Step>
+<Step>
+**Ángulo**: como $a\cdot b = 8 > 0$, el ángulo es **agudo**. Con las longitudes $\|a\| = \sqrt{14} \approx 3.742$ y $\|b\| = \sqrt{21} \approx 4.583$:
+
+$$
+\cos\theta = \frac{8}{3.742 \cdot 4.583} \approx 0.467 \;\Rightarrow\; \theta \approx 62.2^\circ
+$$
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+Ejecuta cada celda (botón **Ejecutar** o `Ctrl+Enter`). Puedes modificar el código: cambia los números y predice el resultado antes de ejecutar.
+
+<PyCell title="Definir un vector" code={definir} />
+<PyCell title="Aritmética elemento a elemento" code={aritmetica} hint="Observa que a * b NO es el producto punto." />
+<PyCell title="Producto punto: tres formas" code={punto} />
+<PyCell title="Multiplicación por un escalar" code={escalar} />
+<PyCell title="Ángulo entre vectores" code={angulo} hint="Comprueba en la figura interactiva que a=(2,3) y b=(4,1) forman ese mismo ángulo." />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+El producto punto es la operación más repetida de todo el machine learning:
+
+- **Regresión lineal y neuronas**: $\hat{y} = w \cdot x + b$. Una red neuronal densa calcula miles de productos punto por capa.
+- **Similitud**: la *similitud coseno* $\frac{a\cdot b}{\|a\|\|b\|}$ compara documentos, embeddings de palabras o perfiles de usuarios en sistemas de recomendación.
+- **Diferencias**: $a - b$ es la base de las distancias (k vecinos más cercanos, clustering) que formalizaremos con normas.
+
+<PyCell title="Una predicción es un producto punto" code={neurona} hint={<>La segunda línea calcula tres predicciones de golpe: eso es una multiplicación matriz-vector (<StageRef slug="matrices" />).</>} />
+
+<KeyTakeaways>
+- Un vector es una lista ordenada de números; en NumPy, un `array` de 1 dimensión.
+- `+`, `-`, `*`, `/` operan **elemento a elemento** y exigen la misma longitud.
+- El producto punto $a\cdot b=\sum a_i b_i$ devuelve un escalar que mide alineación: $\|a\|\|b\|\cos\theta$.
+- `a * b` es Hadamard; `a.dot(b)` o `a @ b` es el producto punto.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Crea un ejemplo de cada operación con tus propios datos pequeños.
+2. Implementa cada operación a mano con listas de Python (sin NumPy) y compara:
+
+<PyCell title="Reto: operaciones con listas" code={reto} />
+
+3. Busca en un artículo de ML un ejemplo de cada operación (pista: busca "dot product" en el paper de *Attention Is All You Need*).
+
+</Section>

@@ -1,17 +1,18 @@
 import { useState } from 'react'
 import { PASS_SCORE, recordQuiz, useProgress } from '../../lib/progress'
+import { useCurrentStage } from '../lesson/stageContext'
 import { RichText } from '../lesson/Tex'
 import { isCorrect, score, type Question, type Response } from './quizEngine'
 
 interface Props {
-  stageId: number
   questions: Question[]
 }
 
-export function Quiz({ stageId, questions }: Props) {
+export function Quiz({ questions }: Props) {
+  const stageSlug = useCurrentStage()
   const [responses, setResponses] = useState<Response[]>(() => questions.map(() => null))
   const [submitted, setSubmitted] = useState(false)
-  const progress = useProgress()[stageId]
+  const progress = useProgress()[stageSlug]
 
   const setResponse = (i: number, r: Response) =>
     setResponses((rs) => rs.map((x, j) => (j === i ? r : x)))
@@ -21,7 +22,7 @@ export function Quiz({ stageId, questions }: Props) {
 
   function submit() {
     setSubmitted(true)
-    recordQuiz(stageId, result)
+    recordQuiz(stageSlug, result)
   }
 
   function retry() {

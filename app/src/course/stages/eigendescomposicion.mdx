@@ -1,0 +1,146 @@
+import { quiz } from '../quizzes/eigendescomposicion'
+import eig from '../snippets/eigendescomposicion/01_eig.py?raw'
+import confirmar from '../snippets/eigendescomposicion/02_confirmar.py?raw'
+import reconstruir from '../snippets/eigendescomposicion/03_reconstruir.py?raw'
+import simetrica from '../snippets/eigendescomposicion/04_simetrica.py?raw'
+import sympyEig from '../snippets/eigendescomposicion/05_sympy.py?raw'
+import complejos from '../snippets/eigendescomposicion/06_complejos.py?raw'
+import potencia from '../snippets/eigendescomposicion/07_potencia.py?raw'
+import pagerank from '../snippets/eigendescomposicion/08_pagerank.py?raw'
+
+<Section kind="why">
+
+Una matriz transforma el espacio: gira, estira, inclina… Pero casi siempre hay unas **direcciones privilegiadas** que la matriz no gira, solo estira o encoge. Son sus **vectores propios** (*eigenvectors*), y el factor de estiramiento es su **valor propio** (*eigenvalue*).
+
+Encontrarlas es como descubrir los "ejes naturales" de la transformación, y está detrás de algoritmos clave:
+
+- **PCA** (<StageRef slug="pca" />): las componentes principales son los vectores propios de la matriz de covarianza.
+- **PageRank**: la importancia de cada página web es el vector propio dominante de la matriz de enlaces.
+- **Clustering espectral** y análisis de grafos: usan los vectores propios del laplaciano del grafo.
+- **Estabilidad** de sistemas dinámicos y de redes recurrentes: si los valores propios superan 1 en valor absoluto, las activaciones explotan.
+
+</Section>
+
+<Section kind="intuition">
+
+Arrastra $v$ y observa $Av$. En general $Av$ apunta en otra dirección. Tu objetivo es encontrar las direcciones en las que $Av$ queda **sobre la misma recta que $v$**:
+
+<Figure title="A la caza de vectores propios" caption="Prueba la rotación de 90°: no tiene ninguna dirección real que se conserve. Y la reflexión: un vector propio con λ = 1 (no cambia) y otro con λ = −1 (se invierte).">
+  <EigenExplorer />
+</Figure>
+
+Lo que conviene notar:
+
+- Si $v$ es vector propio, también lo es $2v$ o $-v$: lo que importa es la **dirección** (la recta), no la longitud. Por eso NumPy devuelve vectores propios de longitud 1.
+- $\lambda > 1$ estira, $0 < \lambda < 1$ encoge, $\lambda < 0$ invierte el sentido y $\lambda = 0$ aplasta esa dirección hasta el origen (la matriz es singular).
+- Si conocemos todas las direcciones propias, la matriz se entiende como **"estirar por $\lambda_i$ a lo largo de cada dirección propia"**: eso es la eigendescomposición.
+
+</Section>
+
+<Section kind="formal">
+
+<Formula label="Vector y valor propio" tex="A\,v = \lambda\,v,\qquad v \neq 0" reading="A por v es igual a lambda por v, siendo v un vector distinto del vector cero">
+  $A$ es cuadrada ($n\times n$), $v$ es un **vector propio** y el número $\lambda$ es su **valor propio**.
+</Formula>
+
+<Formula label="Ecuación característica" tex="\det(A - \lambda I) = 0" reading="el determinante de A menos lambda por la identidad es igual a cero">
+  Viene de $(A - \lambda I)v = 0$ con $v \ne 0$: la matriz $A - \lambda I$ debe aplastar alguna dirección, así que es singular. Para $2\times2$ queda la ecuación de segundo grado $\lambda^2 - \operatorname{tr}(A)\,\lambda + \det(A) = 0$.
+</Formula>
+
+<Formula label="Eigendescomposición" tex="A = Q\,\Lambda\,Q^{-1},\qquad \Lambda = \operatorname{diag}(\lambda_1, \dots, \lambda_n)" reading="A es igual a Q por lambda mayúscula por la inversa de Q, donde lambda mayúscula es la matriz diagonal con los valores propios lambda sub 1 hasta lambda sub n">
+  Las columnas de $Q$ son los vectores propios. Existe cuando hay $n$ vectores propios linealmente independientes (no siempre ocurre; por ejemplo, con una cizalla).
+</Formula>
+
+<Formula label="Matrices simétricas (teorema espectral)" tex="A = A^T \;\Rightarrow\; A = Q\,\Lambda\,Q^T,\qquad Q^TQ = I" reading="si A es igual a su transpuesta, entonces A es igual a Q por lambda mayúscula por Q transpuesta, siendo Q una matriz ortogonal">
+  Para matrices simétricas los valores propios son **reales** y los vectores propios se pueden elegir **ortonormales**. En NumPy se usa `eigh`, más estable que `eig`.
+</Formula>
+
+<Formula label="Traza y determinante" tex="\operatorname{tr}(A) = \sum_{i=1}^{n} \lambda_i,\qquad \det(A) = \prod_{i=1}^{n} \lambda_i" reading="la traza de A es igual a la suma de sus valores propios, y el determinante de A es igual al producto de sus valores propios" />
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Calcula los valores y vectores propios de $A = \begin{bmatrix}2&1\\1&2\end{bmatrix}$ y escribe su eigendescomposición.
+</Problem>
+<Step>
+**Ecuación característica**: $\det\begin{bmatrix}2-\lambda & 1\\ 1 & 2-\lambda\end{bmatrix} = (2-\lambda)^2 - 1 = \lambda^2 - 4\lambda + 3 = 0$
+</Step>
+<Step>
+Factorizamos: $(\lambda - 3)(\lambda - 1) = 0$, así que $\lambda_1 = 3$ y $\lambda_2 = 1$. Comprobación: la suma es $4 = \operatorname{tr}A$ y el producto es $3 = \det A$ ✓
+</Step>
+<Step>
+**Vector propio de $\lambda_1 = 3$**: resolvemos $(A - 3I)v = 0$:
+
+$$
+\begin{bmatrix}-1&1\\1&-1\end{bmatrix}\begin{bmatrix}v_1\\v_2\end{bmatrix} = \begin{bmatrix}0\\0\end{bmatrix} \;\Rightarrow\; v_1 = v_2 \;\Rightarrow\; q_1 = \frac{1}{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix}
+$$
+
+Comprobación: $Aq_1 = \tfrac{1}{\sqrt2}\begin{bmatrix}2+1\\1+2\end{bmatrix} = \tfrac{1}{\sqrt2}\begin{bmatrix}3\\3\end{bmatrix} = 3\,q_1$ ✓
+</Step>
+<Step>
+**Vector propio de $\lambda_2 = 1$**:
+
+$$
+\begin{bmatrix}1&1\\1&1\end{bmatrix}\begin{bmatrix}v_1\\v_2\end{bmatrix} = \begin{bmatrix}0\\0\end{bmatrix} \;\Rightarrow\; v_1 = -v_2 \;\Rightarrow\; q_2 = \frac{1}{\sqrt2}\begin{bmatrix}-1\\1\end{bmatrix}
+$$
+
+Es perpendicular a $q_1$ ($q_1 \cdot q_2 = \tfrac12(-1 + 1) = 0$), como corresponde a una matriz simétrica.
+</Step>
+<Step>
+**Eigendescomposición** (como $A$ es simétrica, $Q^{-1} = Q^T$):
+
+$$
+A = \underbrace{\tfrac{1}{\sqrt2}\begin{bmatrix}1&-1\\1&1\end{bmatrix}}_{Q}\underbrace{\begin{bmatrix}3&0\\0&1\end{bmatrix}}_{\Lambda}\underbrace{\tfrac{1}{\sqrt2}\begin{bmatrix}1&1\\-1&1\end{bmatrix}}_{Q^T}
+$$
+
+$A$ estira por 3 a lo largo de la diagonal $(1, 1)$ y deja intacta la dirección $(-1, 1)$.
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="Valores y vectores propios" code={eig} />
+<PyCell title="Confirmar Av = λv" code={confirmar} />
+<PyCell title="Reconstruir A = QΛQ⁻¹" code={reconstruir} />
+<PyCell title="Matrices simétricas: eigh" code={simetrica} />
+<PyCell title="Cálculo exacto con SymPy" code={sympyEig} />
+<PyCell title="Valores propios complejos" code={complejos} />
+<PyCell title="Método de la potencia" code={potencia} hint="Así calculan los buscadores el vector propio dominante de matrices enormes: solo hacen productos matriz-vector." />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+El **PageRank** original de Google modela a un internauta que salta de página en página siguiendo enlaces. La proporción de tiempo que pasa en cada página es el vector propio de valor propio 1 de la matriz de transición:
+
+<PyCell title="PageRank como vector propio" code={pagerank} />
+
+En la <StageRef slug="pca" /> aplicaremos la eigendescomposición a la **matriz de covarianza** de un dataset: sus vectores propios son las direcciones de máxima varianza (las componentes principales) y sus valores propios, cuánta varianza explica cada una.
+
+<KeyTakeaways>
+- $Av = \lambda v$: los vectores propios son las direcciones que $A$ solo estira; $\lambda$ es el factor.
+- Se obtienen de $\det(A - \lambda I) = 0$; en la práctica, con `eig` (o `eigh` si $A$ es simétrica).
+- $A = Q\Lambda Q^{-1}$; si $A$ es simétrica, $A = Q\Lambda Q^T$ con $Q$ ortogonal.
+- La suma de los valores propios es la traza y su producto, el determinante.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Calcula a mano los valores y vectores propios de $\begin{bmatrix}4&1\\2&3\end{bmatrix}$ y compruébalos con NumPy.
+2. Comprueba que una cizalla $\begin{bmatrix}1&1\\0&1\end{bmatrix}$ tiene un único vector propio independiente y no es diagonalizable.
+3. Calcula $A^{10}$ como $Q\Lambda^{10}Q^{-1}$ y compáralo con `np.linalg.matrix_power`.
+
+</Section>

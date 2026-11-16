@@ -1,0 +1,133 @@
+import { quiz } from '../quizzes/operaciones-matriciales'
+import transpuesta from '../snippets/operaciones-matriciales/01_transpuesta.py?raw'
+import inversa from '../snippets/operaciones-matriciales/02_inversa.py?raw'
+import exacta from '../snippets/operaciones-matriciales/03_inversa_exacta.py?raw'
+import singular from '../snippets/operaciones-matriciales/04_singular.py?raw'
+import traza from '../snippets/operaciones-matriciales/05_traza.py?raw'
+import determinante from '../snippets/operaciones-matriciales/06_determinante.py?raw'
+import rango from '../snippets/operaciones-matriciales/07_rango.py?raw'
+import resolver from '../snippets/operaciones-matriciales/08_resolver.py?raw'
+
+<Section kind="why">
+
+Estas cinco operaciones aparecen constantemente en las fórmulas de ML:
+
+- **Transpuesta**: en la ecuación normal de la regresión, $b = (X^TX)^{-1}X^Ty$, y en el producto punto escrito como $a^Tb$.
+- **Inversa**: para "deshacer" una transformación y resolver sistemas $Ax = b$.
+- **Determinante**: dice si una matriz es invertible y cuánto escala el espacio (también aparece en la densidad de la distribución normal multivariada).
+- **Traza**: suma de la diagonal; aparece en la varianza total y en algunas penalizaciones.
+- **Rango**: cuánta información independiente contiene una matriz. Si dos características son redundantes, la matriz de datos pierde rango y algunos algoritmos fallan.
+
+</Section>
+
+<Section kind="intuition">
+
+Pensando en la matriz como transformación del plano:
+
+- El **determinante** es el **factor por el que cambia el área**. El cuadrado unidad (naranja) se convierte en un paralelogramo de área $|\det A|$. Si es negativo, el plano se ha dado la vuelta, como en un espejo.
+- Si $\det A = 0$, el plano **colapsa** en una recta (o un punto): se pierde una dimensión, el **rango** baja, y ya no hay vuelta atrás, así que **no existe la inversa**.
+- La **inversa** es la transformación que deshace la original. Activa "Aplicar después la inversa" y mueve $t$ para verla volver a la identidad.
+
+<Figure title="Determinante, rango e inversa" caption="Prueba el ejemplo «Singular (rango 1)»: el área se hace 0 y la inversa deja de existir.">
+  <MatrixTransform2D initial="ejemplo" presets={['ejemplo', 'escala', 'reflexion', 'cizalla', 'rotacion', 'singular']} showInverse />
+</Figure>
+
+</Section>
+
+<Section kind="formal">
+
+<Formula label="Transpuesta" tex="(A^T)_{ij} = a_{ji},\qquad (m\times n)^T \to (n\times m),\qquad (AB)^T = B^TA^T" reading="el elemento i j de A transpuesta es igual a a sub j i; la transpuesta de una matriz de m por n es una matriz de n por m; y la transpuesta de A por B es igual a B transpuesta por A transpuesta">
+  Las filas pasan a ser columnas. El producto punto puede escribirse como $a \cdot b = a^Tb$.
+</Formula>
+
+<Formula label="Inversa" tex="AA^{-1} = A^{-1}A = I,\qquad \begin{bmatrix}a&b\\c&d\end{bmatrix}^{-1} = \frac{1}{ad-bc}\begin{bmatrix}d&-b\\-c&a\end{bmatrix}" reading="A por A inversa es igual a A inversa por A, que es igual a la identidad; y la inversa de la matriz a, b, c, d es igual a uno dividido entre a por d menos b por c, multiplicado por la matriz d, menos b, menos c, a">
+  Solo existe si $A$ es cuadrada y $\det A \ne 0$; si no existe, la matriz es **singular**. En la práctica no se calcula $A^{-1}$ para resolver $Ax = b$: se usa `solve`, que es más rápido y estable.
+</Formula>
+
+<Formula label="Traza" tex="\operatorname{tr}(A) = \sum_{i=1}^{n} a_{ii}" reading="la traza de A es igual a la sumatoria, para i desde 1 hasta n, de a sub i i; es decir, la suma de los elementos de la diagonal" />
+
+<Formula label="Determinante" tex="\det\begin{bmatrix}a&b\\c&d\end{bmatrix} = ad - bc,\qquad \det(AB) = \det(A)\det(B)" reading="el determinante de la matriz a, b, c, d es igual a a por d menos b por c; y el determinante de A por B es igual al determinante de A por el determinante de B">
+  Para $3\times3$ y mayores se calcula por cofactores o, mejor, con la descomposición LU (<StageRef slug="descomposiciones" />). También es el producto de los valores propios (<StageRef slug="eigendescomposicion" />).
+</Formula>
+
+<Formula label="Rango" tex="\operatorname{rank}(A) = \text{n.º de columnas (o filas) linealmente independientes} \le \min(m, n)" reading="el rango de A es el número de columnas (o filas) linealmente independientes, y es menor o igual que el mínimo entre m y n">
+  Una matriz cuadrada $n\times n$ es invertible si y solo si tiene rango completo $n$, es decir, si $\det A \ne 0$.
+</Formula>
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Para $A = \begin{bmatrix}1&2\\3&4\end{bmatrix}$ calcula $A^T$, $\operatorname{tr}(A)$, $\det A$, $A^{-1}$ y $\operatorname{rank}(A)$.
+</Problem>
+<Step>
+Transpuesta: $A^T = \begin{bmatrix}1&3\\2&4\end{bmatrix}$. Traza: $1 + 4 = 5$.
+</Step>
+<Step>
+Determinante: $\det A = 1\cdot4 - 2\cdot3 = -2$. Es distinto de 0, así que es invertible. El signo negativo indica que invierte la orientación, y el área se multiplica por 2.
+</Step>
+<Step>
+Inversa con la fórmula $2\times2$ (intercambiar $a$ y $d$, cambiar el signo de $b$ y $c$, dividir por el determinante):
+
+$$
+A^{-1} = \frac{1}{-2}\begin{bmatrix}4&-2\\-3&1\end{bmatrix} = \begin{bmatrix}-2&1\\1.5&-0.5\end{bmatrix}
+$$
+</Step>
+<Step>
+Comprobación:
+
+$$
+AA^{-1} = \begin{bmatrix}1&2\\3&4\end{bmatrix}\begin{bmatrix}-2&1\\1.5&-0.5\end{bmatrix} = \begin{bmatrix}-2+3 & 1-1\\ -6+6 & 3-2\end{bmatrix} = \begin{bmatrix}1&0\\0&1\end{bmatrix} = I \ \checkmark
+$$
+</Step>
+<Step>
+Rango: como $\det A \ne 0$, las dos columnas son independientes y $\operatorname{rank}(A) = 2$ (rango completo).
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="Transpuesta" code={transpuesta} />
+<PyCell title="Inversa" code={inversa} hint="Fíjate en los errores de redondeo del orden de 1e-16: en coma flotante, A @ inv(A) casi nunca es exactamente I." />
+<PyCell title="Inversa exacta con SymPy" code={exacta} />
+<PyCell title="Matriz singular" code={singular} />
+<PyCell title="Traza" code={traza} />
+<PyCell title="Determinante" code={determinante} />
+<PyCell title="Rango" code={rango} />
+<PyCell title="Resolver Ax = b" code={resolver} />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+- **Regresión lineal**: la solución de mínimos cuadrados es $b = (X^TX)^{-1}X^Ty$. Si dos columnas de $X$ son proporcionales (multicolinealidad), $X^TX$ pierde rango y la inversa no existe o es numéricamente inestable. Lo resolveremos en la <StageRef slug="regresion-lineal" /> con QR y SVD.
+- **Distribución normal multivariada**: su densidad usa la inversa y el determinante de la matriz de covarianza.
+- **Rango bajo**: los sistemas de recomendación suponen que la matriz usuarios × productos tiene rango bajo (pocos "gustos" independientes); la SVD lo aprovecha.
+
+<KeyTakeaways>
+- $A^T$ intercambia filas y columnas; $(AB)^T = B^TA^T$.
+- $A^{-1}$ deshace $A$; existe solo si $\det A \ne 0$.
+- $|\det A|$ es el factor de cambio del área; $\det A = 0$ significa colapso de dimensión.
+- La traza es la suma de la diagonal; el rango, el número de direcciones independientes.
+- Para resolver $Ax = b$, usa `solve` en lugar de `inv`.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Implementa el determinante $3\times3$ por la regla de Sarrus y compáralo con `det`.
+2. Construye una matriz $5\times5$ de rango 2 multiplicando una $5\times2$ por una $2\times5$ y compruébalo con `matrix_rank`.
+3. Compara el error de `inv(A) @ b` y `solve(A, b)` con una matriz casi singular, como la de Hilbert (`scipy.linalg.hilbert`).
+
+</Section>

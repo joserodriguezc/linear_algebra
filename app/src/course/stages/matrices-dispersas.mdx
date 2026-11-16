@@ -1,0 +1,131 @@
+import { quiz } from '../quizzes/matrices-dispersas'
+import sparsity from '../snippets/matrices-dispersas/01_sparsity.py?raw'
+import csr from '../snippets/matrices-dispersas/02_csr.py?raw'
+import memoria from '../snippets/matrices-dispersas/03_memoria.py?raw'
+import bolsa from '../snippets/matrices-dispersas/04_bolsa_palabras.py?raw'
+import oneHot from '../snippets/matrices-dispersas/05_one_hot.py?raw'
+
+<Section kind="why">
+
+Muchos datos de ML son **casi todo ceros**:
+
+- **One-hot encoding**: con 1000 categorías, cada fila tiene un 1 y 999 ceros.
+- **Texto**: una bolsa de palabras o TF-IDF tiene una columna por palabra del vocabulario (decenas de miles), pero cada documento usa unas pocas.
+- **Recomendadores**: la matriz usuarios × películas apenas tiene valoraciones; la mayoría de usuarios no ha visto casi ninguna película.
+
+Guardar y operar todos esos ceros desperdicia memoria y tiempo. Una matriz de 100 000 × 100 000 en `float64` ocupa 80 GB; si solo el 0.01 % de los valores es distinto de cero, en formato disperso ocupa unos 12 MB.
+
+</Section>
+
+<Section kind="intuition">
+
+La idea es **guardar solo lo que no es cero** y dónde está. El formato más usado, **CSR** (*Compressed Sparse Row*), lo hace con tres arrays. Haz clic en las celdas para cambiar sus valores y observa cómo cambian los tres arrays:
+
+<Figure title="Del formato denso a CSR">
+  <SparseCSR />
+</Figure>
+
+¿Cuándo compensa? Depende de la **densidad** (proporción de valores no nulos). Mueve el control:
+
+<Figure title="Memoria: densa frente a CSR">
+  <SparsityHeatmap />
+</Figure>
+
+</Section>
+
+<Section kind="formal">
+
+<Formula label="Dispersión (sparsity)" tex="\text{sparsity} = \frac{\text{n.º de ceros}}{\text{n.º total de elementos}} = 1 - \frac{\operatorname{nnz}(A)}{m \times n}" reading="la dispersión es igual al número de ceros dividido entre el número total de elementos, que es igual a uno menos el número de elementos no nulos de A dividido entre m por n">
+  $\operatorname{nnz}$ = *number of non-zeros*. La **densidad** es $1 - \text{sparsity}$.
+</Formula>
+
+**Formato CSR** de una matriz $m\times n$:
+
+| Array | Longitud | Contenido |
+|---|---|---|
+| `data` | nnz | valores no nulos, fila a fila |
+| `indices` | nnz | columna de cada valor |
+| `indptr` | $m+1$ | la fila $i$ ocupa `data[indptr[i]:indptr[i+1]]` |
+
+Otros formatos: **COO** (lista de tripletas fila, columna, valor; cómodo para construir), **CSC** (como CSR pero por columnas), **DOK** (diccionario; cómodo para modificar) y **LIL** (lista de listas). Se construye en COO o LIL y se convierte a CSR o CSC para operar.
+
+<Formula label="Coste de un producto matriz-vector" tex="\text{densa: } O(m\,n) \qquad\qquad \text{CSR: } O(\operatorname{nnz})" reading="en formato denso el coste es del orden de m por n operaciones; en formato CSR es del orden del número de elementos no nulos" />
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Convierte a CSR la matriz $A = \begin{bmatrix}1&0&0&1&0&0\\0&0&2&0&0&1\\0&0&0&2&0&0\end{bmatrix}$, y calcula su dispersión.
+</Problem>
+<Step>
+Recorremos fila a fila anotando los valores no nulos y su columna:
+
+- fila 0: valor 1 en la columna 0, valor 1 en la columna 3
+- fila 1: valor 2 en la columna 2, valor 1 en la columna 5
+- fila 2: valor 2 en la columna 3
+</Step>
+<Step>
+Los valores van a `data` y sus columnas a `indices`, en el mismo orden:
+
+$$
+\begin{aligned} \texttt{data} &= \begin{bmatrix}1 & 1 & 2 & 1 & 2\end{bmatrix} \\ \texttt{indices} &= \begin{bmatrix}0 & 3 & 2 & 5 & 3\end{bmatrix} \end{aligned}
+$$
+</Step>
+<Step>
+`indptr` acumula cuántos valores llevamos al terminar cada fila, empezando en 0 (tiene una entrada más que filas):
+
+$$
+\texttt{indptr} = \begin{bmatrix}0 & 2 & 4 & 5\end{bmatrix}
+$$
+
+Comprobación: la fila 1 ocupa `data[indptr[1]:indptr[2]] = data[2:4]`, es decir, los valores $(2, 1)$ en las columnas $(2, 5)$ ✓
+</Step>
+<Step>
+Dispersión: $\operatorname{nnz} = 5$ de $3\times6 = 18$ elementos, así que $1 - 5/18 = 13/18 \approx 0.72$.
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="Calcular la dispersión" code={sparsity} />
+<PyCell title="Denso ↔ CSR con SciPy" code={csr} />
+<PyCell title="Memoria y velocidad" code={memoria} hint="Puede tardar unos segundos en el navegador." />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+scikit-learn devuelve matrices dispersas de SciPy en sus codificadores y vectorizadores de texto, y la mayoría de modelos lineales las aceptan directamente en `fit`.
+
+<PyCell title="Bolsa de palabras" code={bolsa} />
+<PyCell title="One-hot encoding" code={oneHot} />
+
+<Callout kind="warning">
+Llamar a `.toarray()` o `.todense()` sobre una matriz dispersa enorme puede agotar la memoria. Úsalos solo para inspeccionar ejemplos pequeños.
+</Callout>
+
+<KeyTakeaways>
+- Dispersión = proporción de ceros; muchas matrices de ML superan el 99 %.
+- CSR guarda `data`, `indices` e `indptr`: memoria y tiempo proporcionales a nnz.
+- `scipy.sparse` ofrece CSR, CSC, COO, DOK y LIL; scikit-learn las usa directamente.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Implementa a mano la conversión denso → CSR y el producto CSR × vector.
+2. Construye una matriz en formato COO a partir de tripletas (fila, columna, valor) y conviértela a CSR.
+3. Mide con `TfidfVectorizer` la dispersión de un corpus de varios párrafos.
+
+</Section>

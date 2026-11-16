@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Tex } from '../components/lesson/Tex'
-import { stages } from '../course/curriculum'
+import { stageBySlug } from '../course/curriculum'
 import { glossary } from '../lib/notation'
 
 /** Letras griegas frecuentes en ML y su uso habitual. */
@@ -22,13 +22,12 @@ const GREEK: [string, string, string][] = [
   ['\\omega', 'omega', 'pesos; frecuencia'],
 ]
 
-const s = (id: number) => stages.find((x) => x.id === id)!
 
 /** Hoja de referencia de NumPy, agrupada por tema. */
-const CHEATSHEET: { title: string; stage: number[]; rows: [string, string][] }[] = [
+const CHEATSHEET: { title: string; stage: string[]; rows: [string, string][] }[] = [
   {
     title: 'Crear arrays',
-    stage: [4, 5],
+    stage: ['arrays-numpy', 'indexado-slicing-reshape'],
     rows: [
       ['array([[1, 2], [3, 4]])', 'desde listas'],
       ['zeros((3, 5)), ones(5), empty((3, 3))', 'rellenos con ceros, unos o sin inicializar'],
@@ -39,7 +38,7 @@ const CHEATSHEET: { title: string; stage: number[]; rows: [string, string][] }[]
   },
   {
     title: 'Vectores',
-    stage: [7, 8],
+    stage: ['vectores', 'normas'],
     rows: [
       ['a + b, a - b, a * b, a / b', 'aritmética elemento a elemento'],
       ['a @ b  o  a.dot(b)', 'producto punto'],
@@ -49,7 +48,7 @@ const CHEATSHEET: { title: string; stage: number[]; rows: [string, string][] }[]
   },
   {
     title: 'Matrices',
-    stage: [9, 10],
+    stage: ['matrices', 'tipos-de-matrices'],
     rows: [
       ['A + B, A * B', 'suma y producto de Hadamard'],
       ['A @ B, A @ v', 'producto matricial y matriz-vector'],
@@ -58,7 +57,7 @@ const CHEATSHEET: { title: string; stage: number[]; rows: [string, string][] }[]
   },
   {
     title: 'Operaciones',
-    stage: [11],
+    stage: ['operaciones-matriciales'],
     rows: [
       ['A.T', 'transpuesta'],
       ['inv(A), det(A), trace(A), matrix_rank(A)', 'inversa, determinante, traza, rango'],
@@ -67,7 +66,7 @@ const CHEATSHEET: { title: string; stage: number[]; rows: [string, string][] }[]
   },
   {
     title: 'Dispersas y tensores',
-    stage: [12, 13],
+    stage: ['matrices-dispersas', 'tensores'],
     rows: [
       ['csr_matrix(A), S.todense()', 'de denso a CSR y de vuelta (scipy.sparse)'],
       ['1 - count_nonzero(A) / A.size', 'dispersión'],
@@ -76,7 +75,7 @@ const CHEATSHEET: { title: string; stage: number[]; rows: [string, string][] }[]
   },
   {
     title: 'Factorización',
-    stage: [14, 15, 16],
+    stage: ['descomposiciones', 'eigendescomposicion', 'svd'],
     rows: [
       ['P, L, U = lu(A)', 'LU (scipy.linalg)'],
       ['Q, R = qr(A), L = cholesky(A)', 'QR y Cholesky'],
@@ -86,7 +85,7 @@ const CHEATSHEET: { title: string; stage: number[]; rows: [string, string][] }[]
   },
   {
     title: 'Estadística y regresión',
-    stage: [17, 18, 19],
+    stage: ['estadistica-multivariada', 'pca', 'regresion-lineal'],
     rows: [
       ['mean(X, axis=0), var(v, ddof=1), std(v, ddof=1)', 'media por columnas, varianza y desviación muestrales'],
       ['cov(X.T), corrcoef(x, y)', 'matriz de covarianza y correlación'],
@@ -168,9 +167,9 @@ export function Reference() {
               <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
                 <h3 className="font-semibold">{g.title}</h3>
                 <span className="flex gap-1 text-xs">
-                  {g.stage.map((id) => (
-                    <Link key={id} to={`/etapa/${s(id).slug}`} className="rounded bg-slate-100 px-1.5 py-0.5 hover:bg-brand-50 dark:bg-slate-800" title={s(id).title}>
-                      etapa {id}
+                  {g.stage.map((slug) => (
+                    <Link key={slug} to={`/etapa/${slug}`} className="rounded bg-slate-100 px-1.5 py-0.5 hover:bg-brand-50 dark:bg-slate-800" title={stageBySlug(slug).title}>
+                      etapa {stageBySlug(slug).n}
                     </Link>
                   ))}
                 </span>

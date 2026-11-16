@@ -7,8 +7,16 @@ const modules = import.meta.glob<{ quiz: Question[] }>('./quizzes/*.ts', { eager
 describe('bancos de preguntas', () => {
   it('cada archivo corresponde a una etapa existente', () => {
     for (const path of Object.keys(modules)) {
-      const id = Number(path.match(/(\d+)\.ts$/)![1])
-      expect(stages.some((s) => s.id === id), path).toBe(true)
+      const slug = path.match(/([\w-]+)\.ts$/)![1]
+      expect(stages.some((s) => s.slug === slug), path).toBe(true)
+    }
+  })
+
+  it('cada etapa tiene su MDX y su banco de preguntas', () => {
+    const mdx = import.meta.glob('./stages/*.mdx')
+    for (const s of stages) {
+      expect(Object.keys(mdx), s.slug).toContain(`./stages/${s.slug}.mdx`)
+      expect(Object.keys(modules), s.slug).toContain(`./quizzes/${s.slug}.ts`)
     }
   })
 

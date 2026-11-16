@@ -1,5 +1,6 @@
 import { PyCell } from './components/code/PyCell'
 import { Callout, Figure, Formula, KeyTakeaways, Problem, Section, Step, WorkedExample } from './components/lesson/blocks'
+import { StageRef } from './components/lesson/StageRef'
 import { Tex } from './components/lesson/Tex'
 import { Quiz } from './components/quiz/Quiz'
 import * as viz from './components/viz'
@@ -15,6 +16,7 @@ export const mdxComponents = {
   KeyTakeaways,
   Figure,
   Tex,
+  StageRef,
   PyCell,
   Quiz,
   ...viz,

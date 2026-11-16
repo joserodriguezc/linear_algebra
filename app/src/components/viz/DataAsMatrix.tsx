@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { StageRef } from '../lesson/StageRef'
 import { MatrixGrid } from './MatrixGrid'
 
 /** Un "3" dibujado en 8x8 píxeles (0 = blanco, 16 = negro), como en el dataset de dígitos de scikit-learn. */
@@ -121,7 +122,7 @@ export function OneHotDemo() {
       </div>
       <p className="text-xs text-slate-500 dark:text-slate-400">
         {rows.length} filas × {cats.length} categorías = {rows.length * cats.length} números, de los que solo {rows.length} son 1: una
-        matriz dispersa (etapa 12). Así un modelo, que solo entiende números, puede usar una variable categórica sin inventar un
+        matriz dispersa (<StageRef slug="matrices-dispersas" />). Así un modelo, que solo entiende números, puede usar una variable categórica sin inventar un
         orden falso (rojo = 1, verde = 2…).
       </p>
     </div>
