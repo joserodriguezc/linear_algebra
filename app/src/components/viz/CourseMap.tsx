@@ -13,7 +13,7 @@ const AREAS: { key: string; title: string; why: string; stages: string[] }[] = [
     key: 'aritmetica',
     title: 'Aritmética',
     why: 'Sumar, multiplicar y transformar vectores, matrices y tensores: lo que hace un modelo al predecir.',
-    stages: ['indexado-slicing-reshape', 'broadcasting', 'vectores', 'normas', 'matrices', 'tipos-de-matrices', 'operaciones-matriciales', 'matrices-dispersas'],
+    stages: ['indexado-slicing-reshape', 'broadcasting', 'vectores', 'normas', 'matrices', 'tipos-de-matrices', 'operaciones-matriciales', 'independencia-lineal', 'matrices-dispersas'],
   },
   {
     key: 'estadistica',
@@ -30,8 +30,8 @@ const AREAS: { key: string; title: string; why: string; stages: string[] }[] = [
   {
     key: 'minimos',
     title: 'Mínimos cuadrados',
-    why: 'Ajustar modelos a datos: la regresión lineal y todo lo que se construye sobre ella.',
-    stages: ['regresion-lineal'],
+    why: 'Ajustar modelos a datos proyectando sobre un subespacio: la regresión lineal y todo lo que se construye sobre ella.',
+    stages: ['proyecciones-ortogonales', 'regresion-lineal'],
   },
 ]
 

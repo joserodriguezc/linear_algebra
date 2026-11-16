@@ -8,6 +8,7 @@ import intercepto from '../snippets/regresion-lineal/06_intercepto.py?raw'
 import estabilidad from '../snippets/regresion-lineal/07_estabilidad.py?raw'
 import sklearnLr from '../snippets/regresion-lineal/08_sklearn.py?raw'
 import multiple from '../snippets/regresion-lineal/09_multiple.py?raw'
+import proyeccion from '../snippets/regresion-lineal/10_proyeccion.py?raw'
 
 <Section kind="why">
 
@@ -50,6 +51,14 @@ Con $n$ observaciones y $p$ características, $X$ es la matriz $n \times p$ de e
 <Formula label="Solución con QR" tex="X = Q\,R \;\Rightarrow\; R\,b = Q^Ty" reading="si X es igual a Q por R, entonces b se obtiene resolviendo R por b igual a Q transpuesta por y">
   $R$ es triangular, así que el sistema se resuelve por sustitución. Es estable porque nunca se forma $X^TX$.
 </Formula>
+
+<Formula label="La regresión como proyección ortogonal" tex="\hat{y} = X\,b = P\,y,\qquad P = X(X^TX)^{-1}X^T,\qquad X^T(y - \hat{y}) = \mathbf{0}" reading="y sombrero es igual a X por b, que es igual a P por y, donde P es igual a X por la inversa de X transpuesta por X, por X transpuesta; y X transpuesta por el residuo y menos y sombrero es igual al vector cero">
+  $P$ proyecta sobre el espacio columna de $X$ (<StageRef slug="proyecciones-ortogonales" />): las predicciones son el punto de ese espacio más cercano a $y$, y el residuo es perpendicular a todas las columnas. Es la ecuación normal leída geométricamente.
+</Formula>
+
+<Figure title="Mínimos cuadrados como proyección" caption="Con tres observaciones, y es un vector de tres números reales; ŷ es su proyección sobre el plano que generan las columnas de X.">
+  <RegressionAsProjection3D />
+</Figure>
 
 <Formula label="Solución con SVD (pseudoinversa)" tex="b = X^+\,y = V\,\Sigma^+\,U^T\,y" reading="b es igual a la pseudoinversa de X por y, que es igual a V por sigma mayúscula más por U transpuesta por y">
   Es la más robusta: funciona incluso si las columnas de $X$ son dependientes (devuelve la solución de norma mínima). Es lo que usa `numpy.linalg.lstsq`.
@@ -102,6 +111,7 @@ Los cuatro métodos con un dataset de 5 puntos (sin término independiente):
 <PyCell title="3. SVD y pseudoinversa" code={svd} />
 <PyCell title="4. lstsq (recomendado)" code={lstsq} hint="Los cuatro dan el mismo b ≈ 1.00233. La diferencia está en la estabilidad numérica." />
 <PyCell title="Con término independiente" code={intercepto} />
+<PyCell title="La regresión como proyección" code={proyeccion} hint="Mismos datos que el ejemplo resuelto: P y da las mismas predicciones." />
 <PyCell title="Estabilidad numérica" code={estabilidad} hint="Con columnas casi dependientes, la ecuación normal pierde unos 8 dígitos de precisión frente a QR y lstsq." />
 
 </Section>

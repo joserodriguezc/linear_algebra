@@ -64,4 +64,15 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: '$\\hat{y} = 1 + 2\\cdot2 = 5$ y el residuo es $6 - 5 = 1$ (el punto queda 1 unidad por encima de la recta).',
   },
+  {
+    type: 'choice',
+    prompt: '¿Qué significa geométricamente la ecuación normal $X^T(y - Xb) = \\mathbf{0}$?',
+    options: [
+      'Que el residuo es cero',
+      'Que el residuo es perpendicular a todas las columnas de $X$: $\\hat{y}$ es la proyección ortogonal de $y$',
+      'Que $X$ es ortogonal',
+    ],
+    answer: 1,
+    explanation: 'Cada fila de $X^T$ es una columna de $X$; que el producto sea cero dice que el residuo es ortogonal al espacio columna.',
+  },
 ]

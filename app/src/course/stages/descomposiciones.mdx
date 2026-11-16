@@ -51,6 +51,7 @@ Casi ningún programa de ML calcula una inversa de forma directa. Por dentro, Nu
 <Formula label="Resolver un sistema con LU" tex="Ax = b \iff L\,(Ux) = b:\qquad Ly = b,\quad Ux = y" reading="A por x igual a b equivale a L por U por x igual a b; se resuelve primero L por y igual a b (sustitución hacia adelante) y después U por x igual a y (sustitución hacia atrás)" />
 
 <Formula label="Descomposición QR" tex="A = Q\,R,\qquad Q^TQ = I" reading="A es igual a Q por R, donde Q transpuesta por Q es igual a la identidad (Q tiene columnas ortonormales) y R es triangular superior">
+  Las columnas de $Q$ son una base ortonormal del espacio columna de $A$, así que $QQ^T$ es la proyección sobre ese espacio (<StageRef slug="proyecciones-ortogonales" />).
   Para $A$ de $m\times n$ con $m > n$, la QR "reducida" da $Q$ de $m\times n$ y $R$ de $n\times n$; la "completa" (`'complete'`) da $Q$ de $m\times m$ y $R$ de $m\times n$.
 </Formula>
 

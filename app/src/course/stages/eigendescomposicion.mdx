@@ -7,6 +7,8 @@ import sympyEig from '../snippets/eigendescomposicion/05_sympy.py?raw'
 import complejos from '../snippets/eigendescomposicion/06_complejos.py?raw'
 import potencia from '../snippets/eigendescomposicion/07_potencia.py?raw'
 import pagerank from '../snippets/eigendescomposicion/08_pagerank.py?raw'
+import cambioBase from '../snippets/eigendescomposicion/09_cambio_base.py?raw'
+import definida from '../snippets/eigendescomposicion/10_definida_positiva.py?raw'
 
 <Section kind="why">
 
@@ -56,6 +58,14 @@ Lo que conviene notar:
 </Formula>
 
 <Formula label="Traza y determinante" tex="\operatorname{tr}(A) = \sum_{i=1}^{n} \lambda_i,\qquad \det(A) = \prod_{i=1}^{n} \lambda_i" reading="la traza de A es igual a la suma de sus valores propios, y el determinante de A es igual al producto de sus valores propios" />
+
+<Formula label="Diagonalizar es cambiar de base" tex="A\,x = Q\,\Lambda\,\underbrace{Q^{-1}x}_{c}" reading="A por x es igual a Q por lambda mayúscula por c, donde c es la inversa de Q por x">
+  Se lee de derecha a izquierda (<StageRef slug="independencia-lineal" />): $c = Q^{-1}x$ son las coordenadas de $x$ en la base de vectores propios; en esa base, $\Lambda$ solo multiplica cada coordenada por su $\lambda_i$; y $Q$ devuelve el resultado a la base estándar. Por eso una matriz diagonalizable es «una matriz diagonal vista desde otra base».
+</Formula>
+
+<Formula label="Matriz definida positiva" tex="x^TAx > 0 \ \ \text{para todo } x \neq \mathbf{0} \iff \lambda_i > 0 \ \text{para todo } i" reading="x transpuesta por A por x es mayor que cero para todo x distinto del vector cero, si y solo si todos los valores propios lambda sub i son mayores que cero">
+  Se aplica a matrices simétricas. Si solo se cumple $x^TAx \ge 0$ (con $\lambda_i \ge 0$), la matriz es **semidefinida positiva**: toda matriz de covarianza lo es. Ser definida positiva es lo que exige la descomposición de Cholesky (<StageRef slug="descomposiciones" />) y garantiza que $A$ sea invertible.
+</Formula>
 
 </Section>
 
@@ -111,6 +121,8 @@ $A$ estira por 3 a lo largo de la diagonal $(1, 1)$ y deja intacta la dirección
 <PyCell title="Cálculo exacto con SymPy" code={sympyEig} />
 <PyCell title="Valores propios complejos" code={complejos} />
 <PyCell title="Método de la potencia" code={potencia} hint="Así calculan los buscadores el vector propio dominante de matrices enormes: solo hacen productos matriz-vector." />
+<PyCell title="Diagonalizar es cambiar de base" code={cambioBase} />
+<PyCell title="¿Es definida positiva?" code={definida} hint="Con un solo valor propio negativo basta para que xᵀAx sea negativo en alguna dirección." />
 
 </Section>
 

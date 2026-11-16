@@ -1,0 +1,168 @@
+import { quiz } from '../quizzes/independencia-lineal'
+import combinacion from '../snippets/independencia-lineal/01_combinacion.py?raw'
+import rref from '../snippets/independencia-lineal/02_rref.py?raw'
+import espacios from '../snippets/independencia-lineal/03_espacios.py?raw'
+import general from '../snippets/independencia-lineal/04_solucion_general.py?raw'
+import cambio from '../snippets/independencia-lineal/05_cambio_base.py?raw'
+import multicolinealidad from '../snippets/independencia-lineal/06_multicolinealidad.py?raw'
+
+<Section kind="why">
+
+En la <StageRef slug="operaciones-matriciales" /> definimos el **rango** como «el número de columnas linealmente independientes». Esta etapa explica qué significa eso y por qué importa tanto en ML:
+
+- **Características redundantes**: si una columna del dataset es combinación de otras (por ejemplo, el precio en euros y en dólares), la matriz pierde rango y la regresión lineal deja de tener una solución única (*multicolinealidad*).
+- **Cambiar de base** es cambiar el punto de vista: PCA (<StageRef slug="pca" />) describe los mismos datos en una base nueva, la de las direcciones de máxima varianza, y la eigendescomposición (<StageRef slug="eigendescomposicion" />) es un cambio a la base de vectores propios.
+- El **núcleo** de una matriz dice qué información se pierde al aplicarla, y por qué algunos sistemas tienen infinitas soluciones.
+
+</Section>
+
+<Section kind="intuition">
+
+Con unos cuantos vectores podemos formar **combinaciones lineales**: escalarlos y sumarlos. El conjunto de todos los puntos que se alcanzan así es su **span** (el espacio que generan).
+
+- Dos vectores que **no** están en la misma recta generan todo el plano: son **independientes**.
+- Si uno es múltiplo del otro, solo generan una recta: son **dependientes**, porque uno sobra.
+
+Arrastra $b_1$ y $b_2$ y mueve los coeficientes:
+
+<Figure title="Combinaciones lineales y span">
+  <SpanExplorer />
+</Figure>
+
+Un conjunto de vectores independientes que genera todo el espacio es una **base**. Cualquier punto se escribe de forma única como combinación de ella, y los coeficientes son sus **coordenadas** en esa base. Cambiar de base no mueve los puntos: cambia los números que los describen.
+
+<Figure title="El mismo punto en otra base" caption="Arrastra los vectores de la base y el punto x.">
+  <BasisChange2D />
+</Figure>
+
+Toda matriz $A$ tiene dos subespacios asociados. El **espacio columna** (o imagen) reúne todo lo que $A$ puede producir. El **núcleo** reúne lo que $A$ aplasta hasta el vector cero. Lo que se pierde en uno es lo que le falta al otro:
+
+<Figure title="Espacio columna y núcleo">
+  <ColumnNullSpace2D />
+</Figure>
+
+</Section>
+
+<Section kind="formal">
+
+Sean $x_1, \dots, x_k$ vectores de $\mathbb{R}^n$ (vectores de $n$ números reales).
+
+<Formula label="Combinación lineal" tex="v = c_1x_1 + c_2x_2 + \cdots + c_kx_k = \sum_{i=1}^{k} c_i\,x_i" reading="v es igual a c sub 1 por x sub 1, más c sub 2 por x sub 2, más … más c sub k por x sub k; es decir, la sumatoria, para i desde 1 hasta k, de c sub i por x sub i">
+  Los $c_i$ son números reales cualesquiera (los coeficientes).
+</Formula>
+
+<Formula label="Independencia lineal" tex="c_1x_1 + \cdots + c_kx_k = \mathbf{0} \;\Rightarrow\; c_1 = \cdots = c_k = 0" reading="si la combinación lineal c sub 1 por x sub 1 más … más c sub k por x sub k es igual al vector cero, entonces todos los coeficientes c sub 1 hasta c sub k valen cero">
+  Si existe otra forma de obtener $\mathbf{0}$ (con algún $c_i \neq 0$), los vectores son **dependientes**: al menos uno es combinación de los demás. En la práctica se comprueba con el rango: $k$ vectores son independientes si la matriz que los tiene como columnas tiene rango $k$.
+</Formula>
+
+<Formula label="Span, base y dimensión" tex="\operatorname{span}(x_1, \dots, x_k) = \left\{ \sum_{i=1}^{k} c_i\,x_i \;:\; c_i \in \mathbb{R} \right\},\qquad \dim V = \text{n.º de vectores de una base de } V" reading="el span de x sub 1 hasta x sub k es el conjunto de todas sus combinaciones lineales, con coeficientes c sub i reales; y la dimensión de V es el número de vectores de cualquier base de V">
+  Una **base** de $V$ es un conjunto de vectores independientes cuyo span es $V$. Todas las bases de un mismo espacio tienen el mismo número de vectores; por ejemplo, $\dim \mathbb{R}^n = n$ (el espacio de los vectores de $n$ números reales tiene dimensión $n$).
+</Formula>
+
+<Formula label="Coordenadas y cambio de base" tex="x = B\,c \iff c = B^{-1}x,\qquad B = \begin{bmatrix} b_1 & \cdots & b_n \end{bmatrix}" reading="x es igual a B por c si y solo si c es igual a la inversa de B por x, donde B es la matriz que tiene como columnas los vectores de la base, b sub 1 hasta b sub n">
+  $c$ son las coordenadas de $x$ en la base $\{b_1, \dots, b_n\}$. $B$ es invertible precisamente porque sus columnas son independientes.
+</Formula>
+
+<Formula label="Espacio columna y núcleo" tex="\operatorname{Im}(A) = \{ Ax : x \in \mathbb{R}^n \},\qquad \ker(A) = \{ x \in \mathbb{R}^n : Ax = \mathbf{0} \}" reading="la imagen de A, o espacio columna, es el conjunto de todos los vectores A por x; y el núcleo de A es el conjunto de los vectores x de R a la n tales que A por x es igual al vector cero" />
+
+<Formula label="Teorema rango–nulidad" tex="\operatorname{rank}(A) + \dim\ker(A) = n" reading="el rango de A más la dimensión del núcleo de A es igual a n, el número de columnas de A">
+  $\operatorname{rank}(A) = \dim\operatorname{Im}(A)$. Cada dimensión que se pierde en el núcleo es una que le falta a la imagen.
+</Formula>
+
+<Formula label="Solución general de un sistema" tex="Ax = b \;\Rightarrow\; x = x_p + x_h,\qquad Ax_p = b,\quad x_h \in \ker(A)" reading="si A por x es igual a b, toda solución x es una solución particular x sub p más un vector x sub h del núcleo de A, donde A por x sub p es igual a b">
+  Si el núcleo solo contiene $\mathbf{0}$, la solución (si existe) es única; si no, hay infinitas.
+</Formula>
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Sean $x_1 = (1, 2, 3)$, $x_2 = (2, 1, 0)$ y $x_3 = (1, -1, -3)$. ¿Son independientes? Da una base del espacio columna y del núcleo de $A = \begin{bmatrix}x_1 & x_2 & x_3\end{bmatrix}$, y la solución general de $Ax = (3, 3, 3)$.
+</Problem>
+<Step>
+Ponemos los vectores como columnas:
+
+$$
+A = \begin{bmatrix}1&2&1\\2&1&-1\\3&0&-3\end{bmatrix}
+$$
+</Step>
+<Step>
+**Eliminación gaussiana**: $F_2 \leftarrow F_2 - 2F_1$ y $F_3 \leftarrow F_3 - 3F_1$; después, $F_3 \leftarrow F_3 - 2F_2$:
+
+$$
+\begin{bmatrix}1&2&1\\0&-3&-3\\0&-6&-6\end{bmatrix} \;\longrightarrow\; \begin{bmatrix}1&2&1\\0&-3&-3\\0&0&0\end{bmatrix}
+$$
+
+Solo hay 2 pivotes (en las columnas 1 y 2): $\operatorname{rank}(A) = 2 < 3$, así que los vectores son **dependientes**.
+</Step>
+<Step>
+**Espacio columna**: las columnas pivote de la matriz original forman una base, $\{x_1, x_2\}$. Es un plano de $\mathbb{R}^3$ (vectores de tres números reales). En efecto, $x_3 = x_2 - x_1$.
+</Step>
+<Step>
+**Núcleo**: de la forma escalonada, $x + 2y + z = 0$ y $-3y - 3z = 0$, así que $y = -z$ y $x = z$:
+
+$$
+\ker(A) = \operatorname{span}\left(\begin{bmatrix}1\\-1\\1\end{bmatrix}\right),\qquad A\begin{bmatrix}1\\-1\\1\end{bmatrix} = x_1 - x_2 + x_3 = \mathbf{0}
+$$
+
+Se cumple el teorema rango–nulidad: $2 + 1 = 3$.
+</Step>
+<Step>
+**Solución general**: como $b = (3, 3, 3) = x_1 + x_2$, una solución particular es $x_p = (1, 1, 0)$. Sumándole cualquier vector del núcleo:
+
+$$
+x = \begin{bmatrix}1\\1\\0\end{bmatrix} + t\begin{bmatrix}1\\-1\\1\end{bmatrix},\qquad t \in \mathbb{R}\ \ \text{(cualquiera de los números reales)}
+$$
+
+Hay infinitas soluciones, una para cada número real $t$.
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="Combinaciones lineales y rango" code={combinacion} />
+<PyCell title="Forma escalonada reducida con SymPy" code={rref} />
+<PyCell title="Espacio columna y núcleo" code={espacios} />
+<PyCell title="Solución general de un sistema" code={general} hint="Cualquier valor de t da una solución: la particular más un múltiplo del núcleo." />
+<PyCell title="Cambio de base" code={cambio} />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+**Multicolinealidad.** Si una característica es combinación lineal de otras, $X$ no tiene rango completo: $X^TX$ es singular y hay infinitos coeficientes que dan las mismas predicciones. En la práctica, las columnas casi dependientes disparan el número de condición y vuelven inestables los coeficientes.
+
+<PyCell title="Una columna redundante en un dataset" code={multicolinealidad} hint="Con x3 los coeficientes no son únicos (2.83 + 0.17 ≈ 3); sin ella se recuperan los verdaderos, 3 y −1." />
+
+Más ideas de esta etapa que verás en el curso:
+
+- La **dimensión** de los datos es cuántas direcciones independientes contienen. PCA (<StageRef slug="pca" />) la reduce eligiendo una base nueva y quedándose con sus primeros vectores.
+- La SVD (<StageRef slug="svd" />) da bases ortonormales del espacio columna y del núcleo, y el rango es el número de valores singulares no nulos.
+- La regresión lineal (<StageRef slug="regresion-lineal" />) busca $\hat{y}$ dentro del espacio columna de $X$; la siguiente etapa explica cómo.
+
+<KeyTakeaways>
+- Los vectores son independientes si ninguno es combinación de los demás; el rango cuenta cuántos lo son.
+- Una base es un conjunto independiente que genera el espacio; las coordenadas en ella se obtienen con $c = B^{-1}x$.
+- $\operatorname{Im}(A)$ es todo lo que $A$ produce, y $\ker(A)$ lo que aplasta a $\mathbf{0}$; $\operatorname{rank} + \dim\ker = n$.
+- Si el núcleo no es trivial, un sistema compatible tiene infinitas soluciones: una particular más el núcleo.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Genera 5 vectores aleatorios de $\mathbb{R}^3$ (vectores de tres números reales) y comprueba que el rango de la matriz que forman nunca supera 3.
+2. Calcula el núcleo de una matriz $3\times4$ con SymPy y verifica que cada vector de la base cumple $Ax = \mathbf{0}$.
+3. Añade a un dataset real una columna que sea suma de otras dos, entrena `LinearRegression` y compara los coeficientes con `Ridge`, que sí da una solución única.
+
+</Section>

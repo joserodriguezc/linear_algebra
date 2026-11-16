@@ -34,7 +34,7 @@ export const parts: Part[] = [
   {
     id: 3,
     title: 'Matrices',
-    description: 'Vectores, normas, matrices, sus tipos y operaciones, matrices dispersas y tensores.',
+    description: 'Vectores, normas, matrices, sus tipos y operaciones, bases y proyecciones, matrices dispersas y tensores.',
   },
   {
     id: 4,
@@ -168,6 +168,29 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Calcular transpuesta, inversa y traza',
       'Interpretar el determinante como factor de área',
       'Entender el rango como dimensión del espacio generado',
+    ],
+  },
+  {
+    slug: 'independencia-lineal',
+    title: 'Independencia lineal, bases y rango',
+    part: 3,
+    summary: 'Combinaciones lineales, span, bases, cambio de base, espacio columna y núcleo.',
+    objectives: [
+      'Decidir si unos vectores son linealmente independientes',
+      'Encontrar una base y las coordenadas de un vector en ella',
+      'Calcular el espacio columna y el núcleo, y aplicar el teorema rango–nulidad',
+      'Escribir la solución general de un sistema con infinitas soluciones',
+    ],
+  },
+  {
+    slug: 'proyecciones-ortogonales',
+    title: 'Proyecciones ortogonales',
+    part: 3,
+    summary: 'Proyectar sobre rectas y subespacios: la idea común a la regresión y a PCA.',
+    objectives: [
+      'Construir la matriz de proyección sobre un subespacio',
+      'Reconocer sus propiedades: P² = P, simetría y residuo perpendicular',
+      'Interpretar la regresión lineal y PCA como proyecciones ortogonales',
     ],
   },
   {

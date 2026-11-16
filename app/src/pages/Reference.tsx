@@ -65,6 +65,17 @@ const CHEATSHEET: { title: string; stage: string[]; rows: [string, string][] }[]
     ],
   },
   {
+    title: 'Bases, subespacios y proyecciones',
+    stage: ['independencia-lineal', 'proyecciones-ortogonales'],
+    rows: [
+      ['matrix_rank(A)', 'rango: número de columnas linealmente independientes'],
+      ['Matrix(A).rref(), .nullspace(), .columnspace()', 'forma escalonada, núcleo y espacio columna exactos (SymPy)'],
+      ['null_space(A), orth(A)', 'bases ortonormales del núcleo y del espacio columna (scipy.linalg)'],
+      ['solve(B, x)', 'coordenadas de x en la base formada por las columnas de B'],
+      ['B @ inv(B.T @ B) @ B.T  /  Q @ Q.T', 'matriz de proyección sobre el espacio columna de B (o de Q ortonormal)'],
+    ],
+  },
+  {
     title: 'Dispersas y tensores',
     stage: ['matrices-dispersas', 'tensores'],
     rows: [

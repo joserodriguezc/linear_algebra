@@ -2,7 +2,7 @@
 
 **Curso interactivo y autocontenido, en español, que enseña el álgebra lineal que hace falta para entender machine learning.** Cada concepto se presenta con su intuición geométrica, su formalización matemática, un ejemplo resuelto a mano, gráficos manipulables, código Python ejecutable en el propio navegador y preguntas de autoevaluación.
 
-El curso se organiza en 19 **etapas** agrupadas en cinco partes, desde los arrays de NumPy hasta PCA y la regresión lineal.
+El curso se organiza en 21 **etapas** agrupadas en cinco partes, desde los arrays de NumPy hasta PCA y la regresión lineal.
 
 ![Página de inicio con el mapa del curso](.github/images/inicio.png)
 
@@ -20,7 +20,7 @@ El curso se organiza en 19 **etapas** agrupadas en cinco partes, desde los array
 
 ## Características
 
-**Una plantilla pedagógica común.** Las 19 etapas tienen las mismas secciones, en este orden:
+**Una plantilla pedagógica común.** Las 21 etapas tienen las mismas secciones, en este orden:
 
 | Sección | Qué aporta |
 | --- | --- |
@@ -33,7 +33,7 @@ El curso se organiza en 19 **etapas** agrupadas en cinco partes, desde los array
 | Conexión con ML y resumen | Aplicación práctica e ideas clave |
 | Retos y extensiones | Ejercicios abiertos para profundizar |
 
-**Visualizaciones interactivas.** 25 componentes propios en SVG: vectores arrastrables, transformaciones del plano, eliminación gaussiana paso a paso, Gram-Schmidt, búsqueda de vectores propios, la SVD como "girar · estirar · girar", compresión de imágenes, PCA como dirección de máxima varianza, mínimos cuadrados con los residuos al cuadrado dibujados, y más.
+**Visualizaciones interactivas.** 30 componentes propios en SVG: vectores arrastrables, transformaciones del plano, span y cambio de base, espacio columna y núcleo, la regresión como proyección en 3D, eliminación gaussiana paso a paso, Gram-Schmidt, búsqueda de vectores propios, la SVD como "girar · estirar · girar", compresión de imágenes, PCA como dirección de máxima varianza, mínimos cuadrados con los residuos al cuadrado dibujados, y más.
 
 ![Etapa de SVD: visualización interactiva de la descomposición](.github/images/etapa-svd.png)
 
@@ -60,16 +60,18 @@ El curso se organiza en 19 **etapas** agrupadas en cinco partes, desde los array
 | | 9 · Matrices y aritmética matricial | Producto matricial celda a celda, matriz como transformación |
 | | 10 · Tipos de matrices | Galería con propiedades comprobadas en vivo |
 | | 11 · Operaciones matriciales | Determinante como área, rango, inversa |
-| | 12 · Matrices dispersas | Formato CSR editable, memoria densa frente a dispersa |
-| | 13 · Tensores | Tensor 3D en capas con indexado |
-| **IV. Factorización** | 14 · LU, QR y Cholesky | Eliminación gaussiana paso a paso, Gram-Schmidt |
-| | 15 · Eigendescomposición | Búsqueda interactiva de vectores propios |
-| | 16 · SVD | Geometría de la SVD, compresión de imágenes |
-| **V. Estadística** | 17 · Estadística multivariada | Covarianza como promedio de productos, elipse de covarianza |
-| | 18 · PCA | Varianza de la proyección según la dirección |
-| | 19 · Regresión lineal | Ajuste por mínimos cuadrados con residuos |
+| | 12 · Independencia lineal, bases y rango | Span de dos vectores, cambio de base, espacio columna y núcleo |
+| | 13 · Proyecciones ortogonales | La proyección como matriz, la regresión como proyección en ℝ³ |
+| | 14 · Matrices dispersas | Formato CSR editable, memoria densa frente a dispersa |
+| | 15 · Tensores | Tensor 3D en capas con indexado |
+| **IV. Factorización** | 16 · LU, QR y Cholesky | Eliminación gaussiana paso a paso, Gram-Schmidt |
+| | 17 · Eigendescomposición | Búsqueda interactiva de vectores propios, matrices definidas positivas |
+| | 18 · SVD | Geometría de la SVD, compresión de imágenes |
+| **V. Estadística** | 19 · Estadística multivariada | Covarianza como promedio de productos, elipse de covarianza |
+| | 20 · PCA | Varianza de la proyección y error de reconstrucción |
+| | 21 · Regresión lineal | Ajuste por mínimos cuadrados, la regresión como proyección |
 
-En total: 19 etapas, 25 visualizaciones interactivas, 128 celdas de Python y 141 preguntas de autoevaluación.
+En total: 21 etapas, 30 visualizaciones interactivas, 143 celdas de Python y 160 preguntas de autoevaluación.
 
 ## Inicio rápido
 
@@ -152,10 +154,10 @@ No hay backend: la app es un sitio estático y todo el cómputo ocurre en el nav
 ├── app/                          Frontend (React + Vite)
 │   ├── src/
 │   │   ├── course/
-│   │   │   ├── curriculum.ts     Partes y etapas: títulos, objetivos, orden
-│   │   │   ├── stages/           Una etapa por archivo: NN-slug.mdx
-│   │   │   ├── snippets/NN/      Código Python de cada etapa (.py, importado con ?raw)
-│   │   │   └── quizzes/NN.ts     Preguntas de cada etapa
+│   │   │   ├── curriculum.ts     Partes y etapas en orden (el número de etapa sale de la posición)
+│   │   │   ├── stages/           Una etapa por archivo: <slug>.mdx
+│   │   │   ├── snippets/<slug>/  Código Python de cada etapa (.py, importado con ?raw)
+│   │   │   └── quizzes/<slug>.ts Preguntas de cada etapa
 │   │   ├── components/
 │   │   │   ├── lesson/           Plantilla: Section, Formula, WorkedExample, Callout…
 │   │   │   ├── code/             PyCell y el worker de Pyodide
@@ -185,12 +187,14 @@ Python se ejecuta fuera del hilo de la interfaz, así que una celda lenta no blo
 
 ## Guía para autores
 
+Cada etapa se identifica por su **slug** (por ejemplo, `pca`): nombra sus archivos, su URL y su progreso guardado. Su número no se escribe en ningún sitio, sino que se calcula a partir de su posición en `curriculum.ts`. Así, insertar o reordenar etapas no obliga a renumerar nada.
+
 Para añadir o modificar una etapa:
 
-1. **Código**: crea los snippets en `app/src/course/snippets/NN/*.py`. Deben ser autocontenidos. Si uno debe fallar a propósito, añade `# expect-error: ValueError`.
-2. **Preguntas**: escríbelas en `app/src/course/quizzes/NN.ts` (`choice`, `numeric` o `matrix`). Los textos admiten LaTeX en línea entre `$…$`.
-3. **Contenido**: crea `app/src/course/stages/NN-slug.mdx` con las secciones de la plantilla (`<Section kind="why|intuition|formal|example|lab|quiz|ml|extensions">`). Los componentes del curso están disponibles sin importarlos.
-4. **Metadatos**: registra la etapa en `app/src/course/curriculum.ts`.
+1. **Metadatos**: registra la etapa en `app/src/course/curriculum.ts`, en la posición que le corresponda.
+2. **Código**: crea los snippets en `app/src/course/snippets/<slug>/*.py`. Deben ser autocontenidos. Si uno debe fallar a propósito, añade `# expect-error: ValueError`.
+3. **Preguntas**: escríbelas en `app/src/course/quizzes/<slug>.ts` (`choice`, `numeric` o `matrix`). Los textos admiten LaTeX en línea entre `$…$`.
+4. **Contenido**: crea `app/src/course/stages/<slug>.mdx` con las secciones de la plantilla (`<Section kind="why|intuition|formal|example|lab|quiz|ml|extensions">`). Los componentes del curso están disponibles sin importarlos; `<Quiz questions={quiz} />` sabe solo a qué etapa pertenece.
 5. **Verificación**: ejecuta `uv run pytest`, `npm test` y `npm run test:e2e`.
 
 Convenciones que los tests hacen cumplir:
@@ -199,6 +203,8 @@ Convenciones que los tests hacen cumplir:
 - Si una fórmula usa un símbolo que el glosario aún no conoce, se añade una regla en `app/src/lib/notation.ts` con su test.
 - Si ℝ aparece fuera de una fórmula, la misma línea debe aclarar que son los números reales.
 - En los ejemplos resueltos, el enunciado va en `<Problem>` y cada paso en un `<Step>`.
+- Para citar otra etapa se usa `<StageRef slug="pca" />`, que muestra el número actual y enlaza; nunca se escribe «etapa 20» a mano.
+- Las fórmulas en bloque se escriben con `$$` en líneas propias (en una sola línea, remark-math las muestra en línea).
 
 ```mdx
 <Formula label="Producto punto" tex="a \cdot b = \sum_{i=1}^{n} a_i b_i"

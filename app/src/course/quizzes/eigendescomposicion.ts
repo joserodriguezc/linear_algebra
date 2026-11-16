@@ -59,4 +59,22 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: '$Q$ tiene los vectores propios en sus columnas y $\\Lambda = \\operatorname{diag}(\\lambda_1, \\dots, \\lambda_n)$.',
   },
+  {
+    type: 'choice',
+    prompt: '¿Es definida positiva $\\begin{bmatrix}1&2\\\\2&1\\end{bmatrix}$?',
+    options: ['Sí, porque todos sus elementos son positivos', 'No: sus valores propios son 3 y −1', 'Sí, porque es simétrica'],
+    answer: 1,
+    explanation: 'Definida positiva significa $x^TAx > 0$ para todo $x \\neq \\mathbf{0}$, lo que equivale a que todos los $\\lambda_i$ sean positivos. Con $x = (1, -1)$: $x^TAx = -2$.',
+  },
+  {
+    type: 'choice',
+    prompt: 'Al escribir $A = Q\\Lambda Q^{-1}$, ¿qué hace $Q^{-1}x$?',
+    options: [
+      'Calcula los valores propios',
+      'Expresa $x$ en la base de vectores propios, donde $A$ solo escala cada coordenada por su $\\lambda_i$',
+      'Invierte la dirección de $x$',
+    ],
+    answer: 1,
+    explanation: 'Diagonalizar es cambiar de base: $Q^{-1}$ pasa a coordenadas de vectores propios, $\\Lambda$ escala y $Q$ vuelve a la base estándar.',
+  },
 ]

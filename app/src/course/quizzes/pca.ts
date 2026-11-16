@@ -63,4 +63,10 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: 'Las matrices simétricas tienen vectores propios ortogonales, así que las nuevas coordenadas no están correlacionadas entre sí.',
   },
+  {
+    type: 'numeric',
+    prompt: 'Los valores propios de la covarianza son $5$, $2$ y $1$. Si te quedas con 1 componente, ¿cuánta varianza pierdes (la suma de los $\\lambda$ descartados)?',
+    answer: 3,
+    explanation: 'El error de reconstrucción es proporcional a $\\lambda_2 + \\lambda_3 = 2 + 1 = 3$: la varianza de las direcciones descartadas.',
+  },
 ]

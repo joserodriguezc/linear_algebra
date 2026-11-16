@@ -4,6 +4,7 @@ import sk from '../snippets/pca/02_pca_sklearn.py?raw'
 import viaSvd from '../snippets/pca/03_pca_svd.py?raw'
 import explicada from '../snippets/pca/04_varianza_explicada.py?raw'
 import iris2d from '../snippets/pca/05_iris_2d.py?raw'
+import errorRec from '../snippets/pca/06_error_reconstruccion.py?raw'
 
 <Section kind="why">
 
@@ -49,6 +50,10 @@ Sea $X$ la matriz de datos de $n \times p$ (filas = observaciones).
 
 <Formula label="4. Proyectar (reducir a k dimensiones)" tex="T = X_c\,Q_k" reading="T es igual a X sub c por Q sub k, donde Q sub k son las k primeras componentes principales">
   $T$ tiene forma $n \times k$: cada fila son las nuevas coordenadas (*scores*) de una observación. También se escribe de forma equivalente como $P = Q^T X_c^T$.
+</Formula>
+
+<Formula label="Error de reconstrucción" tex="\tilde{x}_i = \mu + Q_kQ_k^T(x_i - \mu),\qquad \frac{1}{n}\sum_{i=1}^{n}\|x_i - \tilde{x}_i\|_2^2 = \frac{n-1}{n}\sum_{j=k+1}^{p}\lambda_j" reading="x tilde sub i, la reconstrucción de x sub i, es igual a mu más Q sub k por Q sub k transpuesta por x sub i menos mu; y el promedio de la norma dos al cuadrado de x sub i menos x tilde sub i es igual a n menos uno entre n por la suma de los valores propios descartados, desde lambda sub k más uno hasta lambda sub p">
+  Es la **perspectiva de proyección** de PCA (<StageRef slug="proyecciones-ortogonales" />): $Q_kQ_k^T$ proyecta sobre las $k$ primeras componentes, y lo que se pierde es exactamente la varianza de las direcciones descartadas. Maximizar la varianza conservada y minimizar el error de reconstrucción son el mismo problema. (El factor $\frac{n-1}{n}$ aparece porque $\Sigma$ divide entre $n - 1$.)
 </Formula>
 
 <Formula label="Proporción de varianza explicada" tex="\frac{\lambda_j}{\sum_{i=1}^{p} \lambda_i}" reading="lambda sub j dividido entre la sumatoria, para i desde 1 hasta p, de lambda sub i">
@@ -120,6 +125,7 @@ Los tres puntos 2D quedan descritos por un solo número cada uno, sin perder nad
 
 <PyCell title="Varianza explicada en un dataset real" code={explicada} />
 <PyCell title="Visualizar Iris (4 dimensiones) en 2D" code={iris2d} hint="Las tres especies se separan bastante con solo dos componentes." />
+<PyCell title="Error de reconstrucción = varianza descartada" code={errorRec} />
 
 <Callout kind="warning">
 PCA solo encuentra estructura **lineal** y es sensible a la **escala**: estandariza las variables si tienen unidades distintas. Para estructuras no lineales existen alternativas como kernel PCA, t-SNE o UMAP.
