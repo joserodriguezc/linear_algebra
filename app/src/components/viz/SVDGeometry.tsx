@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { fmt, matVec, svd2, type Mat, type Vec2 } from '../../lib/linalg'
-import { MatrixInput2, Readout, Segmented, Slider, VizLayout, texMat } from './controls'
+import { MatrixInput2, Readout, Segmented, Slider, VizLayout } from './controls'
+import { texMat } from '../../lib/tex'
 import { Arrow, Plane, Polygon, Polyline } from './plane'
 
 type Stage = '0' | '1' | '2' | '3'

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { evalIndex, formatNested, gather, isSelected, shapeStr, type IndexResult } from '../../lib/ndindex'
 import { MatrixGrid } from './MatrixGrid'
 
-const BOOK_T = [
+const EJEMPLO_T = [
   [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
   [[11, 12, 13], [14, 15, 16], [17, 18, 19]],
   [[21, 22, 23], [24, 25, 26], [27, 28, 29]],
@@ -12,7 +12,7 @@ const BOOK_T = [
  * Tensor de 3 dimensiones dibujado como capas apiladas (eje 0 = profundidad).
  * Escribe un índice como T[0], T[:, 0, :] o T[1, 2, 0] y mira qué elementos selecciona.
  */
-export function TensorExplorer({ T = BOOK_T }: { T?: number[][][] }) {
+export function TensorExplorer({ T = EJEMPLO_T }: { T?: number[][][] }) {
   const shape = [T.length, T[0].length, T[0][0].length]
   const [expr, setExpr] = useState('T[0]')
   const presets = ['T[0]', 'T[:, 0, :]', 'T[:, :, 0]', 'T[1, 2, 0]', 'T[:, 1, 1]', 'T[1:, :, 2]']

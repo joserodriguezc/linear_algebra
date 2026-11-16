@@ -1,24 +1,10 @@
 import { useState } from 'react'
+import { broadcastShapes, type Shape } from '../../lib/broadcast'
 import { shapeStr } from '../../lib/ndindex'
 import { MatrixGrid } from './MatrixGrid'
 import { Slider } from './controls'
 
-type Shape = number[]
 
-/** Regla de broadcasting: compara las dimensiones desde la derecha; deben ser iguales o una de ellas 1. */
-export function broadcastShapes(a: Shape, b: Shape): { shape: Shape | null; checks: { a?: number; b?: number; ok: boolean }[] } {
-  const n = Math.max(a.length, b.length)
-  const checks: { a?: number; b?: number; ok: boolean }[] = []
-  const out: number[] = []
-  for (let k = 1; k <= n; k++) {
-    const da = a[a.length - k]
-    const db = b[b.length - k]
-    const ok = da === undefined || db === undefined || da === db || da === 1 || db === 1
-    checks.unshift({ a: da, b: db, ok })
-    out.unshift(Math.max(da ?? 1, db ?? 1))
-  }
-  return { shape: checks.every((c) => c.ok) ? out : null, checks }
-}
 
 const pad2 = (s: Shape): [number, number] => (s.length === 0 ? [1, 1] : s.length === 1 ? [1, s[0]] : [s[0], s[1]])
 

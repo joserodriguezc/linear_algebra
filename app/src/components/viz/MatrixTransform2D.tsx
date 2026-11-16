@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { det2, eig2, fmt, inv2, matVec, type Mat, type Vec2 } from '../../lib/linalg'
-import { MatrixInput2, Readout, Slider, VizLayout, texMat } from './controls'
+import { MatrixInput2, Readout, Slider, VizLayout } from './controls'
+import { texMat } from '../../lib/tex'
 import { Arrow, Handle, Plane, Polygon, Polyline } from './plane'
 
-export const TRANSFORM_PRESETS: Record<string, { label: string; m: Mat }> = {
+const TRANSFORM_PRESETS: Record<string, { label: string; m: Mat }> = {
   identidad: { label: 'Identidad', m: [[1, 0], [0, 1]] },
   escala: { label: 'Escala', m: [[2, 0], [0, 0.5]] },
   rotacion: { label: 'Rotación 45°', m: [[0.71, -0.71], [0.71, 0.71]] },

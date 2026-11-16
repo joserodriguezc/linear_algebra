@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { cov, eig2, fmt, mean, type Vec2 } from '../../lib/linalg'
 import { correlatedCloud } from '../../lib/random'
-import { Readout, Segmented, VizLayout, texMat } from './controls'
+import { Readout, Segmented, VizLayout } from './controls'
+import { texMat } from '../../lib/tex'
 import { Dot, Handle, Plane, Polygon, Polyline, Segment } from './plane'
 
 const PRESETS: Record<string, { label: string; pts: () => Vec2[] }> = {

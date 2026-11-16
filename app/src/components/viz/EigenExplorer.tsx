@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { angle, eig2, fmt, matVec, normL2, type Mat, type Vec2 } from '../../lib/linalg'
-import { MatrixInput2, Readout, VizLayout, texMat } from './controls'
+import { MatrixInput2, Readout, VizLayout } from './controls'
+import { texMat } from '../../lib/tex'
 import { Arrow, Dot, Handle, Plane, Polyline, Segment } from './plane'
 
 const PRESETS: Record<string, { label: string; m: Mat }> = {

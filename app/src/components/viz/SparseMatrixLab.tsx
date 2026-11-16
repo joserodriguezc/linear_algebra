@@ -1,27 +1,11 @@
 import { useMemo, useState } from 'react'
 import { rng } from '../../lib/random'
+import { toCSR } from '../../lib/sparse'
 import { MatrixGrid } from './MatrixGrid'
 import { Slider } from './controls'
 
-export function toCSR(M: number[][]) {
-  const data: number[] = []
-  const indices: number[] = []
-  const indptr: number[] = [0]
-  const owner: [number, number][] = []
-  M.forEach((row, i) => {
-    row.forEach((v, j) => {
-      if (v !== 0) {
-        data.push(v)
-        indices.push(j)
-        owner.push([i, j])
-      }
-    })
-    indptr.push(data.length)
-  })
-  return { data, indices, indptr, owner }
-}
 
-const BOOK = [
+const EJEMPLO = [
   [1, 0, 0, 1, 0, 0],
   [0, 0, 2, 0, 0, 1],
   [0, 0, 0, 2, 0, 0],
@@ -29,7 +13,7 @@ const BOOK = [
 
 /** Edita una matriz pequeña (clic en las celdas) y observa su representación CSR. */
 export function SparseCSR() {
-  const [M, setM] = useState(BOOK)
+  const [M, setM] = useState(EJEMPLO)
   const [hover, setHover] = useState<number | null>(null)
   const csr = toCSR(M)
   const nnz = csr.data.length
