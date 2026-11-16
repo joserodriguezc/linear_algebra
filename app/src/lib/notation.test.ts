@@ -30,7 +30,39 @@ describe('detectNotation', () => {
 
   it('normas, valor absoluto, sumatoria, transpuesta e inversa', () => {
     const s = symbols('\\|v\\|_1 = \\sum_{i=1}^{n} |v_i|,\\ A^T,\\ A^{-1}')
-    expect(s).toEqual(expect.arrayContaining(['\\|v\\|', '\\sum', '|x|', 'A^T', 'A^{-1}']))
+    expect(s).toEqual(expect.arrayContaining(['\\|v\\|_1', '\\sum', '|v_i|', 'v_{i}', 'A^T', 'A^{-1}']))
+  })
+
+  it('muestra el símbolo que aparece en la fórmula, no un ejemplo fijo', () => {
+    // Fórmulas sin subíndices no explican subíndices
+    expect(meanings('A = Q\\,R').some((m) => m.startsWith('subíndice'))).toBe(false)
+    expect(symbols('\\|v\\|_\\infty = \\max_i |v_i|')).not.toContain('a_{ij}')
+    expect(detectNotation('\\|v\\|_\\infty')[0]).toMatchObject({ tex: '\\|v\\|_\\infty', meaning: expect.stringMatching(/subíndice ∞/) })
+    // Cada tipo de subíndice con su propio símbolo y explicación
+    const one = detectNotation('\\bar{x} = \\frac{1}{n}\\sum_{i=1}^{n} x_i').find((n) => n.tex === 'x_{i}')
+    expect(one?.meaning).toMatch(/elemento i de x/)
+    const two = detectNotation('c_{ij} = \\sum_k a_{ik} b_{kj}').find((n) => n.tex === 'c_{ij}')
+    expect(two?.meaning).toMatch(/fila i y la columna j de la matriz C/)
+    expect(detectNotation('t_{ijk}')[0]).toMatchObject({ tex: 't_{ijk}' })
+    expect(meanings('a_{11} v_1')[0]).toMatch(/fila 1 y la columna 1 de la matriz A/)
+    expect(meanings('I_3')[0]).toMatch(/identidad de 3 × 3/)
+    expect(meanings('\\Sigma_{jk}').find((m) => m.startsWith('subíndices'))).toMatch(/matriz Σ$/)
+    expect(meanings('X - \\mu^T').find((m) => m.startsWith('transpuesta'))).toMatch(/vector columna/)
+    expect(detectNotation('n_1 \\times n_2')[0]).toMatchObject({ tex: 'n_{1}' })
+    // El subíndice de un operador (\sum_{i=1}) no cuenta como elemento
+    expect(symbols('\\sum_{i=1}^{n} 1')).not.toEqual(expect.arrayContaining([expect.stringMatching(/_\{i/)]))
+    // Transpuesta, inversa, pseudoinversa, normas, barra y sombrero con su base real
+    expect(symbols('Q^TQ = I')).toContain('Q^T')
+    expect(symbols('X_c^TX_c')).toContain('X_c^T')
+    expect(symbols('b = (X^TX)^{-1}X^Ty')).toEqual(expect.arrayContaining(['X^T', '(\\ldots)^{-1}']))
+    expect(symbols('A^+ = V\\Sigma^+U^T')).toContain('A^+')
+    expect(symbols('d(p, q) = \\|p - q\\|')).toContain('\\|p - q\\|')
+    expect(symbols('\\bar{y}')).toContain('\\bar{y}')
+    expect(meanings('\\hat{y}_i')[0]).toMatch(/«y sombrero»/)
+    // ℓ con sus subíndices reales y sin duplicar la explicación de subíndices
+    const lu = detectNotation('\\ell_{ik} = u_{ik} / u_{kk}')
+    expect(lu.find((n) => n.tex === '\\ell_{ik}')?.meaning).toMatch(/fila i usando la fila k/)
+    expect(lu.filter((n) => n.meaning.startsWith('subíndice')).map((n) => n.tex)).toEqual(['u_{ik}'])
   })
 
   it('no detecta \\le dentro de \\left ni \\in dentro de \\infty', () => {
