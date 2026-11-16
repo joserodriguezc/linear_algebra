@@ -23,6 +23,13 @@ export function PCAProjection() {
   const scores = pts.map((p) => (p[0] - mu[0]) * d[0] + (p[1] - mu[1]) * d[1])
   const varProj = scores.reduce((a, s) => a + s * s, 0) / (pts.length - 1)
   const total = e.values[0] + e.values[1]
+  // Error de reconstrucción: distancia² de cada punto a su proyección (misma normalización n − 1)
+  const recError =
+    pts.reduce((a, p, i) => {
+      const q: Vec2 = [mu[0] + scores[i] * d[0], mu[1] + scores[i] * d[1]]
+      return a + (p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2
+    }, 0) /
+    (pts.length - 1)
 
   return (
     <VizLayout
@@ -78,14 +85,17 @@ export function PCAProjection() {
           <Readout
             items={[
               `\\operatorname{Var}(\\text{proyecciones}) = ${fmt(varProj)}`,
+              `\\text{error de reconstrucción} = ${fmt(recError)}`,
+              `${fmt(varProj)} + ${fmt(recError)} = ${fmt(total)} = \\lambda_1 + \\lambda_2 \\ \\text{(varianza total)}`,
               `\\lambda_1 = ${fmt(e.values[0])},\\quad \\lambda_2 = ${fmt(e.values[1])}`,
               `\\text{varianza explicada por PC1} = \\frac{\\lambda_1}{\\lambda_1 + \\lambda_2} = ${fmt((e.values[0] / total) * 100, 1)}\\%`,
             ]}
           />
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Cada punto gris se proyecta en perpendicular sobre la recta (puntos azules). Gira la recta: la varianza de las proyecciones
-            es máxima justo en la dirección de PC1 (vale λ₁) y mínima en la perpendicular (vale λ₂). Proyectar sobre PC1 reduce los datos
-            de 2 dimensiones a 1 perdiendo la menor información posible.
+            es máxima justo en la dirección de PC1 (vale λ₁) y mínima en la perpendicular (vale λ₂). Como varianza proyectada + error de
+            reconstrucción siempre suman la varianza total, maximizar la primera es lo mismo que minimizar el error: proyectar sobre PC1
+            reduce los datos de 2 dimensiones a 1 perdiendo la menor información posible.
           </p>
         </>
       }

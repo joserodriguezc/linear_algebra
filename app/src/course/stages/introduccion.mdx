@@ -1,0 +1,127 @@
+import { quiz } from '../quizzes/introduccion'
+import sistema from '../snippets/introduccion/01_sistema.py?raw'
+import sistema3 from '../snippets/introduccion/02_sistema_3x3.py?raw'
+import flotante from '../snippets/introduccion/03_coma_flotante.py?raw'
+import estadistica from '../snippets/introduccion/04_estadistica.py?raw'
+import sympySol from '../snippets/introduccion/05_sympy.py?raw'
+
+<Section kind="why">
+
+El álgebra lineal es **la matemática de los datos**. Un dataset es una tabla de números (una matriz), cada fila es una lista de números (un vector) y casi todo lo que un modelo hace con ellos (predecir, ajustar, comprimir, comparar) son operaciones de álgebra lineal.
+
+No hace falta dominar toda la disciplina para entender machine learning: este curso se centra en la parte que sí se usa, con ejemplos concretos en Python. Empezamos por la idea que le da nombre: las **ecuaciones lineales**.
+
+</Section>
+
+<Section kind="intuition">
+
+Una ecuación como $y = 4x + 1$ es **lineal**: si la dibujas, es una recta. Las incógnitas solo se multiplican por números y se suman; no hay potencias, productos entre ellas ni funciones como el seno.
+
+Con dos ecuaciones y dos incógnitas tenemos **dos rectas**, y resolver el sistema es encontrar **dónde se cortan**. Mueve los coeficientes:
+
+<Figure title="Un sistema de ecuaciones son rectas que se cortan" caption="Prueba los tres casos: una solución (se cortan), ninguna (paralelas) o infinitas (la misma recta).">
+  <LinearSystem2D />
+</Figure>
+
+Con 3 incógnitas, cada ecuación es un plano; con miles de incógnitas ya no podemos dibujarlo, pero la idea y las herramientas son las mismas. Escribir el sistema en forma de **matriz por vector**, $Ax = b$, permite tratarlo de forma compacta sea cual sea su tamaño.
+
+Hay dos matices más que recorren todo el curso:
+
+- **Álgebra lineal numérica**: el computador trabaja con precisión limitada y redondea. Las librerías BLAS y LAPACK (que NumPy usa por dentro) están diseñadas para ser rápidas y controlar esos errores.
+- **Estadística**: medias, varianzas y covarianzas se escriben con vectores y matrices (<StageRef slug="estadistica-multivariada" />), y PCA o la regresión nacen de unir ambas disciplinas.
+
+</Section>
+
+<Section kind="formal">
+
+<Formula label="Ecuación lineal" tex="a_1 x_1 + a_2 x_2 + \dots + a_n x_n = b" reading="a sub 1 por x sub 1, más a sub 2 por x sub 2, más … más a sub n por x sub n, es igual a b">
+  Los $a_i$ (coeficientes) y $b$ (término independiente) son números conocidos; los $x_i$ son las incógnitas. Por ejemplo, $y = 4x + 1$ es $-4x + y = 1$.
+</Formula>
+
+<Formula label="Sistema de ecuaciones en forma matricial" tex="\begin{cases} a_{11}x_1 + a_{12}x_2 = b_1 \\ a_{21}x_1 + a_{22}x_2 = b_2 \end{cases} \iff A\,x = b" reading="el sistema formado por a sub 1 1 por x sub 1 más a sub 1 2 por x sub 2 igual a b sub 1, y a sub 2 1 por x sub 1 más a sub 2 2 por x sub 2 igual a b sub 2, es equivalente a A por x igual a b">
+  $A$ es la matriz de coeficientes (una fila por ecuación), $x$ el vector de incógnitas y $b$ el de términos independientes.
+</Formula>
+
+<Formula label="Solución única" tex="\det A \neq 0 \;\Rightarrow\; x = A^{-1}\,b" reading="si el determinante de A es distinto de cero, entonces x es igual a la inversa de A por b">
+  Si $\det A = 0$, el sistema no tiene solución o tiene infinitas (rectas paralelas o coincidentes); cómo describir esas infinitas soluciones se ve en la <StageRef slug="independencia-lineal" />. En la práctica no se calcula $A^{-1}$: se usa `np.linalg.solve` (etapas <StageRef slug="operaciones-matriciales" bare /> y <StageRef slug="descomposiciones" bare />).
+</Formula>
+
+<Formula label="La media como operación de álgebra lineal" tex="\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i = \frac{1}{n}\,x \cdot \mathbf{1}" reading="x barra es igual a uno entre n por la sumatoria de los x sub i, que es lo mismo que uno entre n por el producto punto de x con el vector de unos" />
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Resuelve $x + y = 3$, $x - y = 1$ por eliminación, y después escríbelo como $Ax = b$.
+</Problem>
+<Step>
+**Eliminación**: sumando las dos ecuaciones se cancela $y$: $2x = 4$, así que $x = 2$.
+</Step>
+<Step>
+Sustituyendo en la primera: $2 + y = 3$, así que $y = 1$. La solución es el punto $(2, 1)$, donde se cortan las dos rectas.
+</Step>
+<Step>
+**Forma matricial**:
+
+$$
+\underbrace{\begin{bmatrix}1&1\\1&-1\end{bmatrix}}_{A}\underbrace{\begin{bmatrix}x\\y\end{bmatrix}}_{x} = \underbrace{\begin{bmatrix}3\\1\end{bmatrix}}_{b}
+$$
+</Step>
+<Step>
+Comprobación con el determinante: $\det A = 1\cdot(-1) - 1\cdot1 = -2 \neq 0$, así que la solución es única. Y al multiplicar $A$ por el vector solución se recupera $b$:
+
+$$
+\begin{bmatrix}1&1\\1&-1\end{bmatrix}\begin{bmatrix}2\\1\end{bmatrix} = \begin{bmatrix}1\cdot2 + 1\cdot1\\ 1\cdot2 - 1\cdot1\end{bmatrix} = \begin{bmatrix}3\\1\end{bmatrix} = b \ \checkmark
+$$
+
+Puedes verlo en la figura con «Una solución».
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="Resolver un sistema con NumPy" code={sistema} />
+<PyCell title="Un sistema 3×3" code={sistema3} />
+<PyCell title="Solución exacta con SymPy" code={sympySol} hint="SymPy distingue los tres casos: solución única, infinitas (en función de una variable) o ninguna (lista vacía)." />
+<PyCell title="Álgebra lineal numérica: redondeo" code={flotante} />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+El álgebra lineal está en todas partes, aunque no se vea:
+
+- Un **dataset** es una matriz y una **predicción** de un modelo lineal es un producto matriz-vector.
+- **Entrenar** una regresión lineal es resolver un sistema $Xb \approx y$ con más ecuaciones que incógnitas (<StageRef slug="regresion-lineal" />).
+- La **estadística** de los datos se calcula con productos punto:
+
+<PyCell title="Estadística con álgebra lineal" code={estadistica} />
+
+Fuera de ML, el álgebra lineal se usa en gráficos por computador (cada rotación de un objeto 3D es una matriz), en ingeniería (circuitos, estructuras), en procesamiento de señales y en el PageRank de los buscadores (<StageRef slug="eigendescomposicion" />).
+
+<KeyTakeaways>
+- El álgebra lineal estudia ecuaciones lineales y sus representaciones con vectores y matrices.
+- Un sistema de ecuaciones es la intersección de rectas o planos; se escribe $Ax = b$.
+- Tiene una, ninguna o infinitas soluciones; $\det A \ne 0$ garantiza una única.
+- El álgebra lineal numérica se ocupa de calcular rápido y con precisión controlada en el computador.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Busca tres ejemplos de ecuaciones lineales en tu trabajo o tus estudios y escríbelas como $Ax = b$.
+2. Resuelve con `np.linalg.solve` un sistema $4\times4$ inventado y comprueba el resultado con `A @ x`.
+3. Investiga qué implementación de BLAS usa tu NumPy con `np.show_config()`.
+
+</Section>

@@ -4,8 +4,8 @@ import { resetProgress, useProgress } from '../lib/progress'
 
 export function Home() {
   const progress = useProgress()
-  const done = stages.filter((s) => progress[s.id]?.completed).length
-  const next = stages.find((s) => !progress[s.id]?.completed) ?? stages[0]
+  const done = stages.filter((s) => progress[s.slug]?.completed).length
+  const next = stages.find((s) => !progress[s.slug]?.completed) ?? stages[0]
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
@@ -13,7 +13,7 @@ export function Home() {
         <p className="text-sm font-semibold uppercase tracking-wide text-brand-600">Curso interactivo</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Álgebra lineal para machine learning</h1>
         <p className="mt-3 max-w-2xl text-slate-600 dark:text-slate-300">
-          19 etapas, de los arrays de NumPy a PCA y la regresión lineal. En cada una: la intuición
+          {stages.length} etapas, de los arrays de NumPy a PCA y la regresión lineal. En cada una: la intuición
           geométrica, las fórmulas, un ejemplo resuelto paso a paso, gráficos interactivos, código Python ejecutable y preguntas
           para comprobar lo aprendido.
         </p>
@@ -22,7 +22,7 @@ export function Home() {
             to={`/etapa/${next.slug}`}
             className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700"
           >
-            {done === 0 ? 'Empezar el curso' : `Continuar: etapa ${next.id}`}
+            {done === 0 ? 'Empezar el curso' : `Continuar: etapa ${next.n}`}
           </Link>
           <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
             <div className="h-2 w-40 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
@@ -54,11 +54,11 @@ export function Home() {
               {stages
                 .filter((s) => s.part === part.id)
                 .map((s) => {
-                  const p = progress[s.id]
+                  const p = progress[s.slug]
                   const available = Boolean(stageLoader(s))
                   return (
                     <Link
-                      key={s.id}
+                      key={s.slug}
                       to={`/etapa/${s.slug}`}
                       className={`group rounded-xl border p-4 transition hover:-translate-y-0.5 hover:shadow-md ${
                         p?.completed
@@ -67,7 +67,7 @@ export function Home() {
                       }`}
                     >
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-mono text-slate-400">Etapa {s.id}</span>
+                        <span className="font-mono text-slate-400">Etapa {s.n}</span>
                         {p?.completed ? (
                           <span className="font-semibold text-emerald-600">✓ {Math.round(p.bestScore * 100)}%</span>
                         ) : p ? (

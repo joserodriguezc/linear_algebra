@@ -220,3 +220,67 @@ export function svd2(A: Mat): { U: Mat; s: [number, number]; Vt: Mat } {
     Vt: [v1, v2],
   }
 }
+
+const EPS = 1e-9
+
+/** Rango de una matriz 2x2 (0, 1 o 2). */
+export function rank2(A: Mat): 0 | 1 | 2 {
+  if (A.every((r) => r.every((v) => Math.abs(v) < EPS))) return 0
+  return Math.abs(det2(A)) < EPS ? 1 : 2
+}
+
+const unit = (v: Vec2): Vec2 => {
+  const n = Math.hypot(v[0], v[1])
+  return [v[0] / n, v[1] / n]
+}
+
+/** Dirección (unitaria) del espacio columna de una 2x2 de rango 1; null si el rango no es 1. */
+export function columnDirection2(A: Mat): Vec2 | null {
+  if (rank2(A) !== 1) return null
+  const c1: Vec2 = [A[0][0], A[1][0]]
+  const c2: Vec2 = [A[0][1], A[1][1]]
+  return unit(Math.hypot(...c1) > EPS ? c1 : c2)
+}
+
+/** Dirección (unitaria) del núcleo de una 2x2 de rango 1: perpendicular a las filas no nulas. */
+export function nullDirection2(A: Mat): Vec2 | null {
+  if (rank2(A) !== 1) return null
+  const r = Math.hypot(A[0][0], A[0][1]) > EPS ? A[0] : A[1]
+  return unit([-r[1], r[0]])
+}
+
+/** Coordenadas c de x en la base {b1, b2}: x = c1·b1 + c2·b2. null si b1 y b2 no forman base. */
+export function coordsInBasis2(b1: Vec2, b2: Vec2, x: Vec2): Vec2 | null {
+  const Binv = inv2([
+    [b1[0], b2[0]],
+    [b1[1], b2[1]],
+  ])
+  return Binv ? (matVec(Binv, x) as Vec2) : null
+}
+
+/** Inversa de una matriz cuadrada pequeña por Gauss-Jordan con pivoteo parcial; null si es singular. */
+export function invSmall(M: Mat): Mat | null {
+  const n = M.length
+  const A = M.map((r, i) => [...r, ...Array.from({ length: n }, (_, j) => (i === j ? 1 : 0))])
+  for (let c = 0; c < n; c++) {
+    let p = c
+    for (let r = c + 1; r < n; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r
+    if (Math.abs(A[p][c]) < EPS) return null
+    ;[A[c], A[p]] = [A[p], A[c]]
+    const piv = A[c][c]
+    A[c] = A[c].map((v) => v / piv)
+    for (let r = 0; r < n; r++) {
+      if (r === c) continue
+      const f = A[r][c]
+      A[r] = A[r].map((v, j) => v - f * A[c][j])
+    }
+  }
+  return A.map((r) => r.slice(n))
+}
+
+/** Matriz de proyección ortogonal sobre el espacio columna de B: P = B (BᵀB)⁻¹ Bᵀ. */
+export function projectionMatrix(B: Mat): Mat | null {
+  const Bt = transpose(B)
+  const G = invSmall(matMul(Bt, B))
+  return G ? matMul(matMul(B, G), Bt) : null
+}

@@ -91,6 +91,19 @@ describe('detectNotation', () => {
     expect(symbols('\\min(m, n)')).toContain('\\min')
   })
 
+  it('símbolos de espacios vectoriales y proyecciones', () => {
+    const s = symbols('\\dim\\ker(A) + \\dim\\operatorname{Im}(A) = n,\\ \\operatorname{span}(b_1, b_2),\\ U \\subseteq \\mathbb{R}^n,\\ A x = \\mathbf{0},\\ \\tilde{x} = Px')
+    expect(s).toEqual(expect.arrayContaining(['\\dim', '\\ker', '\\operatorname{Im}', '\\operatorname{span}', '\\subseteq', '\\mathbf{0}', '\\tilde{x}']))
+    // ⊥ como relación o como complemento ortogonal
+    expect(meanings('x - Px \\perp U')[0]).toMatch(/perpendicular/)
+    expect(meanings('U^\\perp').find((m) => m.startsWith('complemento'))).toBeTruthy()
+    // \perp no se confunde con \pm, ni \ker / \dim con otras palabras
+    expect(symbols('a \\pm b')).not.toContain('\\perp')
+    expect(symbols('\\kerning')).not.toContain('\\ker')
+    // \mathbf{0} no se confunde con el vector de unos
+    expect(symbols('\\mathbf{1}')).not.toContain('\\mathbf{0}')
+  })
+
   it('devuelve en orden de aparición y sin duplicados', () => {
     const s = symbols('\\sum_i a_i \\le \\sum_j b_j')
     expect(s[0]).toBe('\\sum')

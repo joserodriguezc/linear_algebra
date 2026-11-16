@@ -1,0 +1,155 @@
+import { quiz } from '../quizzes/proyecciones-ortogonales'
+import recta from '../snippets/proyecciones-ortogonales/01_recta.py?raw'
+import plano from '../snippets/proyecciones-ortogonales/02_plano.py?raw'
+import ortonormal from '../snippets/proyecciones-ortogonales/03_base_ortonormal.py?raw'
+import regresion from '../snippets/proyecciones-ortogonales/04_regresion.py?raw'
+import pcaProj from '../snippets/proyecciones-ortogonales/05_pca.py?raw'
+
+<Section kind="why">
+
+Los datos de ML suelen vivir en muchas dimensiones, pero la información importante se concentra en pocas. **Proyectar** es quedarse con la parte de un vector que cae en un subespacio, perdiendo lo mínimo posible. Esta idea une dos de los métodos centrales del curso:
+
+- **Regresión lineal** (<StageRef slug="regresion-lineal" />): las predicciones $\hat{y}$ son la proyección ortogonal del vector de observaciones $y$ sobre el espacio que generan las columnas de $X$.
+- **PCA** (<StageRef slug="pca" />): reducir dimensiones es proyectar los datos sobre el subespacio de las componentes principales, el que minimiza el error de reconstrucción.
+
+También aparece en compresión de datos, en gráficos por computador y en los autoencoders.
+
+</Section>
+
+<Section kind="intuition">
+
+En la <StageRef slug="vectores" /> vimos la proyección de un vector sobre otro como su «sombra». Ahora la escribimos como una **matriz** $P$: multiplicar por $P$ es proyectar. Arrastra $x$ y la recta $b$:
+
+<Figure title="La proyección como matriz">
+  <ProjectionMatrix2D />
+</Figure>
+
+Tres propiedades se ven en la figura:
+
+1. $Px$ es el punto de la recta **más cercano** a $x$.
+2. El **residuo** $x - Px$ es perpendicular a la recta.
+3. Proyectar dos veces no cambia nada: $P(Px) = Px$, es decir, $P^2 = P$.
+
+Lo mismo vale para proyectar sobre un **plano** o sobre cualquier subespacio. El caso más importante para ML: con 3 observaciones, el vector $y$ vive en un espacio de 3 dimensiones, y todas las predicciones posibles $Xb$ forman un plano. La regresión elige el punto del plano más cercano a $y$:
+
+<Figure title="La regresión lineal es una proyección" caption="Cambia las observaciones con los controles y gira la vista: el residuo siempre es perpendicular al plano.">
+  <RegressionAsProjection3D />
+</Figure>
+
+</Section>
+
+<Section kind="formal">
+
+<Formula label="Proyección sobre una recta" tex="P = \frac{b\,b^T}{b^Tb},\qquad Px = \frac{b \cdot x}{b \cdot b}\, b" reading="P es igual a b por b transpuesta dividido entre b transpuesta por b; y P por x es igual a b punto x dividido entre b punto b, multiplicado por b">
+  $b\,b^T$ es una matriz (columna por fila); $b^Tb = \|b\|_2^2$ es un número.
+</Formula>
+
+<Formula label="Proyección sobre un subespacio" tex="P = B\,(B^TB)^{-1}B^T,\qquad Px = B\,c \;\text{ con }\; c = (B^TB)^{-1}B^Tx" reading="P es igual a B por la inversa de B transpuesta por B, por B transpuesta; y P por x es igual a B por c, donde c es igual a la inversa de B transpuesta por B, por B transpuesta por x">
+  Las columnas de $B$ son una base del subespacio (independientes, para que $B^TB$ sea invertible). $c$ son las coordenadas de la proyección en esa base.
+</Formula>
+
+<Formula label="Propiedades de una proyección ortogonal" tex="P^2 = P,\qquad P^T = P,\qquad B^T(x - Px) = \mathbf{0}" reading="P al cuadrado es igual a P; P transpuesta es igual a P; y B transpuesta por el residuo x menos P por x es igual al vector cero">
+  La última igualdad dice que el residuo es perpendicular a cada vector de la base. De ella se deduce la fórmula de $P$.
+</Formula>
+
+<Formula label="Residuo y complemento ortogonal" tex="x = \underbrace{Px}_{\in\, U} + \underbrace{(x - Px)}_{\in\, U^\perp},\qquad x - Px \perp U" reading="x es igual a P por x, que pertenece al subespacio U, más el residuo x menos P por x, que pertenece al complemento ortogonal de U; el residuo es perpendicular a U">
+  $U^\perp$ reúne todos los vectores perpendiculares al subespacio $U$. Todo vector se descompone de forma única en una parte de $U$ y otra de $U^\perp$.
+</Formula>
+
+<Formula label="Con una base ortonormal" tex="Q^TQ = I \;\Rightarrow\; P = Q\,Q^T" reading="si Q transpuesta por Q es igual a la identidad, entonces P es igual a Q por Q transpuesta">
+  Si la base es ortonormal (como la $Q$ de la descomposición QR, <StageRef slug="descomposiciones" />), no hace falta invertir nada.
+</Formula>
+
+<Formula label="Mejor aproximación" tex="Px = \arg\min_{u \,\in\, U} \|x - u\|_2" reading="P por x es el vector u del subespacio U que hace mínima la norma dos de x menos u">
+  De todos los puntos del subespacio, la proyección ortogonal es el más cercano: por eso mínimos cuadrados y PCA son proyecciones.
+</Formula>
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Proyecta $x = (6, 0, 0)$ sobre el plano de $\mathbb{R}^3$ (vectores de tres números reales) generado por $b_1 = (1, 1, 0)$ y $b_2 = (0, 1, 1)$. Comprueba que el residuo es perpendicular al plano.
+</Problem>
+<Step>
+La matriz con la base del plano como columnas:
+
+$$
+B = \begin{bmatrix}1&0\\1&1\\0&1\end{bmatrix},\qquad B^TB = \begin{bmatrix}2&1\\1&2\end{bmatrix},\qquad B^Tx = \begin{bmatrix}6\\0\end{bmatrix}
+$$
+</Step>
+<Step>
+Coordenadas de la proyección, resolviendo $B^TB\,c = B^Tx$:
+
+$$
+c = \frac{1}{3}\begin{bmatrix}2&-1\\-1&2\end{bmatrix}\begin{bmatrix}6\\0\end{bmatrix} = \begin{bmatrix}4\\-2\end{bmatrix}
+$$
+</Step>
+<Step>
+Proyección y residuo:
+
+$$
+Px = 4\begin{bmatrix}1\\1\\0\end{bmatrix} - 2\begin{bmatrix}0\\1\\1\end{bmatrix} = \begin{bmatrix}4\\2\\-2\end{bmatrix},\qquad x - Px = \begin{bmatrix}2\\-2\\2\end{bmatrix}
+$$
+</Step>
+<Step>
+Comprobación: el residuo es perpendicular a los dos vectores de la base:
+
+$$
+B^T(x - Px) = \begin{bmatrix}1\cdot2 + 1\cdot(-2) + 0\cdot2\\ 0\cdot2 + 1\cdot(-2) + 1\cdot2\end{bmatrix} = \begin{bmatrix}0\\0\end{bmatrix} \ \checkmark
+$$
+</Step>
+<Step>
+La matriz de proyección completa, que sirve para cualquier $x$:
+
+$$
+P = B(B^TB)^{-1}B^T = \frac{1}{3}\begin{bmatrix}2&1&-1\\1&2&1\\-1&1&2\end{bmatrix},\qquad P\begin{bmatrix}6\\0\\0\end{bmatrix} = \frac{1}{3}\begin{bmatrix}12\\6\\-6\end{bmatrix} = \begin{bmatrix}4\\2\\-2\end{bmatrix}
+$$
+
+Es simétrica y, si la multiplicas por sí misma, vuelve a dar $P$.
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="Proyección sobre una recta" code={recta} />
+<PyCell title="Proyección sobre un plano (el ejemplo resuelto)" code={plano} />
+<PyCell title="Con una base ortonormal: P = QQᵀ" code={ortonormal} />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+**La regresión lineal es una proyección.** Con $X$ la matriz de diseño, la proyección sobre su espacio columna es $P = X(X^TX)^{-1}X^T$, y las predicciones de mínimos cuadrados son exactamente $\hat{y} = Py$. La ecuación normal, $X^T(y - Xb) = \mathbf{0}$, solo dice que el residuo es perpendicular a las columnas de $X$.
+
+<PyCell title="ŷ = Py coincide con lstsq" code={regresion} />
+
+**PCA también proyecta**: sobre el subespacio que generan las $k$ primeras componentes principales (columnas ortonormales $V_k$), con $P = V_kV_k^T$. De todos los subespacios de dimensión $k$, es el que deja el menor error de reconstrucción.
+
+<PyCell title="PCA como proyección" code={pcaProj} />
+
+<KeyTakeaways>
+- Proyectar sobre un subespacio es multiplicar por $P = B(B^TB)^{-1}B^T$; con una base ortonormal, $P = QQ^T$.
+- $Px$ es el punto del subespacio más cercano a $x$, y el residuo $x - Px$ es perpendicular a él.
+- Una proyección cumple $P^2 = P$ y $P^T = P$.
+- Regresión lineal: $\hat{y} = Py$ es la proyección de $y$ sobre el espacio columna de $X$. PCA: proyección sobre las componentes principales.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Comprueba numéricamente que los valores propios de una matriz de proyección son solo 0 y 1, y que su traza es la dimensión del subespacio.
+2. Calcula la proyección sobre el complemento ortogonal, $I - P$, y verifica que $(I - P)x$ es el residuo.
+3. Ajusta un polinomio de grado 2 por mínimos cuadrados construyendo $P$ con las columnas $1, x, x^2$, y compara con `np.polyfit`.
+
+</Section>

@@ -1,0 +1,146 @@
+import { quiz } from '../quizzes/ejemplos-en-ml'
+import dataset from '../snippets/ejemplos-en-ml/01_dataset.py?raw'
+import imagen from '../snippets/ejemplos-en-ml/02_imagen.py?raw'
+import oneHot from '../snippets/ejemplos-en-ml/03_one_hot.py?raw'
+import regresion from '../snippets/ejemplos-en-ml/04_regresion.py?raw'
+import regularizacion from '../snippets/ejemplos-en-ml/05_regularizacion.py?raw'
+import pca from '../snippets/ejemplos-en-ml/06_pca.py?raw'
+import svd from '../snippets/ejemplos-en-ml/07_svd.py?raw'
+import lsa from '../snippets/ejemplos-en-ml/08_lsa.py?raw'
+import recomendador from '../snippets/ejemplos-en-ml/09_recomendador.py?raw'
+import red from '../snippets/ejemplos-en-ml/10_red_neuronal.py?raw'
+
+<Section kind="why">
+
+Antes de entrar en detalle, conviene ver **dónde aparece el álgebra lineal en el machine learning de todos los días**. Veremos diez ejemplos, desde cómo se guardan los datos hasta el deep learning. Esta etapa es un tráiler del curso: cada ejemplo enlaza con las etapas donde lo estudiaremos a fondo.
+
+</Section>
+
+<Section kind="intuition">
+
+**1. Datasets.** Una tabla de datos es una matriz: cada fila es una observación (un vector) y cada columna, una característica.
+
+**2. Imágenes.** Una foto en escala de grises es una matriz de intensidades; en color, un tensor de 3 ejes (alto × ancho × canales). Cambia los píxeles y mira la matriz:
+
+<Figure title="Una imagen es una matriz">
+  <ImageAsMatrix />
+</Figure>
+
+**3. One-hot encoding.** Los modelos solo entienden números. Una variable categórica (un color, un país) se convierte en una matriz con una columna por categoría y un único 1 por fila:
+
+<Figure title="Codificación one-hot">
+  <OneHotDemo />
+</Figure>
+
+**4. Regresión lineal.** Ajustar una recta (o un hiperplano) a los datos es resolver un sistema de ecuaciones por mínimos cuadrados.
+
+**5. Regularización.** Para evitar el sobreajuste se penaliza el tamaño de los coeficientes, medido con una **norma** de vectores.
+
+**6. PCA.** Reduce el número de columnas buscando las direcciones de máxima varianza; usa la **eigendescomposición** de la matriz de covarianza.
+
+**7. SVD.** Descompone cualquier matriz en "girar · estirar · girar"; sirve para comprimir, calcular la pseudoinversa y reducir dimensiones.
+
+**8. Análisis semántico latente (LSA).** Aplica la SVD a una matriz documentos × palabras para encontrar temas.
+
+**9. Sistemas de recomendación.** Comparan usuarios con productos punto (similitud coseno) y factorizan la matriz usuarios × productos.
+
+**10. Deep learning.** Cada capa de una red neuronal es un producto matricial seguido de una función no lineal, aplicado a tensores.
+
+</Section>
+
+<Section kind="formal">
+
+<Formula label="Dataset" tex="X \in \mathbb{R}^{n\times p},\qquad y \in \mathbb{R}^{n}" reading="X es una matriz de n filas (observaciones) y p columnas (características) de números reales, e y es un vector de n números reales (la variable objetivo)" />
+
+<Formula label="One-hot de la categoría k" tex="e_k = (0, \dots, 0, \underbrace{1}_{\text{posición } k}, 0, \dots, 0)" reading="e sub k es el vector de ceros con un único uno en la posición k" />
+
+<Formula label="Regresión lineal regularizada (Ridge)" tex="\min_b \|y - X\,b\|_2^2 + \alpha\,\|b\|_2^2" reading="el mínimo, variando b, de la norma dos al cuadrado de y menos X por b, más alfa por la norma dos al cuadrado de b">
+  Sin el segundo término es la regresión lineal ordinaria. Con $\|b\|_1$ en lugar de $\|b\|_2^2$ es Lasso.
+</Formula>
+
+<Formula label="Factorización de bajo rango (PCA, LSA, recomendadores)" tex="X \approx U_k\,\Sigma_k\,V_k^T" reading="X es aproximadamente igual a U sub k por sigma mayúscula sub k por V sub k transpuesta: la SVD quedándose solo con las k direcciones más importantes" />
+
+<Formula label="Capa densa de una red neuronal" tex="H = f(X\,W + b)" reading="H es igual a f aplicada a X por W más b">
+  $X$ es el lote de entradas, $W$ la matriz de pesos, $b$ el vector de sesgos (sumado a cada fila con broadcasting) y $f$ una función de activación no lineal aplicada elemento a elemento, como ReLU: $f(z) = \max(0, z)$.
+</Formula>
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Una tienda tiene 3 clientes con (edad, compras) = (25, 4), (40, 10) y (31, 7), y la columna «país» con valores España, Chile y España. Construye la matriz $X$ que recibiría un modelo, con el país en one-hot.
+</Problem>
+<Step>
+Separamos la parte numérica (edad, compras) en una matriz:
+
+$$
+X_{\text{num}} = \begin{bmatrix}25 & 4\\ 40 & 10\\ 31 & 7\end{bmatrix}
+$$
+</Step>
+<Step>
+Las categorías de «país» en orden alfabético son [Chile, España], así que cada país se convierte en un vector con un único 1: Chile $= \begin{bmatrix}1 & 0\end{bmatrix}$ y España $= \begin{bmatrix}0 & 1\end{bmatrix}$. Para la columna (España, Chile, España):
+
+$$
+X_{\text{país}} = \begin{bmatrix}0 & 1\\ 1 & 0\\ 0 & 1\end{bmatrix} \begin{matrix}\leftarrow \text{España}\\ \leftarrow \text{Chile}\\ \leftarrow \text{España}\end{matrix}
+$$
+</Step>
+<Step>
+Cada fila combina las variables numéricas y el one-hot, uniendo las dos matrices lado a lado (`hstack`):
+
+$$
+X = \begin{bmatrix} 25 & 4 & 0 & 1\\ 40 & 10 & 1 & 0\\ 31 & 7 & 0 & 1 \end{bmatrix}
+$$
+</Step>
+<Step>
+Forma: $X \in \mathbb{R}^{3\times4}$, es decir, una matriz de números reales con 3 filas (observaciones) y 4 columnas (características). Un modelo lineal aprendería un vector $b$ de 4 coeficientes (más un término independiente) y predeciría con $\hat{y} = Xb$.
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+Un recorrido rápido por los diez ejemplos. No hace falta entender todavía cada línea: volveremos a todos ellos.
+
+<PyCell title="1. Un dataset es una matriz" code={dataset} />
+<PyCell title="2. Una imagen es una matriz" code={imagen} />
+<PyCell title="3. One-hot encoding" code={oneHot} />
+<PyCell title="4. Regresión lineal" code={regresion} />
+<PyCell title="5. Regularización" code={regularizacion} hint="Lasso deja en 0 los coeficientes de las columnas que no importan." />
+<PyCell title="6. PCA" code={pca} />
+<PyCell title="7. SVD" code={svd} />
+<PyCell title="8. LSA: temas en textos" code={lsa} hint="Los documentos sobre animales y los de álgebra quedan en «temas» (columnas) distintos." />
+<PyCell title="9. Recomendadores" code={recomendador} />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+El último ejemplo, el **deep learning**, resume todo el curso: una red neuronal es una cadena de productos matriciales (<StageRef slug="matrices" />) sobre tensores (<StageRef slug="tensores" />), con broadcasting para los sesgos (<StageRef slug="broadcasting" />).
+
+<PyCell title="10. Una capa de red neuronal" code={red} />
+
+<KeyTakeaways>
+- Los datos (tablas, imágenes, texto) se representan como vectores, matrices y tensores.
+- El preprocesado (one-hot, estandarización) son operaciones de álgebra lineal.
+- Regresión, regularización, PCA, SVD, LSA, recomendadores y deep learning se apoyan en las mismas herramientas.
+- El resto del curso desarrolla cada una de estas piezas.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Carga un CSV con pandas, conviértelo en matriz con `.to_numpy()` y comprueba su forma.
+2. Abre una foto propia con matplotlib y averigua su forma y su tipo de datos.
+3. Elige un algoritmo de ML que uses y busca qué operaciones de álgebra lineal hace por dentro.
+
+</Section>

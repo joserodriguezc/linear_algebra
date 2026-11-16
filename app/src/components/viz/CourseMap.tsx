@@ -1,37 +1,37 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { stages } from '../../course/curriculum'
+import { stageBySlug } from '../../course/curriculum'
 
-const AREAS: { key: string; title: string; why: string; stages: number[] }[] = [
+const AREAS: { key: string; title: string; why: string; stages: string[] }[] = [
   {
     key: 'notacion',
     title: 'Notación',
     why: 'Leer las fórmulas de los artículos, libros y documentación de ML.',
-    stages: [4, 7, 9, 13],
+    stages: ['arrays-numpy', 'vectores', 'matrices', 'tensores'],
   },
   {
     key: 'aritmetica',
     title: 'Aritmética',
     why: 'Sumar, multiplicar y transformar vectores, matrices y tensores: lo que hace un modelo al predecir.',
-    stages: [5, 6, 7, 8, 9, 10, 11, 12],
+    stages: ['indexado-slicing-reshape', 'broadcasting', 'vectores', 'normas', 'matrices', 'tipos-de-matrices', 'operaciones-matriciales', 'independencia-lineal', 'matrices-dispersas'],
   },
   {
     key: 'estadistica',
     title: 'Estadística',
     why: 'Media, varianza y covarianza escritas como operaciones con matrices; base de PCA.',
-    stages: [17, 18],
+    stages: ['estadistica-multivariada', 'pca'],
   },
   {
     key: 'factorizacion',
     title: 'Factorización',
     why: 'Descomponer matrices (LU, QR, eigen, SVD) para resolver, comprimir y reducir dimensiones.',
-    stages: [14, 15, 16],
+    stages: ['descomposiciones', 'eigendescomposicion', 'svd'],
   },
   {
     key: 'minimos',
     title: 'Mínimos cuadrados',
-    why: 'Ajustar modelos a datos: la regresión lineal y todo lo que se construye sobre ella.',
-    stages: [19],
+    why: 'Ajustar modelos a datos proyectando sobre un subespacio: la regresión lineal y todo lo que se construye sobre ella.',
+    stages: ['proyecciones-ortogonales', 'regresion-lineal'],
   },
 ]
 
@@ -57,12 +57,12 @@ export function CourseMap() {
       </div>
       <p className="text-sm">{area.why}</p>
       <ul className="grid gap-2 sm:grid-cols-2">
-        {area.stages.map((id) => {
-          const s = stages.find((x) => x.id === id)!
+        {area.stages.map((slug) => {
+          const s = stageBySlug(slug)
           return (
-            <li key={id}>
+            <li key={slug}>
               <Link to={`/etapa/${s.slug}`} className="block rounded-lg border border-slate-200 px-3 py-2 text-sm hover:border-brand-500 dark:border-slate-700">
-                <span className="font-mono text-xs text-slate-400">Etapa {s.id}</span>
+                <span className="font-mono text-xs text-slate-400">Etapa {s.n}</span>
                 <span className="block font-medium">{s.title}</span>
               </Link>
             </li>

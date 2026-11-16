@@ -1,6 +1,6 @@
 import { python } from '@codemirror/lang-python'
 import CodeMirror from '@uiw/react-codemirror'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useIsDark } from '../../lib/useIsDark'
 import { restartPython, runPython, usePythonStatus, warmupPython, type OutputChunk } from './usePyodide'
 
@@ -12,8 +12,8 @@ interface Props {
   /** Código inicial (normalmente importado con `?raw` desde src/course/snippets). */
   code: string
   title?: string
-  /** Texto breve bajo el título: qué observar en la salida. */
-  hint?: string
+  /** Texto breve bajo el título: qué observar en la salida (admite JSX, p. ej. un <StageRef>). */
+  hint?: ReactNode
 }
 
 export function PyCell({ code: initial, title, hint }: Props) {

@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState, type ComponentType } from 
 import { Link, useParams } from 'react-router-dom'
 import { getStage, neighbors, parts, stageLoader, stages } from '../course/curriculum'
 import { useProgress } from '../lib/progress'
+import { StageContext } from '../components/lesson/stageContext'
 import { mdxComponents } from '../mdxComponents'
 
 type MdxContent = ComponentType<{ components?: Record<string, unknown> }>
@@ -11,10 +12,10 @@ type MdxContent = ComponentType<{ components?: Record<string, unknown> }>
  * navegación: React Router navega dentro de una transición, React descarta y reintenta el render
  * mientras el MDX carga, y cada reintento crearía un lazy nuevo que vuelve a suspenderse.
  */
-const STAGE_CONTENT = new Map<number, MdxContent>()
+const STAGE_CONTENT = new Map<string, MdxContent>()
 for (const s of stages) {
   const loader = stageLoader(s)
-  if (loader) STAGE_CONTENT.set(s.id, lazy(loader) as unknown as MdxContent)
+  if (loader) STAGE_CONTENT.set(s.slug, lazy(loader) as unknown as MdxContent)
 }
 
 export function StagePage() {
@@ -24,11 +25,11 @@ export function StagePage() {
   const articleRef = useRef<HTMLElement>(null)
   const [toc, setToc] = useState<{ id: string; text: string; icon: string }[]>([])
 
-  const Content = stage ? STAGE_CONTENT.get(stage.id) : undefined
+  const Content = stage ? STAGE_CONTENT.get(stage.slug) : undefined
 
   useEffect(() => {
     window.scrollTo(0, 0)
-    if (stage) document.title = `${stage.id}. ${stage.title} · Álgebra Lineal para ML`
+    if (stage) document.title = `${stage.n}. ${stage.title} · Álgebra Lineal para ML`
   }, [stage])
 
   // Construye el índice lateral a partir de los <h2> de la etapa, cuando el MDX ya cargó
@@ -96,14 +97,14 @@ export function StagePage() {
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Etapas</p>
             <ul className="max-h-[45vh] space-y-0.5 overflow-y-auto pr-1">
               {stages.map((s) => (
-                <li key={s.id}>
+                <li key={s.slug}>
                   <Link
                     to={`/etapa/${s.slug}`}
                     className={`flex gap-2 rounded px-2 py-1 ${
-                      s.id === stage.id ? 'bg-brand-50 font-medium text-brand-700 dark:bg-brand-500/15 dark:text-brand-100' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900'
+                      s.slug === stage.slug ? 'bg-brand-50 font-medium text-brand-700 dark:bg-brand-500/15 dark:text-brand-100' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900'
                     }`}
                   >
-                    <span className="w-5 text-right font-mono text-xs leading-5">{progress[s.id]?.completed ? '✓' : s.id}</span>
+                    <span className="w-5 text-right font-mono text-xs leading-5">{progress[s.slug]?.completed ? '✓' : s.n}</span>
                     <span className="truncate">{s.title}</span>
                   </Link>
                 </li>
@@ -116,7 +117,7 @@ export function StagePage() {
       <main className="min-w-0 max-w-3xl">
         <header className="mb-10">
           <p className="text-sm text-slate-500">
-            Parte {part.id} · {part.title} — <span className="font-mono">Etapa {stage.id}</span>
+            Parte {part.id} · {part.title} — <span className="font-mono">Etapa {stage.n}</span>
           </p>
           <h1 className="mt-1 text-3xl font-bold tracking-tight">{stage.title}</h1>
           <p className="mt-2 text-slate-600 dark:text-slate-300">{stage.summary}</p>
@@ -132,11 +133,13 @@ export function StagePage() {
 
         <article ref={articleRef} className="lesson">
           {Content ? (
+            <StageContext.Provider value={stage.slug}>
             <Suspense fallback={<p className="text-slate-500">Cargando etapa…</p>}>
               {/* Falso positivo: Content sale de STAGE_CONTENT, creado una sola vez al cargar el módulo */}
               {/* oxlint-disable-next-line react/static-components */}
               <Content components={mdxComponents} />
             </Suspense>
+            </StageContext.Provider>
           ) : (
             <p className="rounded-xl bg-slate-50 p-6 text-slate-500 dark:bg-slate-900">Esta etapa todavía está en preparación.</p>
           )}
@@ -145,7 +148,7 @@ export function StagePage() {
         <nav className="mt-16 grid gap-3 border-t border-slate-200 pt-6 sm:grid-cols-2 dark:border-slate-800">
           {prev ? (
             <Link to={`/etapa/${prev.slug}`} className="rounded-xl border border-slate-200 p-4 hover:border-brand-500 dark:border-slate-800">
-              <span className="text-xs text-slate-500">← Etapa {prev.id}</span>
+              <span className="text-xs text-slate-500">← Etapa {prev.n}</span>
               <p className="font-medium">{prev.title}</p>
             </Link>
           ) : (
@@ -153,7 +156,7 @@ export function StagePage() {
           )}
           {next && (
             <Link to={`/etapa/${next.slug}`} className="rounded-xl border border-slate-200 p-4 text-right hover:border-brand-500 dark:border-slate-800">
-              <span className="text-xs text-slate-500">Etapa {next.id} →</span>
+              <span className="text-xs text-slate-500">Etapa {next.n} →</span>
               <p className="font-medium">{next.title}</p>
             </Link>
           )}

@@ -176,6 +176,26 @@ const RULES: Rule[] = [
   { re: /\\operatorname\{arg\\?\s*min\}|\\arg\\?min|\\operatorname\*?\{argmin\}/, explain: () => ({ tex: '\\arg\\min', meaning: 'argumento mínimo: el valor de la variable que hace mínima la expresión' }) },
   { re: /\\arg\\?\s*max|\\operatorname\*?\{argmax\}/, explain: () => ({ tex: '\\arg\\max', meaning: 'argumento máximo: el valor de la variable que hace máxima la expresión' }) },
   { re: /\\min(?![a-z])/, explain: () => ({ tex: '\\min', meaning: 'mínimo: el menor de los valores indicados' }) },
+  { re: /\\operatorname\{span\}/, explain: () => ({ tex: '\\operatorname{span}', meaning: 'span (espacio generado): el conjunto de todas las combinaciones lineales de esos vectores' }) },
+  { re: /\\dim(?![a-z])/, explain: () => ({ tex: '\\dim', meaning: 'dimensión: el número de vectores de cualquier base del espacio' }) },
+  { re: /\\ker(?![a-z])/, explain: () => ({ tex: '\\ker', meaning: 'núcleo (kernel): todos los vectores x que la matriz envía al vector cero, Ax = 0' }) },
+  {
+    re: /\\operatorname\{Im\}/,
+    explain: () => ({ tex: '\\operatorname{Im}', meaning: 'imagen o espacio columna: todos los vectores Ax posibles; lo generan las columnas de A' }),
+  },
+  {
+    re: /\^\{?\\perp\}?|\\perp(?![a-z])/,
+    explain: (m) =>
+      m[0].startsWith('^')
+        ? { tex: 'U^\\perp', meaning: 'complemento ortogonal: todos los vectores perpendiculares a cada vector del subespacio' }
+        : { tex: '\\perp', meaning: '«es perpendicular (ortogonal) a»: su producto punto es 0' },
+  },
+  { re: /\\subseteq/, explain: () => ({ tex: '\\subseteq', meaning: '«está contenido en»: es un subconjunto (aquí, un subespacio) del de la derecha' }) },
+  { re: /\\mathbf\{0\}/, explain: () => ({ tex: '\\mathbf{0}', meaning: 'el vector cero: todas sus componentes valen 0' }) },
+  {
+    re: /\\tilde\{?(\w)\}?/,
+    explain: (m) => ({ tex: `\\tilde{${m[1]}}`, meaning: `«${m[1]} tilde»: una aproximación o reconstrucción de ${m[1]} (por ejemplo, su proyección)` }),
+  },
   { re: /\\mathbf\{1\}/, explain: () => ({ tex: '\\mathbf{1}', meaning: 'vector de unos: (1, 1, …, 1)' }) },
   { re: /\\alpha/, explain: () => ({ tex: '\\alpha', meaning: 'alfa: un parámetro que se fija a mano (aquí, la fuerza de la regularización)' }) },
   { re: /\\leftarrow/, explain: () => ({ tex: '\\leftarrow', meaning: '«se reemplaza por»: lo de la izquierda pasa a valer lo de la derecha' }) },
@@ -285,6 +305,9 @@ const SAMPLES = [
   'F_i \\leftarrow F_i - \\ell_{ik} F_k \\iff x',
   'Av = \\lambda v,\\ \\Lambda,\\ \\Sigma,\\ \\sigma_1,\\ A^+',
   'a \\approx b,\\ a \\neq b,\\ \\operatorname{diag}(d),\\ \\sqrt{x}',
+  '\\operatorname{span}(v),\\ \\dim V,\\ \\ker(A),\\ \\operatorname{Im}(A),\\ U \\subseteq V,\\ \\mathbf{0},\\ \\tilde{x}',
+  'U^\\perp',
+  'u \\perp v',
 ]
 
 /** Glosario completo y sin duplicados, en orden alfabético por significado. */

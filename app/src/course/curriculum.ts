@@ -7,9 +7,13 @@ export interface Part {
 }
 
 export interface Stage {
-  /** Número de etapa (orden en el curso). */
-  id: number
+  /**
+   * Identidad estable de la etapa: nombra su MDX (`stages/<slug>.mdx`), sus preguntas
+   * (`quizzes/<slug>.ts`), sus snippets (`snippets/<slug>/`), su URL y su progreso guardado.
+   */
   slug: string
+  /** Número que se muestra: se calcula a partir de la posición en el curso (no se escribe a mano). */
+  n: number
   title: string
   part: number
   summary: string
@@ -30,7 +34,7 @@ export const parts: Part[] = [
   {
     id: 3,
     title: 'Matrices',
-    description: 'Vectores, normas, matrices, sus tipos y operaciones, matrices dispersas y tensores.',
+    description: 'Vectores, normas, matrices, sus tipos y operaciones, bases y proyecciones, matrices dispersas y tensores.',
   },
   {
     id: 4,
@@ -44,9 +48,9 @@ export const parts: Part[] = [
   },
 ]
 
-export const stages: Stage[] = [
+/** Etapas en orden. Insertar o reordenar aquí renumera todo el curso automáticamente. */
+const STAGE_DEFS: Omit<Stage, 'n'>[] = [
   {
-    id: 1,
     slug: 'introduccion',
     title: 'Introducción al álgebra lineal',
     part: 1,
@@ -58,7 +62,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 2,
     slug: 'algebra-lineal-y-ml',
     title: 'Álgebra lineal y machine learning',
     part: 1,
@@ -69,7 +72,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 3,
     slug: 'ejemplos-en-ml',
     title: 'Ejemplos de álgebra lineal en ML',
     part: 1,
@@ -81,7 +83,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 4,
     slug: 'arrays-numpy',
     title: 'Introducción a los arrays de NumPy',
     part: 2,
@@ -93,7 +94,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 5,
     slug: 'indexado-slicing-reshape',
     title: 'Indexado, slicing y reshape',
     part: 2,
@@ -105,7 +105,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 6,
     slug: 'broadcasting',
     title: 'Broadcasting en NumPy',
     part: 2,
@@ -117,7 +116,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 7,
     slug: 'vectores',
     title: 'Vectores y aritmética vectorial',
     part: 3,
@@ -129,7 +127,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 8,
     slug: 'normas',
     title: 'Normas vectoriales',
     part: 3,
@@ -141,7 +138,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 9,
     slug: 'matrices',
     title: 'Matrices y aritmética matricial',
     part: 3,
@@ -153,7 +149,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 10,
     slug: 'tipos-de-matrices',
     title: 'Tipos de matrices',
     part: 3,
@@ -165,7 +160,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 11,
     slug: 'operaciones-matriciales',
     title: 'Operaciones matriciales',
     part: 3,
@@ -177,7 +171,29 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 12,
+    slug: 'independencia-lineal',
+    title: 'Independencia lineal, bases y rango',
+    part: 3,
+    summary: 'Combinaciones lineales, span, bases, cambio de base, espacio columna y núcleo.',
+    objectives: [
+      'Decidir si unos vectores son linealmente independientes',
+      'Encontrar una base y las coordenadas de un vector en ella',
+      'Calcular el espacio columna y el núcleo, y aplicar el teorema rango–nulidad',
+      'Escribir la solución general de un sistema con infinitas soluciones',
+    ],
+  },
+  {
+    slug: 'proyecciones-ortogonales',
+    title: 'Proyecciones ortogonales',
+    part: 3,
+    summary: 'Proyectar sobre rectas y subespacios: la idea común a la regresión y a PCA.',
+    objectives: [
+      'Construir la matriz de proyección sobre un subespacio',
+      'Reconocer sus propiedades: P² = P, simetría y residuo perpendicular',
+      'Interpretar la regresión lineal y PCA como proyecciones ortogonales',
+    ],
+  },
+  {
     slug: 'matrices-dispersas',
     title: 'Matrices dispersas',
     part: 3,
@@ -189,7 +205,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 13,
     slug: 'tensores',
     title: 'Tensores y aritmética tensorial',
     part: 3,
@@ -201,7 +216,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 14,
     slug: 'descomposiciones',
     title: 'Descomposiciones matriciales',
     part: 4,
@@ -213,7 +227,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 15,
     slug: 'eigendescomposicion',
     title: 'Eigendescomposición',
     part: 4,
@@ -225,7 +238,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 16,
     slug: 'svd',
     title: 'Descomposición en valores singulares (SVD)',
     part: 4,
@@ -237,7 +249,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 17,
     slug: 'estadistica-multivariada',
     title: 'Estadística multivariada',
     part: 5,
@@ -249,7 +260,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 18,
     slug: 'pca',
     title: 'Análisis de componentes principales (PCA)',
     part: 5,
@@ -261,7 +271,6 @@ export const stages: Stage[] = [
     ],
   },
   {
-    id: 19,
     slug: 'regresion-lineal',
     title: 'Regresión lineal',
     part: 5,
@@ -274,21 +283,29 @@ export const stages: Stage[] = [
   },
 ]
 
+export const stages: Stage[] = STAGE_DEFS.map((s, i) => ({ ...s, n: i + 1 }))
+
 type MdxModule = { default: ComponentType }
 
 const stageModules = import.meta.glob<MdxModule>('./stages/*.mdx')
 
 /** Devuelve el cargador del MDX de la etapa, o undefined si aún no existe. */
 export function stageLoader(stage: Stage): (() => Promise<MdxModule>) | undefined {
-  const key = `./stages/${String(stage.id).padStart(2, '0')}-${stage.slug}.mdx`
-  return stageModules[key]
+  return stageModules[`./stages/${stage.slug}.mdx`]
 }
 
 export function getStage(slug: string | undefined): Stage | undefined {
   return stages.find((s) => s.slug === slug)
 }
 
+/** Igual que getStage, pero lanza un error si el slug no existe (para referencias escritas a mano). */
+export function stageBySlug(slug: string): Stage {
+  const s = getStage(slug)
+  if (!s) throw new Error(`No existe la etapa «${slug}»`)
+  return s
+}
+
 export function neighbors(stage: Stage): { prev?: Stage; next?: Stage } {
-  const i = stages.findIndex((s) => s.id === stage.id)
+  const i = stage.n - 1
   return { prev: stages[i - 1], next: stages[i + 1] }
 }

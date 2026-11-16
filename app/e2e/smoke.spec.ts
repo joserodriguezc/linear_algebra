@@ -1,4 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
+import { readdirSync } from 'node:fs'
+
+/** Número de etapas del curso = número de MDX en src/course/stages. */
+const STAGE_COUNT = readdirSync(new URL('../src/course/stages', import.meta.url)).filter((f) => f.endsWith('.mdx')).length
 
 function trackErrors(page: Page) {
   const errors: string[] = []
@@ -15,7 +19,7 @@ test('todas las etapas cargan sin errores', async ({ page }) => {
   const hrefs = await page.locator('a[href^="#/etapa/"]').evaluateAll((as) =>
     [...new Set(as.map((a) => a.getAttribute('href')!))],
   )
-  expect(hrefs.length).toBe(19)
+  expect(hrefs.length).toBe(STAGE_COUNT)
   for (const href of hrefs) {
     await page.goto(`/${href}`)
     await expect(page.locator('h1')).toBeVisible()
@@ -58,6 +62,21 @@ test('se navega entre etapas sin recargar (menú lateral, siguiente y anterior)'
   await page.locator('main a', { hasText: 'Tensores y aritmética tensorial' }).click()
   await expect(page.locator('main h1')).toHaveText('Tensores y aritmética tensorial')
   expect(errors).toEqual([])
+})
+
+test('migra el progreso guardado con la versión anterior (por número de etapa)', async ({ page }) => {
+  await page.addInitScript(() => {
+    if (localStorage.getItem('alml-progress-v2')) return
+    const done = { bestScore: 1, completed: true, updatedAt: '2026-11-15T00:00:00Z' }
+    localStorage.setItem('alml-progress-v1', JSON.stringify({ '7': done, '18': done }))
+  })
+  await page.goto('/')
+  // «Vectores» y «PCA» aparecen completadas con su nuevo identificador (slug)
+  await expect(page.locator('main a', { hasText: 'Vectores y aritmética vectorial' })).toContainText('✓')
+  await expect(page.locator('main a', { hasText: 'Análisis de componentes principales' })).toContainText('✓')
+  await expect(page.getByText(/2\/\d+ etapas/)).toBeVisible()
+  const stored = await page.evaluate(() => [localStorage.getItem('alml-progress-v1'), Object.keys(JSON.parse(localStorage.getItem('alml-progress-v2')!))])
+  expect(stored).toEqual([null, ['vectores', 'pca']])
 })
 
 test('una celda de Python se ejecuta con NumPy', async ({ page }) => {

@@ -1,0 +1,164 @@
+import { quiz } from '../quizzes/descomposiciones'
+import lu from '../snippets/descomposiciones/01_lu.py?raw'
+import luResolver from '../snippets/descomposiciones/02_lu_resolver.py?raw'
+import qr from '../snippets/descomposiciones/03_qr.py?raw'
+import qrReducida from '../snippets/descomposiciones/04_qr_reducida.py?raw'
+import cholesky from '../snippets/descomposiciones/05_cholesky.py?raw'
+import choleskyError from '../snippets/descomposiciones/06_cholesky_error.py?raw'
+import sympyLu from '../snippets/descomposiciones/07_sympy_lu.py?raw'
+import regresionQr from '../snippets/descomposiciones/08_regresion_qr.py?raw'
+
+<Section kind="why">
+
+Factorizar un número, $12 = 2 \cdot 2 \cdot 3$, revela su estructura. **Factorizar una matriz** hace lo mismo: la escribe como producto de matrices más simples (triangulares, ortogonales, diagonales) con las que es fácil y estable trabajar.
+
+Casi ningún programa de ML calcula una inversa de forma directa. Por dentro, NumPy, SciPy y scikit-learn usan descomposiciones:
+
+- **LU** para resolver sistemas $Ax = b$ y calcular determinantes.
+- **QR** para resolver mínimos cuadrados (regresión lineal) de forma estable.
+- **Cholesky** para matrices de covarianza: procesos gaussianos, muestreo de normales multivariadas.
+
+</Section>
+
+<Section kind="intuition">
+
+**LU es la eliminación gaussiana con memoria.** Al resolver un sistema "a mano" restamos múltiplos de una fila a las de abajo hasta dejar una matriz triangular superior, $U$. Si además **anotamos los multiplicadores** en una matriz triangular inferior $L$, se cumple $A = LU$. Avanza paso a paso:
+
+<Figure title="Eliminación gaussiana = descomposición LU">
+  <LUStepper />
+</Figure>
+
+**QR es "enderezar" las columnas.** Tomamos las columnas de $A$ y las convertimos, una a una, en direcciones perpendiculares de longitud 1 (las columnas de $Q$): a cada columna le quitamos su "sombra" sobre las anteriores. $R$ anota las longitudes y sombras que hemos quitado. Arrastra las columnas:
+
+<Figure title="QR por Gram-Schmidt">
+  <GramSchmidt2D />
+</Figure>
+
+**Cholesky es la "raíz cuadrada" de una matriz.** Igual que $9 = 3 \cdot 3$, una matriz simétrica y definida positiva (como una matriz de covarianza) se puede escribir como $LL^T$.
+
+</Section>
+
+<Section kind="formal">
+
+<Formula label="Descomposición LU (con pivoteo)" tex="A = P\,L\,U" reading="A es igual a P por L por U, donde P es una matriz de permutación, L es triangular inferior con unos en la diagonal y U es triangular superior">
+  $P$ solo reordena filas (es la identidad con las filas permutadas). Se usa para no dividir nunca por un pivote nulo o muy pequeño, que dispararía los errores de redondeo. Si no hace falta reordenar, $P = I$ y $A = LU$.
+</Formula>
+
+<Formula label="Un paso de eliminación" tex="\ell_{ik} = \frac{u_{ik}}{u_{kk}},\qquad F_i \leftarrow F_i - \ell_{ik}\,F_k" reading="ele sub i k es igual a u sub i k dividido entre u sub k k (el pivote); y la fila i se reemplaza por la fila i menos ele sub i k veces la fila k">
+  $F_i$ es la fila $i$ de la matriz que se está triangulando. El multiplicador se guarda en la posición $(i, k)$ de $L$.
+</Formula>
+
+<Formula label="Resolver un sistema con LU" tex="Ax = b \iff L\,(Ux) = b:\qquad Ly = b,\quad Ux = y" reading="A por x igual a b equivale a L por U por x igual a b; se resuelve primero L por y igual a b (sustitución hacia adelante) y después U por x igual a y (sustitución hacia atrás)" />
+
+<Formula label="Descomposición QR" tex="A = Q\,R,\qquad Q^TQ = I" reading="A es igual a Q por R, donde Q transpuesta por Q es igual a la identidad (Q tiene columnas ortonormales) y R es triangular superior">
+  Las columnas de $Q$ son una base ortonormal del espacio columna de $A$, así que $QQ^T$ es la proyección sobre ese espacio (<StageRef slug="proyecciones-ortogonales" />).
+  Para $A$ de $m\times n$ con $m > n$, la QR "reducida" da $Q$ de $m\times n$ y $R$ de $n\times n$; la "completa" (`'complete'`) da $Q$ de $m\times m$ y $R$ de $m\times n$.
+</Formula>
+
+<Formula label="Gram-Schmidt (dos columnas)" tex="q_1 = \frac{a_1}{\|a_1\|},\qquad q_2 = \frac{a_2 - (q_1\cdot a_2)\,q_1}{\|a_2 - (q_1\cdot a_2)\,q_1\|}" reading="q sub 1 es a sub 1 dividido entre su norma; q sub 2 es a sub 2 menos su proyección sobre q sub 1 (q sub 1 punto a sub 2, por q sub 1), dividido entre la norma de ese mismo vector">
+  Los denominadores son $r_{11}$ y $r_{22}$, y $r_{12} = q_1 \cdot a_2$: así se construye $R$.
+</Formula>
+
+<Formula label="Descomposición de Cholesky" tex="A = L\,L^T" reading="A es igual a L por L transpuesta, donde L es triangular inferior con diagonal positiva">
+  Solo existe si $A$ es **simétrica** ($A = A^T$) y **definida positiva** ($x^TAx > 0$ para todo $x \ne 0$; equivalentemente, todos sus valores propios son positivos). Cuesta la mitad que LU.
+</Formula>
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Calcula la descomposición LU de $A = \begin{bmatrix}2&1&1\\4&-6&0\\-2&7&2\end{bmatrix}$ y úsala para obtener $\det A$.
+</Problem>
+<Step>
+**Columna 1** (pivote $u_{11} = 2$):
+
+$\ell_{21} = 4/2 = 2$: $\;F_2 \leftarrow F_2 - 2F_1 = (0,\ -8,\ -2)$
+
+$\ell_{31} = -2/2 = -1$: $\;F_3 \leftarrow F_3 + F_1 = (0,\ 8,\ 3)$
+
+La matriz tras eliminar la primera columna:
+
+$$
+\begin{bmatrix}2&1&1\\4&-6&0\\-2&7&2\end{bmatrix} \;\longrightarrow\; \begin{bmatrix}2&1&1\\0&-8&-2\\0&8&3\end{bmatrix}
+$$
+</Step>
+<Step>
+**Columna 2** (pivote $u_{22} = -8$):
+
+$\ell_{32} = 8/(-8) = -1$: $\;F_3 \leftarrow F_3 + F_2 = (0,\ 0,\ 1)$
+
+$$
+\begin{bmatrix}2&1&1\\0&-8&-2\\0&8&3\end{bmatrix} \;\longrightarrow\; \begin{bmatrix}2&1&1\\0&-8&-2\\0&0&1\end{bmatrix} = U
+$$
+</Step>
+<Step>
+Reunimos los multiplicadores en $L$ y el resultado en $U$:
+
+$$
+L = \begin{bmatrix}1&0&0\\2&1&0\\-1&-1&1\end{bmatrix},\qquad U = \begin{bmatrix}2&1&1\\0&-8&-2\\0&0&1\end{bmatrix}
+$$
+</Step>
+<Step>
+Comprobación completa:
+
+$$
+LU = \begin{bmatrix}1&0&0\\2&1&0\\-1&-1&1\end{bmatrix}\begin{bmatrix}2&1&1\\0&-8&-2\\0&0&1\end{bmatrix} = \begin{bmatrix}2&1&1\\4&-6&0\\-2&7&2\end{bmatrix} = A \ \checkmark
+$$
+
+Por ejemplo, la fila 2 es $2\cdot(2,1,1) + 1\cdot(0,-8,-2) = (4, -6, 0)$.
+</Step>
+<Step>
+El determinante de una matriz triangular es el producto de su diagonal, y $\det L = 1$:
+
+$$
+\det A = \det L \cdot \det U = 2 \cdot (-8) \cdot 1 = -16
+$$
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="LU con SciPy" code={lu} hint="Observa que SciPy reordena filas (P no es la identidad) para usar el pivote más grande." />
+<PyCell title="LU exacta con SymPy" code={sympyLu} />
+<PyCell title="Factorizar una vez, resolver muchas" code={luResolver} />
+<PyCell title="QR" code={qr} />
+<PyCell title="QR reducida y columnas ortonormales" code={qrReducida} />
+<PyCell title="Cholesky" code={cholesky} />
+<PyCell title="Cholesky necesita una matriz definida positiva" code={choleskyError} />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+- **Regresión lineal**: la ecuación normal $X^TXb = X^Ty$ pierde precisión cuando $X$ tiene columnas casi dependientes. Con $X = QR$ el problema se reduce a $Rb = Q^Ty$, que es triangular y numéricamente estable.
+- **Normales multivariadas**: para generar muestras con covarianza $\Sigma$ se usa $x = \mu + Lz$, donde $\Sigma = LL^T$ (Cholesky) y $z$ es ruido normal estándar. Es habitual en procesos gaussianos y en optimización bayesiana.
+- **Resolver sistemas**: `numpy.linalg.solve` usa LU por dentro.
+
+<PyCell title="Regresión lineal con QR" code={regresionQr} />
+
+<KeyTakeaways>
+- LU = eliminación gaussiana: $U$ triangular superior y $L$ con los multiplicadores; con pivoteo, $A = PLU$.
+- QR = Gram-Schmidt: $Q$ ortonormal y $R$ triangular superior; base de los mínimos cuadrados estables.
+- Cholesky $A = LL^T$ solo para matrices simétricas definidas positivas, como las covarianzas.
+- Las matrices triangulares y ortogonales hacen que resolver sistemas sea barato y estable.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Implementa la LU sin pivoteo con dos bucles y compárala con SymPy.
+2. Implementa Gram-Schmidt para $n$ columnas y compara tu $Q$ con `numpy.linalg.qr` (puede diferir en el signo de las columnas).
+3. Genera 1000 muestras de una normal bidimensional con covarianza $\begin{bmatrix}2&1\\1&2\end{bmatrix}$ usando Cholesky y comprueba su covarianza con `np.cov`.
+
+</Section>
