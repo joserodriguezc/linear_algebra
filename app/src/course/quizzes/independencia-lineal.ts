@@ -69,4 +69,18 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: 'Es multicolinealidad: hay infinitas combinaciones de coeficientes que dan las mismas predicciones. Se resuelve quitando la columna redundante o regularizando.',
   },
+  {
+    type: 'numeric',
+    prompt: 'Una matriz de $5\\times3$ tiene rango 3. ¿Qué dimensión tiene su núcleo izquierdo, $\\ker(A^T)$?',
+    answer: 2,
+    tolerance: 0,
+    explanation: '$\\dim\\ker(A^T) = m - r = 5 - 3 = 2$. El núcleo $\\ker(A)$, en cambio, tiene dimensión $n - r = 0$.',
+  },
+  {
+    type: 'choice',
+    prompt: '¿Qué subespacio es perpendicular al núcleo de $A$?',
+    options: ['El espacio columna', 'El espacio fila, $\\operatorname{Im}(A^T)$', 'El núcleo izquierdo', 'Ninguno'],
+    answer: 1,
+    explanation: 'Si $Ax = \\mathbf{0}$, $x$ es perpendicular a cada fila de $A$, y por tanto a todas sus combinaciones: el espacio fila.',
+  },
 ]

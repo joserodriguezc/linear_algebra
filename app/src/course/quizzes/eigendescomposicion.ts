@@ -77,4 +77,11 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: 'Diagonalizar es cambiar de base: $Q^{-1}$ pasa a coordenadas de vectores propios, $\\Lambda$ escala y $Q$ vuelve a la base estándar.',
   },
+  {
+    type: 'choice',
+    prompt: 'Para $S$ simétrica con valores propios 1 y 3, ¿entre qué valores está siempre el cociente de Rayleigh $R(x) = \\frac{x^TSx}{x^Tx}$?',
+    options: ['Entre 0 y 1', 'Entre 1 y 3', 'Entre −3 y 3', 'Puede ser cualquier número'],
+    answer: 1,
+    explanation: 'Vale el menor valor propio en su vector propio y el mayor en el suyo, y nunca sale de ese intervalo. PCA busca el $x$ que lo maximiza.',
+  },
 ]

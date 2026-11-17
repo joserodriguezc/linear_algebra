@@ -112,7 +112,7 @@ Los cuatro métodos con un dataset de 5 puntos (sin término independiente):
 <PyCell title="4. lstsq (recomendado)" code={lstsq} hint="Los cuatro dan el mismo b ≈ 1.00233. La diferencia está en la estabilidad numérica." />
 <PyCell title="Con término independiente" code={intercepto} />
 <PyCell title="La regresión como proyección" code={proyeccion} hint="Mismos datos que el ejemplo resuelto: P y da las mismas predicciones." />
-<PyCell title="Estabilidad numérica" code={estabilidad} hint="Con columnas casi dependientes, la ecuación normal pierde unos 8 dígitos de precisión frente a QR y lstsq." />
+<PyCell title="Estabilidad numérica" code={estabilidad} hint={<>Con columnas casi dependientes, la ecuación normal pierde unos 8 dígitos de precisión frente a QR y lstsq: formar XᵀX eleva al cuadrado el número de condición (<StageRef slug="svd" />).</>} />
 
 </Section>
 

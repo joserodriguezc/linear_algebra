@@ -5,6 +5,7 @@ import espacios from '../snippets/independencia-lineal/03_espacios.py?raw'
 import general from '../snippets/independencia-lineal/04_solucion_general.py?raw'
 import cambio from '../snippets/independencia-lineal/05_cambio_base.py?raw'
 import multicolinealidad from '../snippets/independencia-lineal/06_multicolinealidad.py?raw'
+import cuatro from '../snippets/independencia-lineal/07_cuatro_subespacios.py?raw'
 
 <Section kind="why">
 
@@ -69,6 +70,14 @@ Sean $x_1, \dots, x_k$ vectores de $\mathbb{R}^n$ (vectores de $n$ números real
   $\operatorname{rank}(A) = \dim\operatorname{Im}(A)$. Cada dimensión que se pierde en el núcleo es una que le falta a la imagen.
 </Formula>
 
+<Formula label="Los cuatro subespacios fundamentales" tex="\operatorname{Im}(A^T) \perp \ker(A),\qquad \operatorname{Im}(A) \perp \ker(A^T),\qquad \dim:\ r,\ \ n - r,\ \ r,\ \ m - r" reading="el espacio fila, imagen de A transpuesta, es perpendicular al núcleo de A; el espacio columna, imagen de A, es perpendicular al núcleo de A transpuesta; y sus dimensiones son r, n menos r, r y m menos r">
+  Para $A$ de $m\times n$ y rango $r$: el **espacio fila** $\operatorname{Im}(A^T)$ y el **núcleo** $\ker(A)$ viven entre los vectores de $n$ componentes; el **espacio columna** $\operatorname{Im}(A)$ y el **núcleo izquierdo** $\ker(A^T)$, entre los de $m$ componentes. Cada pareja es perpendicular: si $Ax = \mathbf{0}$, $x$ es perpendicular a todas las filas de $A$.
+</Formula>
+
+<Figure title="El gran esquema de los cuatro subespacios">
+  <FourSubspaces />
+</Figure>
+
 <Formula label="Solución general de un sistema" tex="Ax = b \;\Rightarrow\; x = x_p + x_h,\qquad Ax_p = b,\quad x_h \in \ker(A)" reading="si A por x es igual a b, toda solución x es una solución particular x sub p más un vector x sub h del núcleo de A, donde A por x sub p es igual a b">
   Si el núcleo solo contiene $\mathbf{0}$, la solución (si existe) es única; si no, hay infinitas.
 </Formula>
@@ -129,6 +138,7 @@ Hay infinitas soluciones, una para cada número real $t$.
 <PyCell title="Espacio columna y núcleo" code={espacios} />
 <PyCell title="Solución general de un sistema" code={general} hint="Cualquier valor de t da una solución: la particular más un múltiplo del núcleo." />
 <PyCell title="Cambio de base" code={cambio} />
+<PyCell title="Los cuatro subespacios y sus ortogonalidades" code={cuatro} />
 
 </Section>
 
@@ -140,7 +150,7 @@ Hay infinitas soluciones, una para cada número real $t$.
 
 <Section kind="ml">
 
-**Multicolinealidad.** Si una característica es combinación lineal de otras, $X$ no tiene rango completo: $X^TX$ es singular y hay infinitos coeficientes que dan las mismas predicciones. En la práctica, las columnas casi dependientes disparan el número de condición y vuelven inestables los coeficientes.
+**Multicolinealidad.** Si una característica es combinación lineal de otras, $X$ no tiene rango completo: $X^TX$ es singular y hay infinitos coeficientes que dan las mismas predicciones. En la práctica, las columnas casi dependientes disparan el **número de condición** (<StageRef slug="svd" />) y vuelven inestables los coeficientes.
 
 <PyCell title="Una columna redundante en un dataset" code={multicolinealidad} hint="Con x3 los coeficientes no son únicos (2.83 + 0.17 ≈ 3); sin ella se recuperan los verdaderos, 3 y −1." />
 

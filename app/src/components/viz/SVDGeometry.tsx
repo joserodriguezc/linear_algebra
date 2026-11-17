@@ -79,6 +79,9 @@ export function SVDGeometry() {
             items={[
               `A = U\\,\\Sigma\\,V^T = ${texMat(U)}${texMat(S)}${texMat(Vt)}`,
               `\\sigma_1 = ${fmt(s[0])},\\quad \\sigma_2 = ${fmt(s[1])}`,
+              `\\|A\\|_2 = \\sigma_1 = ${fmt(s[0])}`,
+              `\\|A\\|_F = \\sqrt{\\sigma_1^2 + \\sigma_2^2} = ${fmt(Math.hypot(s[0], s[1]))}`,
+              s[1] > 1e-9 ? `\\kappa(A) = \\sigma_1 / \\sigma_2 = ${fmt(s[0] / s[1])}` : `\\kappa(A) = \\infty\\ \\text{(singular)}`,
             ]}
           />
           <p className="text-xs text-slate-500 dark:text-slate-400">

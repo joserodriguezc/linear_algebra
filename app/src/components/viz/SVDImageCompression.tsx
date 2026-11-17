@@ -100,7 +100,7 @@ export function SVDImageCompression() {
           Energía conservada: <strong>{((kept / total) * 100).toFixed(1)} %</strong>
         </p>
         <p>
-          Error relativo: <strong>{(Math.sqrt(Math.max(0, 1 - kept / total)) * 100).toFixed(1)} %</strong>
+          Error relativo ‖A − Aₖ‖_F / ‖A‖_F: <strong>{(Math.sqrt(Math.max(0, 1 - kept / total)) * 100).toFixed(1)} %</strong>
         </p>
       </div>
       <figure>

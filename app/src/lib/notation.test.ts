@@ -104,6 +104,19 @@ describe('detectNotation', () => {
     expect(symbols('\\mathbf{1}')).not.toContain('\\mathbf{0}')
   })
 
+  it('normas de matrices, número de condición y convolución', () => {
+    expect(meanings('\\|A\\|_F')[0]).toMatch(/norma matricial.*Frobenius/)
+    expect(meanings('\\|A\\|_*')[0]).toMatch(/nuclear/)
+    expect(meanings('\\|A - A_k\\|_2 = \\sigma_{k+1}')[0]).toMatch(/norma matricial.*espectral/)
+    expect(meanings('\\|AB\\| \\le \\|A\\|\\,\\|B\\|')[0]).toMatch(/norma matricial/)
+    // las normas de vectores siguen siendo de vectores
+    expect(meanings('\\|v\\|_2')[0]).toMatch(/del vector/)
+    expect(meanings('\\|y - Xb\\|_2')[0]).toMatch(/del vector/)
+    expect(symbols('\\kappa(A) = \\sigma_{\\max}/\\sigma_{\\min}')).toContain('\\kappa')
+    expect(symbols('y = k \\ast x')).toContain('\\ast')
+    expect(symbols('\\asterisk')).not.toContain('\\ast')
+  })
+
   it('devuelve en orden de aparición y sin duplicados', () => {
     const s = symbols('\\sum_i a_i \\le \\sum_j b_j')
     expect(s[0]).toBe('\\sum')
