@@ -65,4 +65,16 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: '$A^TA = V\\Sigma^2V^T$: los vectores singulares derechos son vectores propios de $A^TA$ y sus valores propios son $\\sigma_i^2$.',
   },
+  {
+    type: 'numeric',
+    prompt: 'Los valores singulares de $A$ son 5 y 2. ¿Cuánto vale su norma espectral $\\|A\\|_2$?',
+    answer: 5,
+    explanation: 'La norma espectral es el mayor valor singular: lo máximo que $A$ puede estirar un vector de longitud 1.',
+  },
+  {
+    type: 'numeric',
+    prompt: 'Con los mismos valores singulares (5 y 2), ¿cuál es el número de condición $\\kappa(A)$?',
+    answer: 2.5,
+    explanation: '$\\kappa = \\sigma_{\\max}/\\sigma_{\\min} = 5/2 = 2.5$. Un $\\kappa$ enorme avisa de que resolver $Ax = b$ amplifica los errores.',
+  },
 ]

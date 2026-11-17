@@ -7,6 +7,7 @@ import matvec from '../snippets/matrices/05_matvec.py?raw'
 import escalar from '../snippets/matrices/06_escalar.py?raw'
 import noConmutativo from '../snippets/matrices/07_no_conmutativo.py?raw'
 import transformacion from '../snippets/matrices/08_transformacion.py?raw'
+import capas from '../snippets/matrices/09_columnas_por_filas.py?raw'
 
 <Section kind="why">
 
@@ -24,6 +25,12 @@ Hay dos formas complementarias de entender el producto matricial.
 
 <Figure title="El producto matricial celda a celda">
   <MatMulVisualizer />
+</Figure>
+
+Hay una tercera lectura, menos conocida y muy útil en ML: **columnas por filas**. La columna $k$ de $A$ multiplicada por la fila $k$ de $B$ da una matriz completa, de **rango 1**, y $AB$ es la suma de esas capas. Es la idea que reaparece en la SVD (<StageRef slug="svd" />) y en la compresión de datos:
+
+<Figure title="AB como suma de matrices de rango 1" caption="Mueve el control para ir sumando capas.">
+  <MatMulVisualizer initialMode="capas" />
 </Figure>
 
 **2. Como una transformación del espacio.** Una matriz $2\times2$ mueve cada punto del plano: $v \mapsto Av$. Las columnas de $A$ dicen **a dónde van los vectores base** $\hat\imath = (1,0)$ y $\hat\jmath = (0,1)$, y el resto de la cuadrícula los sigue. Multiplicar matrices es encadenar transformaciones.
@@ -49,6 +56,10 @@ Hay dos formas complementarias de entender el producto matricial.
 </Formula>
 
 <Formula label="Matriz por escalar" tex="sA = \big[s\,a_{ij}\big]" reading="s por A es la matriz cuyos elementos son s por a sub i j" />
+
+<Formula label="Columnas por filas: suma de matrices de rango 1" tex="AB = \sum_{k=1}^{n} a_k\, b_k^T = a_1b_1^T + a_2b_2^T + \cdots + a_nb_n^T" reading="A por B es igual a la sumatoria, para k desde 1 hasta n, de a sub k por b sub k transpuesta: la columna k de A por la fila k de B">
+  $a_k$ es la columna $k$ de $A$ y $b_k^T$ la fila $k$ de $B$. Cada $a_kb_k^T$ es una matriz de $m \times p$ de rango 1 (un *producto exterior*). Cuatro lecturas del mismo producto: fila por columna (productos punto), matriz por columnas, filas por matriz y columnas por filas (suma de rango 1).
+</Formula>
 
 Propiedades clave:
 
@@ -110,6 +121,7 @@ $$
 <PyCell title="Matriz por vector" code={matvec} />
 <PyCell title="Matriz por escalar" code={escalar} />
 <PyCell title="AB ≠ BA" code={noConmutativo} />
+<PyCell title="Columnas por filas: suma de matrices de rango 1" code={capas} />
 <PyCell title="Transformar un cuadrado" code={transformacion} hint="La celda dibuja con matplotlib; la imagen aparece bajo el código." />
 
 </Section>

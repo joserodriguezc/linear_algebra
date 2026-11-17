@@ -20,6 +20,7 @@ export function MatrixGrid({
   dimZeros = false,
   digits = 2,
   size = 'md',
+  indexBase = 0,
   label,
   onCellClick,
   onCellHover,
@@ -29,13 +30,15 @@ export function MatrixGrid({
   showIndices?: boolean
   dimZeros?: boolean
   digits?: number
-  size?: 'sm' | 'md'
+  size?: 'xs' | 'sm' | 'md'
+  /** Primer número de los índices de fila y columna (0 como NumPy, 1 como en matemáticas). */
+  indexBase?: number
   label?: ReactNode
   onCellClick?: (i: number, j: number) => void
   onCellHover?: (cell: [number, number] | null) => void
 }) {
   const cols = values[0]?.length ?? 0
-  const cell = size === 'sm' ? 'h-7 min-w-7 text-[11px]' : 'h-9 min-w-10 text-sm'
+  const cell = size === 'xs' ? 'h-6 min-w-6 px-0.5 text-[10px]' : size === 'sm' ? 'h-7 min-w-7 px-1.5 text-[11px]' : 'h-9 min-w-10 px-1.5 text-sm'
   return (
     <div className="inline-flex flex-col items-center gap-1">
       {label && <div className="text-sm">{label}</div>}
@@ -45,14 +48,14 @@ export function MatrixGrid({
             <span />
             {Array.from({ length: cols }, (_, j) => (
               <span key={j} className="text-center font-mono text-[10px] text-slate-400">
-                {j}
+                {j + indexBase}
               </span>
             ))}
           </>
         )}
         {values.map((row, i) => (
           <Row key={i}>
-            {showIndices && <span className="self-center pr-1 text-right font-mono text-[10px] text-slate-400">{i}</span>}
+            {showIndices && <span className="self-center pr-1 text-right font-mono text-[10px] text-slate-400">{i + indexBase}</span>}
             {row.map((v, j) => {
               const t = tone?.(i, j) ?? (dimZeros && v === 0 ? 'muted' : undefined)
               const Tag = onCellClick ? 'button' : 'span'
@@ -63,7 +66,7 @@ export function MatrixGrid({
                   onClick={onCellClick ? () => onCellClick(i, j) : undefined}
                   onMouseEnter={() => onCellHover?.([i, j])}
                   onFocus={() => onCellHover?.([i, j])}
-                  className={`${cell} inline-flex items-center justify-center rounded-md border px-1.5 font-mono tabular-nums transition-colors ${
+                  className={`${cell} inline-flex items-center justify-center rounded-md border font-mono tabular-nums transition-colors ${
                     t ? toneCls[t] : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900'
                   } ${onCellClick ? 'cursor-pointer hover:ring-2 hover:ring-brand-500' : ''}`}
                 >

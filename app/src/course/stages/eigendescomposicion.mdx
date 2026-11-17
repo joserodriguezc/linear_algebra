@@ -9,6 +9,7 @@ import potencia from '../snippets/eigendescomposicion/07_potencia.py?raw'
 import pagerank from '../snippets/eigendescomposicion/08_pagerank.py?raw'
 import cambioBase from '../snippets/eigendescomposicion/09_cambio_base.py?raw'
 import definida from '../snippets/eigendescomposicion/10_definida_positiva.py?raw'
+import rayleigh from '../snippets/eigendescomposicion/11_rayleigh.py?raw'
 
 <Section kind="why">
 
@@ -67,6 +68,16 @@ Lo que conviene notar:
   Se aplica a matrices simétricas. Si solo se cumple $x^TAx \ge 0$ (con $\lambda_i \ge 0$), la matriz es **semidefinida positiva**: toda matriz de covarianza lo es. Ser definida positiva es lo que exige la descomposición de Cholesky (<StageRef slug="descomposiciones" />) y garantiza que $A$ sea invertible.
 </Formula>
 
+<Formula label="Cociente de Rayleigh" tex="R(x) = \frac{x^TSx}{x^Tx},\qquad \lambda_{\min} \le R(x) \le \lambda_{\max}" reading="R de x es igual a x transpuesta por S por x dividido entre x transpuesta por x; y siempre está entre el menor y el mayor valor propio de S">
+  Para $S$ simétrica, $R$ alcanza $\lambda_{\max}$ en su vector propio y $\lambda_{\min}$ en el suyo. Maximizar $R$ es lo que hace PCA (<StageRef slug="pca" />) para encontrar la primera componente, y el método de la potencia lo usa para estimar el valor propio dominante.
+</Formula>
+
+La «energía» $x^TSx$ tiene una forma geométrica que resume todo lo anterior: sus curvas de nivel son elipses alineadas con los vectores propios si $S$ es definida positiva, y hipérbolas si es indefinida. Es también la forma de una función de pérdida cerca de un mínimo o de un punto de silla.
+
+<Figure title="La forma cuadrática xᵀSx">
+  <QuadraticFormExplorer />
+</Figure>
+
 </Section>
 
 <Section kind="example">
@@ -123,6 +134,7 @@ $A$ estira por 3 a lo largo de la diagonal $(1, 1)$ y deja intacta la dirección
 <PyCell title="Método de la potencia" code={potencia} hint="Así calculan los buscadores el vector propio dominante de matrices enormes: solo hacen productos matriz-vector." />
 <PyCell title="Diagonalizar es cambiar de base" code={cambioBase} />
 <PyCell title="¿Es definida positiva?" code={definida} hint="Con un solo valor propio negativo basta para que xᵀAx sea negativo en alguna dirección." />
+<PyCell title="Cociente de Rayleigh" code={rayleigh} />
 
 </Section>
 

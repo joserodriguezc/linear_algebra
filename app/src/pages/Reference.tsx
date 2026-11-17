@@ -92,6 +92,19 @@ const CHEATSHEET: { title: string; stage: string[]; rows: [string, string][] }[]
       ['Q, R = qr(A), L = cholesky(A)', 'QR y Cholesky'],
       ['values, vectors = eig(A)  /  eigh(S)', 'eigendescomposición (eigh si S es simétrica)'],
       ['U, s, VT = svd(A), pinv(A)', 'SVD y pseudoinversa'],
+      ["norm(A, 'fro' | 2 | 'nuc')", 'normas de Frobenius, espectral y nuclear'],
+      ['cond(A)', 'número de condición: σ máximo / σ mínimo'],
+    ],
+  },
+  {
+    title: 'Convolución y grafos',
+    stage: ['convolucion', 'grafos-laplaciano'],
+    rows: [
+      ["convolve(x, k, mode='same')", 'convolución 1D (NumPy)'],
+      ['toeplitz(c, r), circulant(c)', 'matrices de Toeplitz y circulante (scipy.linalg)'],
+      ["convolve2d(X, K, mode='valid'), correlate2d(X, K)", 'convolución y correlación 2D (scipy.signal)'],
+      ['nx.laplacian_matrix(G).toarray()', 'laplaciano L = D − A de un grafo (networkx)'],
+      ['SpectralClustering(k, affinity=\'nearest_neighbors\')', 'clustering espectral (sklearn.cluster)'],
     ],
   },
   {

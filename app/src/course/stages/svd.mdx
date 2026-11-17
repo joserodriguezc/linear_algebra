@@ -8,6 +8,9 @@ import reduccion from '../snippets/svd/06_reduccion.py?raw'
 import truncated from '../snippets/svd/07_truncated_svd.py?raw'
 import imagen from '../snippets/svd/08_imagen.py?raw'
 import recomendador from '../snippets/svd/09_recomendador.py?raw'
+import normas from '../snippets/svd/10_normas_condicion.py?raw'
+import condicion from '../snippets/svd/11_condicion_error.py?raw'
+import eckart from '../snippets/svd/12_eckart_young.py?raw'
 
 <Section kind="why">
 
@@ -52,6 +55,24 @@ La segunda gran idea: la SVD escribe la matriz como una **suma de capas** $\sigm
 </Formula>
 
 <Formula label="Relación con la eigendescomposición" tex="A^TA = V\,\Sigma^T\Sigma\,V^T \;\Rightarrow\; \sigma_i = \sqrt{\lambda_i(A^TA)}" reading="A transpuesta por A es igual a V por sigma mayúscula transpuesta por sigma mayúscula por V transpuesta; por tanto, sigma sub i es la raíz cuadrada del i-ésimo valor propio de A transpuesta por A" />
+
+**Normas de matrices.** Igual que las normas de vectores (<StageRef slug="normas" />) miden su longitud, las normas de matrices miden su «tamaño». Las tres más usadas se leen directamente en los valores singulares:
+
+<Formula label="Norma de Frobenius" tex="\|A\|_F = \sqrt{\sum_{i}\sum_{j} a_{ij}^2} = \sqrt{\sigma_1^2 + \sigma_2^2 + \cdots + \sigma_r^2}" reading="la norma de Frobenius de A es la raíz cuadrada de la suma de los cuadrados de todos sus elementos, que es igual a la raíz de la suma de los cuadrados de los valores singulares">
+  Trata la matriz como un vector largo. Es la que penaliza la regularización *weight decay* en las redes neuronales.
+</Formula>
+
+<Formula label="Norma espectral y norma nuclear" tex="\|A\|_2 = \max_{x \neq \mathbf{0}} \frac{\|Ax\|_2}{\|x\|_2} = \sigma_1,\qquad \|A\|_* = \sigma_1 + \sigma_2 + \cdots + \sigma_r" reading="la norma espectral de A es el máximo, entre los vectores x distintos de cero, de la norma de A por x dividida entre la norma de x, y es igual a sigma sub 1; la norma nuclear es la suma de los valores singulares">
+  La espectral mide lo máximo que $A$ puede estirar un vector: el semieje mayor de la elipse. Toda norma de matrices cumple además $\|AB\| \le \|A\|\,\|B\|$.
+</Formula>
+
+<Formula label="Número de condición" tex="\kappa(A) = \|A\|_2\,\|A^{-1}\|_2 = \frac{\sigma_{\max}}{\sigma_{\min}}" reading="kappa de A, el número de condición, es igual a la norma espectral de A por la de su inversa, que es igual al mayor valor singular dividido entre el menor">
+  Al resolver $Ax = b$, un error relativo en $b$ puede amplificarse hasta $\kappa$ veces en $x$. Con $\kappa \approx 10^{k}$ se pierden unos $k$ dígitos de precisión. Una matriz singular tiene $\kappa = \infty$.
+</Formula>
+
+<Formula label="Error de la aproximación de rango k (Eckart–Young)" tex="\|A - A_k\|_2 = \sigma_{k+1},\qquad \|A - A_k\|_F = \sqrt{\sigma_{k+1}^2 + \cdots + \sigma_r^2}" reading="la norma espectral de A menos A sub k es igual a sigma sub k más 1; y su norma de Frobenius es la raíz de la suma de los cuadrados de los valores singulares descartados">
+  Ninguna otra matriz de rango $k$ queda más cerca de $A$: el error es exactamente lo que se descarta.
+</Formula>
 
 <Formula label="Pseudoinversa (Moore-Penrose)" tex="A^+ = V\,\Sigma^+\,U^T" reading="la pseudoinversa de A es igual a V por sigma mayúscula más por U transpuesta">
   $\Sigma^+$ se obtiene transponiendo $\Sigma$ y sustituyendo cada $\sigma_i \ne 0$ por $1/\sigma_i$. Si $A$ es invertible, $A^+ = A^{-1}$. Para un sistema sin solución exacta, $x = A^+b$ es la solución de **mínimos cuadrados** (y de norma mínima).
@@ -117,6 +138,9 @@ Comprobaciones: $u_1 \cdot u_2 = \tfrac{1}{10}(-3 + 3) = 0$ ✓ y $\sigma_1\sigm
 <PyCell title="Pseudoinversa a mano con la SVD" code={pinvSvd} />
 <PyCell title="Reducción de dimensionalidad" code={reduccion} />
 <PyCell title="TruncatedSVD de scikit-learn" code={truncated} />
+<PyCell title="Normas de matrices y número de condición" code={normas} />
+<PyCell title="Cómo amplifica κ los errores" code={condicion} hint="Las matrices de Hilbert tienen κ enorme: un error de 1e-10 en b se convierte en errores gigantescos en x." />
+<PyCell title="Eckart–Young: el error es lo que se descarta" code={eckart} />
 <PyCell title="Comprimir una imagen" code={imagen} />
 
 </Section>

@@ -1,22 +1,11 @@
 import { useState } from 'react'
+import { DIGIT_3 } from '../../lib/sampleData'
 import { StageRef } from '../lesson/StageRef'
 import { MatrixGrid } from './MatrixGrid'
 
-/** Un "3" dibujado en 8x8 píxeles (0 = blanco, 16 = negro), como en el dataset de dígitos de scikit-learn. */
-const DIGIT = [
-  [0, 0, 4, 13, 15, 8, 0, 0],
-  [0, 0, 12, 9, 6, 16, 2, 0],
-  [0, 0, 0, 0, 5, 15, 2, 0],
-  [0, 0, 0, 7, 16, 9, 0, 0],
-  [0, 0, 0, 2, 9, 16, 5, 0],
-  [0, 0, 0, 0, 0, 10, 12, 0],
-  [0, 0, 7, 4, 5, 14, 9, 0],
-  [0, 0, 5, 14, 15, 8, 0, 0],
-]
-
 /** Haz clic en los píxeles para cambiar su intensidad: la imagen y la matriz son lo mismo. */
 export function ImageAsMatrix() {
-  const [img, setImg] = useState(DIGIT)
+  const [img, setImg] = useState(DIGIT_3)
   const cycle = (i: number, j: number) => setImg(img.map((r, a) => r.map((v, b) => (a === i && b === j ? (v >= 16 ? 0 : Math.min(16, v + 8)) : v))))
   return (
     <div className="flex flex-wrap items-start gap-8">

@@ -119,11 +119,27 @@ const RULES: Rule[] = [
   },
   { re: /\\(?:c|v|d|l)?dots/, explain: () => ({ tex: '\\dots', meaning: 'puntos suspensivos: los términos continúan siguiendo el mismo patrón' }) },
   {
-    re: /\\\|(.+?)\\\|(?:_(\{[^}]*\}|\\[a-zA-Z]+|\w))?/,
-    explain: (m) => ({
-      tex: m[0],
-      meaning: `norma: la longitud o magnitud del vector${m[2] ? ` (el subíndice ${m[2].replace(/[{}]/g, '').replace('\\infty', '∞')} indica qué norma)` : ''}`,
-    }),
+    re: /\\\|(.+?)\\\|(?:_(\{[^}]*\}|\\[a-zA-Z]+|\*|\w))?/,
+    explain: (m) => {
+      const sub = m[2]?.replace(/[{}]/g, '')
+      // Norma de matriz: contenido que empieza por mayúscula (A, A − A_k, AB) o subíndice F / *
+      const isMatrix = sub === 'F' || sub === '*' || /^\s*[A-Z]/.test(m[1])
+      if (isMatrix) {
+        const kind =
+          sub === 'F'
+            ? ' (F = Frobenius: raíz de la suma de los cuadrados de todos los elementos)'
+            : sub === '*'
+              ? ' (* = nuclear: suma de los valores singulares)'
+              : sub === '2'
+                ? ' (2 = espectral: cuánto puede estirar la matriz un vector, σ₁)'
+                : ''
+        return { tex: m[0], meaning: `norma matricial: el «tamaño» de la matriz${kind}` }
+      }
+      return {
+        tex: m[0],
+        meaning: `norma: la longitud o magnitud del vector${sub ? ` (el subíndice ${sub.replace('\\infty', '∞')} indica qué norma)` : ''}`,
+      }
+    },
   },
   { re: /(?<![\\|])\|([^|]+?)(?<!\\)\|/, explain: (m) => ({ tex: m[0], meaning: 'valor absoluto: el número sin signo (|−3| = 3)' }) },
   { re: /\\infty/, explain: () => ({ tex: '\\infty', meaning: 'infinito' }) },
@@ -176,6 +192,11 @@ const RULES: Rule[] = [
   { re: /\\operatorname\{arg\\?\s*min\}|\\arg\\?min|\\operatorname\*?\{argmin\}/, explain: () => ({ tex: '\\arg\\min', meaning: 'argumento mínimo: el valor de la variable que hace mínima la expresión' }) },
   { re: /\\arg\\?\s*max|\\operatorname\*?\{argmax\}/, explain: () => ({ tex: '\\arg\\max', meaning: 'argumento máximo: el valor de la variable que hace máxima la expresión' }) },
   { re: /\\min(?![a-z])/, explain: () => ({ tex: '\\min', meaning: 'mínimo: el menor de los valores indicados' }) },
+  {
+    re: /\\kappa/,
+    explain: () => ({ tex: '\\kappa', meaning: 'kappa: el número de condición, cuánto puede amplificar la matriz los errores relativos (σ_max / σ_min)' }),
+  },
+  { re: /\\ast(?![a-z])/, explain: () => ({ tex: '\\ast', meaning: 'convolución: deslizar el filtro sobre la señal y sumar productos en cada posición' }) },
   { re: /\\operatorname\{span\}/, explain: () => ({ tex: '\\operatorname{span}', meaning: 'span (espacio generado): el conjunto de todas las combinaciones lineales de esos vectores' }) },
   { re: /\\dim(?![a-z])/, explain: () => ({ tex: '\\dim', meaning: 'dimensión: el número de vectores de cualquier base del espacio' }) },
   { re: /\\ker(?![a-z])/, explain: () => ({ tex: '\\ker', meaning: 'núcleo (kernel): todos los vectores x que la matriz envía al vector cero, Ax = 0' }) },
@@ -307,6 +328,7 @@ const SAMPLES = [
   'a \\approx b,\\ a \\neq b,\\ \\operatorname{diag}(d),\\ \\sqrt{x}',
   '\\operatorname{span}(v),\\ \\dim V,\\ \\ker(A),\\ \\operatorname{Im}(A),\\ U \\subseteq V,\\ \\mathbf{0},\\ \\tilde{x}',
   'U^\\perp',
+  '\\kappa(A) = \\sigma_1 / \\sigma_n,\\ y = k \\ast x',
   'u \\perp v',
 ]
 

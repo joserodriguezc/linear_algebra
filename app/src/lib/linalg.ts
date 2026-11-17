@@ -284,3 +284,110 @@ export function projectionMatrix(B: Mat): Mat | null {
   const G = invSmall(matMul(Bt, B))
   return G ? matMul(matMul(B, G), Bt) : null
 }
+
+// ---------------------------------------------------------------------------
+// Convolución (etapa «La convolución como matriz»)
+// Convención: filtro k de longitud impar m con centro c = (m − 1)/2 y
+//   y_i = Σ_j k_j · x_{i − j + c}
+// (igual que np.convolve(x, k, 'same') para filtros de longitud impar).
+
+/** Convolución 1D con bordes de ceros ('same') o circular. */
+export function convolve1d(x: number[], k: number[], circular = false): number[] {
+  const n = x.length
+  const c = (k.length - 1) / 2
+  return x.map((_, i) => {
+    let s = 0
+    for (let j = 0; j < k.length; j++) {
+      let idx = i - j + c
+      if (circular) idx = ((idx % n) + n) % n
+      else if (idx < 0 || idx >= n) continue
+      s += k[j] * x[idx]
+    }
+    return s
+  })
+}
+
+/** Matriz n×n de la convolución con bordes de ceros: diagonales constantes (Toeplitz). */
+export function toeplitzMatrix(k: number[], n: number): Mat {
+  const c = (k.length - 1) / 2
+  return Array.from({ length: n }, (_, i) =>
+    Array.from({ length: n }, (_, l) => {
+      const j = i - l + c
+      return j >= 0 && j < k.length ? k[j] : 0
+    }),
+  )
+}
+
+/** Matriz n×n de la convolución circular: cada fila es la anterior desplazada (circulante). */
+export function circulantMatrix(k: number[], n: number): Mat {
+  const c = (k.length - 1) / 2
+  const M: Mat = Array.from({ length: n }, () => Array(n).fill(0) as number[])
+  for (let i = 0; i < n; i++)
+    for (let j = 0; j < k.length; j++) {
+      const l = (((i - j + c) % n) + n) % n
+      M[i][l] += k[j]
+    }
+  return M
+}
+
+/**
+ * Convolución 2D «válida» tal como la usan las CNN (correlación cruzada: el núcleo no se voltea),
+ * equivalente a scipy.signal.correlate2d(img, K, mode='valid').
+ */
+export function conv2dValid(img: Mat, K: Mat): Mat {
+  const [h, w] = [img.length, img[0].length]
+  const [kh, kw] = [K.length, K[0].length]
+  return Array.from({ length: h - kh + 1 }, (_, i) =>
+    Array.from({ length: w - kw + 1 }, (_, j) => {
+      let s = 0
+      for (let a = 0; a < kh; a++) for (let b = 0; b < kw; b++) s += K[a][b] * img[i + a][j + b]
+      return s
+    }),
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Valores y vectores propios de matrices simétricas pequeñas (método de Jacobi)
+
+/** Eigendescomposición de una matriz simétrica: valores en orden creciente y vectores (columnas de Q). */
+export function eigSym(S: Mat, maxSweeps = 100): { values: number[]; vectors: Mat } {
+  const n = S.length
+  const A = S.map((r) => [...r])
+  const V: Mat = Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => (i === j ? 1 : 0)))
+  for (let sweep = 0; sweep < maxSweeps; sweep++) {
+    let off = 0
+    for (let p = 0; p < n; p++) for (let q = p + 1; q < n; q++) off += A[p][q] ** 2
+    if (off < 1e-22) break
+    for (let p = 0; p < n; p++)
+      for (let q = p + 1; q < n; q++) {
+        if (Math.abs(A[p][q]) < 1e-15) continue
+        const theta = (A[q][q] - A[p][p]) / (2 * A[p][q])
+        const t = Math.sign(theta || 1) / (Math.abs(theta) + Math.sqrt(theta * theta + 1))
+        const c = 1 / Math.sqrt(t * t + 1)
+        const s = t * c
+        for (let k = 0; k < n; k++) {
+          const akp = A[k][p]
+          const akq = A[k][q]
+          A[k][p] = c * akp - s * akq
+          A[k][q] = s * akp + c * akq
+        }
+        for (let k = 0; k < n; k++) {
+          const apk = A[p][k]
+          const aqk = A[q][k]
+          A[p][k] = c * apk - s * aqk
+          A[q][k] = s * apk + c * aqk
+        }
+        for (let k = 0; k < n; k++) {
+          const vkp = V[k][p]
+          const vkq = V[k][q]
+          V[k][p] = c * vkp - s * vkq
+          V[k][q] = s * vkp + c * vkq
+        }
+      }
+  }
+  const order = A.map((r, i) => [r[i], i] as const).sort((a, b) => a[0] - b[0])
+  return {
+    values: order.map(([v]) => v),
+    vectors: V.map((row) => order.map(([, i]) => row[i])),
+  }
+}

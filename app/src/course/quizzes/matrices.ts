@@ -60,4 +60,11 @@ export const quiz: Question[] = [
     tolerance: 0,
     explanation: 'Fila 2 de A por columna 1 de B: $3\\cdot1 + 4\\cdot3 = 15$.',
   },
+  {
+    type: 'choice',
+    prompt: 'Al escribir $AB = \\sum_k a_k b_k^T$ (columna $k$ de $A$ por fila $k$ de $B$), ¿qué tipo de matriz es cada término?',
+    options: ['La identidad', 'Una matriz de rango 1: todas sus filas son múltiplos de $b_k^T$', 'Una matriz diagonal', 'Una matriz ortogonal'],
+    answer: 1,
+    explanation: 'Una columna por una fila da una matriz de rango 1. El producto $AB$ es la suma de $n$ de ellas; la SVD ordena esas capas por importancia.',
+  },
 ]
