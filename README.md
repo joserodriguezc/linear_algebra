@@ -2,7 +2,7 @@
 
 **Curso interactivo y autocontenido, en español, que enseña el álgebra lineal que hace falta para entender machine learning.** Cada concepto se presenta con su intuición geométrica, su formalización matemática, un ejemplo resuelto a mano, gráficos manipulables, código Python ejecutable en el propio navegador y preguntas de autoevaluación.
 
-El curso se organiza en 21 **etapas** agrupadas en cinco partes, desde los arrays de NumPy hasta PCA y la regresión lineal.
+El curso se organiza en 23 **etapas** agrupadas en cinco partes, desde los arrays de NumPy hasta PCA y la regresión lineal.
 
 ![Página de inicio con el mapa del curso](.github/images/inicio.png)
 
@@ -20,7 +20,7 @@ El curso se organiza en 21 **etapas** agrupadas en cinco partes, desde los array
 
 ## Características
 
-**Una plantilla pedagógica común.** Las 21 etapas tienen las mismas secciones, en este orden:
+**Una plantilla pedagógica común.** Las 23 etapas tienen las mismas secciones, en este orden:
 
 | Sección | Qué aporta |
 | --- | --- |
@@ -37,7 +37,7 @@ El curso se organiza en 21 **etapas** agrupadas en cinco partes, desde los array
 
 ![Etapa de SVD: visualización interactiva de la descomposición](.github/images/etapa-svd.png)
 
-**Python real en el navegador.** Las celdas se ejecutan con [Pyodide](https://pyodide.org) (CPython compilado a WebAssembly) dentro de un Web Worker, sin servidor. Los paquetes se cargan bajo demanda según los `import` de cada celda: NumPy, SciPy, scikit-learn, SymPy, pandas y matplotlib (los gráficos se muestran bajo la celda).
+**Python real en el navegador.** Las celdas se ejecutan con [Pyodide](https://pyodide.org) (CPython compilado a WebAssembly) dentro de un Web Worker, sin servidor. Los paquetes se cargan bajo demanda según los `import` de cada celda: NumPy, SciPy, scikit-learn, SymPy, pandas, networkx y matplotlib (los gráficos se muestran bajo la celda).
 
 <p align="center"><img src=".github/images/celda-python.png" alt="Celda de Python ejecutada con un gráfico de matplotlib" width="520"></p>
 
@@ -57,21 +57,23 @@ El curso se organiza en 21 **etapas** agrupadas en cinco partes, desde los array
 | | 6 · Broadcasting | Regla de compatibilidad de formas paso a paso |
 | **III. Matrices** | 7 · Vectores y aritmética vectorial | Suma y escalado de vectores, producto punto como proyección |
 | | 8 · Normas vectoriales | Contornos y bolas unidad L¹, L² y L∞ |
-| | 9 · Matrices y aritmética matricial | Producto matricial celda a celda, matriz como transformación |
+| | 9 · Matrices y aritmética matricial | Producto matricial celda a celda y como suma de matrices de rango 1, matriz como transformación |
 | | 10 · Tipos de matrices | Galería con propiedades comprobadas en vivo |
 | | 11 · Operaciones matriciales | Determinante como área, rango, inversa |
-| | 12 · Independencia lineal, bases y rango | Span de dos vectores, cambio de base, espacio columna y núcleo |
+| | 12 · Independencia lineal, bases y rango | Span de dos vectores, cambio de base, los cuatro subespacios fundamentales |
 | | 13 · Proyecciones ortogonales | La proyección como matriz, la regresión como proyección en ℝ³ |
 | | 14 · Matrices dispersas | Formato CSR editable, memoria densa frente a dispersa |
 | | 15 · Tensores | Tensor 3D en capas con indexado |
-| **IV. Factorización** | 16 · LU, QR y Cholesky | Eliminación gaussiana paso a paso, Gram-Schmidt |
-| | 17 · Eigendescomposición | Búsqueda interactiva de vectores propios, matrices definidas positivas |
-| | 18 · SVD | Geometría de la SVD, compresión de imágenes |
-| **V. Estadística** | 19 · Estadística multivariada | Covarianza como promedio de productos, elipse de covarianza |
-| | 20 · PCA | Varianza de la proyección y error de reconstrucción |
-| | 21 · Regresión lineal | Ajuste por mínimos cuadrados, la regresión como proyección |
+| | 16 · La convolución como matriz | Convolución 1D como matriz de Toeplitz o circulante, filtros 2D sobre un dígito |
+| **IV. Factorización** | 17 · LU, QR y Cholesky | Eliminación gaussiana paso a paso, Gram-Schmidt |
+| | 18 · Eigendescomposición | Búsqueda interactiva de vectores propios, forma cuadrática y cociente de Rayleigh |
+| | 19 · SVD | Geometría de la SVD, normas y número de condición, compresión de imágenes |
+| | 20 · Grafos, laplaciano y clustering espectral | Grafo editable con su laplaciano, valores propios y vector de Fiedler |
+| **V. Estadística** | 21 · Estadística multivariada | Covarianza como promedio de productos, elipse de covarianza |
+| | 22 · PCA | Varianza de la proyección y error de reconstrucción |
+| | 23 · Regresión lineal | Ajuste por mínimos cuadrados, la regresión como proyección |
 
-En total: 21 etapas, 30 visualizaciones interactivas, 143 celdas de Python y 160 preguntas de autoevaluación.
+En total: 23 etapas, 35 visualizaciones interactivas, 161 celdas de Python y 180 preguntas de autoevaluación.
 
 ## Inicio rápido
 
@@ -121,7 +123,7 @@ El contenido se valida automáticamente en cuatro niveles:
 | Nivel | Herramienta | Qué comprueba |
 | --- | --- | --- |
 | Snippets | pytest | Cada celda del curso se ejecuta sin errores con NumPy/SciPy/scikit-learn reales; las que deben fallar a propósito llevan `# expect-error: TipoDeError` |
-| Lógica | Vitest | Utilidades de álgebra lineal (LU, QR, SVD, eigen 2×2…), intérprete de índices de NumPy, motor de preguntas y glosario de notación |
+| Lógica | Vitest | Utilidades de álgebra lineal (LU, QR, SVD, eigen, convolución, Toeplitz y circulantes…), intérprete de índices de NumPy, motor de preguntas y glosario de notación |
 | Contenido | Vitest | Cada etapa tiene todas las secciones de la plantilla; cada fórmula tiene su lectura; ℝ siempre se aclara como «números reales»; las preguntas están bien formadas |
 | Extremo a extremo | Playwright | Todas las etapas cargan sin errores, el progreso persiste y **todas las celdas se ejecutan en Pyodide** (detecta diferencias entre el Python local y el del navegador) |
 

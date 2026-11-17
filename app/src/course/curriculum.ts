@@ -34,12 +34,12 @@ export const parts: Part[] = [
   {
     id: 3,
     title: 'Matrices',
-    description: 'Vectores, normas, matrices, sus tipos y operaciones, bases y proyecciones, matrices dispersas y tensores.',
+    description: 'Vectores, normas, matrices, sus tipos y operaciones, bases y proyecciones, matrices dispersas, tensores y convolución.',
   },
   {
     id: 4,
     title: 'Factorización',
-    description: 'Descomponer matrices: LU, QR, Cholesky, eigendescomposición y SVD.',
+    description: 'Descomponer matrices: LU, QR, Cholesky, eigendescomposición, SVD y el laplaciano de un grafo.',
   },
   {
     id: 5,
@@ -146,6 +146,7 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Sumar, restar y multiplicar matrices elemento a elemento',
       'Calcular el producto matriz-matriz y matriz-vector',
       'Ver una matriz como una transformación del plano',
+      'Leer AB como suma de matrices de rango 1 (columnas por filas)',
     ],
   },
   {
@@ -180,6 +181,7 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Encontrar una base y las coordenadas de un vector en ella',
       'Calcular el espacio columna y el núcleo, y aplicar el teorema rango–nulidad',
       'Escribir la solución general de un sistema con infinitas soluciones',
+      'Describir los cuatro subespacios fundamentales y sus ortogonalidades',
     ],
   },
   {
@@ -216,6 +218,17 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
     ],
   },
   {
+    slug: 'convolucion',
+    title: 'La convolución como matriz',
+    part: 3,
+    summary: 'Filtros, matrices de Toeplitz y circulantes, y por qué las CNN tienen tan pocos parámetros.',
+    objectives: [
+      'Calcular una convolución 1D y 2D',
+      'Escribir una convolución como producto por una matriz de Toeplitz o circulante',
+      'Explicar la equivariancia a traslaciones y los pesos compartidos de una CNN',
+    ],
+  },
+  {
     slug: 'descomposiciones',
     title: 'Descomposiciones matriciales',
     part: 4,
@@ -235,6 +248,7 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Entender geométricamente un vector propio',
       'Calcular eigenvalores y eigenvectores',
       'Reconstruir la matriz original',
+      'Usar el cociente de Rayleigh y reconocer una forma cuadrática definida positiva',
     ],
   },
   {
@@ -246,6 +260,18 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Calcular la SVD e interpretar U, Σ y Vᵀ',
       'Calcular la pseudoinversa',
       'Reducir dimensionalidad con SVD truncada',
+      'Calcular las normas de Frobenius, espectral y nuclear, y el número de condición',
+    ],
+  },
+  {
+    slug: 'grafos-laplaciano',
+    title: 'Grafos, laplaciano y clustering espectral',
+    part: 4,
+    summary: 'Adyacencia, laplaciano, componentes conexas y el vector de Fiedler para encontrar comunidades.',
+    objectives: [
+      'Construir la adyacencia, los grados y el laplaciano de un grafo',
+      'Contar componentes conexas con los valores propios nulos',
+      'Dividir un grafo con el vector de Fiedler y aplicar clustering espectral',
     ],
   },
   {

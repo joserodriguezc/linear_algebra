@@ -1,0 +1,148 @@
+import { quiz } from '../quizzes/convolucion'
+import convolve from '../snippets/convolucion/01_convolve.py?raw'
+import toeplitz from '../snippets/convolucion/02_toeplitz.py?raw'
+import circulante from '../snippets/convolucion/03_circulante.py?raw'
+import imagen from '../snippets/convolucion/04_imagen.py?raw'
+import parametros from '../snippets/convolucion/05_parametros.py?raw'
+import capaCnn from '../snippets/convolucion/06_capa_cnn.py?raw'
+
+<Section kind="why">
+
+Las **redes neuronales convolucionales** (CNN) son la arquitectura clásica para imágenes, audio y series temporales. Su operación básica, la **convolución**, también está detrás de los filtros que suavizan una señal o detectan los bordes de una foto.
+
+Una convolución es una operación **lineal**, así que es una matriz (<StageRef slug="matrices" />). Pero no una cualquiera: tiene una estructura muy especial (diagonales constantes, casi todo ceros y los mismos pocos números repetidos) que explica por qué las CNN necesitan muchísimos menos parámetros que una red densa y por qué reconocen un patrón esté donde esté.
+
+</Section>
+
+<Section kind="intuition">
+
+Convolucionar es **deslizar un filtro pequeño** sobre la señal y, en cada posición, sumar los productos. Con una media móvil cada valor se promedia con sus vecinos y la señal se suaviza; con un filtro de diferencias, solo responden los cambios.
+
+Elige una señal y un filtro, y haz clic en una fila de la matriz para ver qué ventana de la señal produce cada salida:
+
+<Figure title="La convolución 1D es una matriz de Toeplitz">
+  <Convolution1D />
+</Figure>
+
+Lo importante está en la matriz: **cada fila es la anterior desplazada una posición**, así que sus diagonales son constantes. Es una **matriz de Toeplitz**. Si la señal «da la vuelta» (convolución circular), también se llenan las esquinas y la matriz es **circulante**.
+
+En imágenes el filtro es un pequeño cuadrado (por ejemplo, 3×3) que se desliza en dos direcciones:
+
+<Figure title="Convolución 2D sobre una imagen">
+  <Convolution2D />
+</Figure>
+
+</Section>
+
+<Section kind="formal">
+
+<Formula label="Convolución discreta" tex="y = k \ast x,\qquad y_i = \sum_{j} k_j\, x_{i-j}" reading="y es la convolución de k con x; y el elemento i de y es la sumatoria, sobre j, de k sub j por x sub i menos j">
+  $k$ es el filtro (o núcleo) y $x$ la señal. Fuera de la señal se suponen ceros (*padding*). Las CNN usan en realidad la **correlación cruzada**, $y_i = \sum_j k_j\,x_{i+j}$, que es lo mismo sin voltear el filtro: como el filtro se aprende, la diferencia no importa.
+</Formula>
+
+<Formula label="Matriz de Toeplitz" tex="y = T\,x,\qquad T = \begin{bmatrix} k_0 & k_{-1} & 0 & \cdots \\ k_1 & k_0 & k_{-1} & \cdots \\ 0 & k_1 & k_0 & \cdots \\ \vdots & & & \ddots \end{bmatrix},\qquad T_{ij} = k_{i-j}" reading="y es igual a T por x, donde T es la matriz cuyas diagonales son constantes: el elemento i j de T es igual a k sub i menos j">
+  Cada diagonal contiene un mismo coeficiente del filtro. Un filtro de 3 coeficientes da una matriz con solo 3 diagonales no nulas (banda).
+</Formula>
+
+<Formula label="Desplazamiento y matriz circulante" tex="(S\,x)_i = x_{i-1},\qquad C = c_0 I + c_1 S + c_2 S^2 + \cdots + c_{n-1}S^{n-1}" reading="el elemento i de S por x es igual a x sub i menos 1; y la matriz circulante C es igual a c sub 0 por la identidad, más c sub 1 por S, más c sub 2 por S al cuadrado, más … más c sub n menos 1 por S a la n menos 1">
+  $S$ es la matriz de desplazamiento circular: mueve cada componente una posición y la última pasa a ser la primera. Toda matriz circulante es una combinación de potencias de $S$, es decir, un filtro aplicado con «vuelta» por los bordes.
+</Formula>
+
+<Formula label="Equivariancia a traslaciones" tex="C\,S = S\,C" reading="C por S es igual a S por C: convolucionar y luego desplazar da lo mismo que desplazar y luego convolucionar">
+  Si la entrada se desplaza, la salida se desplaza igual. Por eso un detector de bordes funciona en cualquier zona de la imagen. Dos matrices circulantes siempre conmutan entre sí.
+</Formula>
+
+<Formula label="Convolución 2D (como en las CNN)" tex="Y_{ij} = \sum_{a=1}^{h}\sum_{b=1}^{w} K_{ab}\, X_{i+a-1,\; j+b-1}" reading="el elemento i j de la salida Y es la doble sumatoria, para a desde 1 hasta h y b desde 1 hasta w, de K sub a b por el elemento de la imagen X en la fila i más a menos 1 y la columna j más b menos 1">
+  $K$ es el núcleo de $h \times w$ y $X$ la imagen. En modo «válido», una imagen de $H \times W$ da una salida de $(H - h + 1) \times (W - w + 1)$.
+</Formula>
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Aplica la media móvil $k = \left(\tfrac14, \tfrac12, \tfrac14\right)$ a la señal $x = (2, 4, 6, 5, 1)$, con ceros fuera de los bordes, y escríbela como una matriz por un vector.
+</Problem>
+<Step>
+Cada salida es un cuarto del vecino izquierdo, la mitad del propio valor y un cuarto del vecino derecho:
+
+$$
+y_i = \tfrac14\,x_{i-1} + \tfrac12\,x_i + \tfrac14\,x_{i+1}
+$$
+</Step>
+<Step>
+Valor a valor (con $x_0 = x_6 = 0$):
+
+$$
+\begin{aligned}
+y_1 &= \tfrac14\cdot0 + \tfrac12\cdot2 + \tfrac14\cdot4 = 2 \\
+y_2 &= \tfrac14\cdot2 + \tfrac12\cdot4 + \tfrac14\cdot6 = 4 \\
+y_3 &= \tfrac14\cdot4 + \tfrac12\cdot6 + \tfrac14\cdot5 = 5.25 \\
+y_4 &= \tfrac14\cdot6 + \tfrac12\cdot5 + \tfrac14\cdot1 = 4.25 \\
+y_5 &= \tfrac14\cdot5 + \tfrac12\cdot1 + \tfrac14\cdot0 = 1.75
+\end{aligned}
+$$
+</Step>
+<Step>
+Lo mismo como producto por una matriz de Toeplitz, con las diagonales $\tfrac14, \tfrac12, \tfrac14$:
+
+$$
+\underbrace{\frac14\begin{bmatrix}2&1&0&0&0\\1&2&1&0&0\\0&1&2&1&0\\0&0&1&2&1\\0&0&0&1&2\end{bmatrix}}_{T}\begin{bmatrix}2\\4\\6\\5\\1\end{bmatrix} = \begin{bmatrix}2\\4\\5.25\\4.25\\1.75\end{bmatrix}
+$$
+
+El pico de la señal (6) se ha suavizado (5.25), y los bordes caen porque se promedian con ceros.
+</Step>
+<Step>
+**Recuento**: $T$ tiene 25 posiciones, pero solo 3 números distintos. Para una imagen de 28×28, una capa densa necesitaría $784 \times 784 \approx 615\,000$ pesos, mientras que un filtro 3×3 solo tiene 9.
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="Convolución con NumPy" code={convolve} />
+<PyCell title="La misma convolución con una matriz de Toeplitz" code={toeplitz} />
+<PyCell title="Matriz circulante y equivariancia" code={circulante} />
+<PyCell title="Filtros sobre imágenes de dígitos" code={imagen} />
+<PyCell title="Una convolución 2D es una matriz dispersa" code={parametros} hint="Solo 216 de los 2304 elementos de la matriz son distintos de cero, y todos son los mismos 9 números." />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+Una **capa convolucional** aplica varios filtros a la vez (cada uno produce un «canal» de salida), suma un sesgo y aplica una función no lineal como ReLU. Los filtros no se diseñan a mano como los de Sobel: **se aprenden** a partir de los datos. Las primeras capas suelen terminar detectando bordes y texturas, y las siguientes combinan esos rasgos en formas más complejas.
+
+<PyCell title="Una capa de una CNN con NumPy" code={capaCnn} />
+
+Lo que la convierte en la arquitectura natural para imágenes son tres propiedades de su matriz:
+
+- **Pocos parámetros**: los pesos se comparten a lo largo de toda la imagen.
+- **Conexiones locales**: la matriz es dispersa (<StageRef slug="matrices-dispersas" />); cada salida solo mira una pequeña ventana.
+- **Equivariancia**: conmuta con los desplazamientos, así que un patrón se detecta igual en cualquier posición.
+
+Las entradas y salidas de estas capas son tensores (<StageRef slug="tensores" />) de forma (lote, canales, alto, ancho).
+
+<KeyTakeaways>
+- Una convolución es lineal: es el producto por una matriz de Toeplitz (diagonales constantes), o circulante si es circular.
+- Esa matriz es dispersa y repite los mismos pocos pesos: por eso una capa convolucional tiene muchos menos parámetros que una densa.
+- Las matrices circulantes conmutan con el desplazamiento: la convolución es equivariante a traslaciones.
+- Las CNN aplican varios filtros aprendidos, más un sesgo y una función no lineal.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Construye con `scipy.linalg.circulant` la matriz de un filtro de 3 coeficientes y comprueba que todas las matrices circulantes del mismo tamaño conmutan entre sí.
+2. Calcula los valores propios de una matriz circulante con `np.linalg.eigvals` y compáralos con `np.fft.fft` de su primera columna: la transformada de Fourier diagonaliza todas las circulantes.
+3. Diseña un filtro 3×3 que detecte bordes diagonales y aplícalo a varios dígitos de `load_digits`.
+
+</Section>

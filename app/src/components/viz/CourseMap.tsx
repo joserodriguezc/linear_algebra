@@ -13,7 +13,7 @@ const AREAS: { key: string; title: string; why: string; stages: string[] }[] = [
     key: 'aritmetica',
     title: 'Aritmética',
     why: 'Sumar, multiplicar y transformar vectores, matrices y tensores: lo que hace un modelo al predecir.',
-    stages: ['indexado-slicing-reshape', 'broadcasting', 'vectores', 'normas', 'matrices', 'tipos-de-matrices', 'operaciones-matriciales', 'independencia-lineal', 'matrices-dispersas'],
+    stages: ['indexado-slicing-reshape', 'broadcasting', 'vectores', 'normas', 'matrices', 'tipos-de-matrices', 'operaciones-matriciales', 'independencia-lineal', 'matrices-dispersas', 'convolucion'],
   },
   {
     key: 'estadistica',
@@ -25,7 +25,7 @@ const AREAS: { key: string; title: string; why: string; stages: string[] }[] = [
     key: 'factorizacion',
     title: 'Factorización',
     why: 'Descomponer matrices (LU, QR, eigen, SVD) para resolver, comprimir y reducir dimensiones.',
-    stages: ['descomposiciones', 'eigendescomposicion', 'svd'],
+    stages: ['descomposiciones', 'eigendescomposicion', 'svd', 'grafos-laplaciano'],
   },
   {
     key: 'minimos',

@@ -1,0 +1,157 @@
+import { quiz } from '../quizzes/grafos-laplaciano'
+import laplaciano from '../snippets/grafos-laplaciano/01_laplaciano.py?raw'
+import fiedler from '../snippets/grafos-laplaciano/02_fiedler.py?raw'
+import componentes from '../snippets/grafos-laplaciano/03_componentes.py?raw'
+import karate from '../snippets/grafos-laplaciano/04_karate.py?raw'
+import espectral from '../snippets/grafos-laplaciano/05_clustering_espectral.py?raw'
+import gnn from '../snippets/grafos-laplaciano/06_gnn.py?raw'
+
+<Section kind="why">
+
+Muchos datos no son tablas sino **redes**: personas y amistades, páginas y enlaces, átomos y enlaces químicos, usuarios y productos. Un **grafo** se describe con matrices, y los valores y vectores propios de esas matrices (<StageRef slug="eigendescomposicion" />) revelan su estructura:
+
+- **Clustering espectral**: encontrar comunidades, o agrupar datos cuyos grupos no son «bolas» y que k-means no separa.
+- **Redes neuronales de grafos** (GNN): para moléculas, recomendadores o detección de fraude.
+- **PageRank** (<StageRef slug="eigendescomposicion" />), que ya vimos como vector propio de la matriz de enlaces.
+
+La matriz protagonista es el **laplaciano** del grafo.
+
+</Section>
+
+<Section kind="intuition">
+
+Un grafo es un conjunto de **nodos** unidos por **aristas**. La **matriz de adyacencia** $A$ tiene un 1 donde hay arista. La matriz de **grados** $D$ dice cuántos vecinos tiene cada nodo. El **laplaciano** es $L = D - A$.
+
+¿Por qué esa matriz? Porque $x^TL\,x$ suma $(x_i - x_j)^2$ sobre todas las aristas: es pequeño cuando los nodos conectados reciben valores parecidos. Los vectores propios de $L$ con valores propios pequeños asignan valores casi constantes dentro de cada grupo bien conectado, así que **delatan las comunidades**.
+
+Haz clic en las aristas del grafo:
+
+<Figure title="El laplaciano revela las comunidades de un grafo">
+  <GraphLaplacianExplorer />
+</Figure>
+
+Dos hechos se ven en la figura:
+
+1. Cada **componente conexa** aporta un valor propio **0**. Al quitar el único puente, el grafo se parte en dos y aparece un segundo cero.
+2. Con el puente puesto, el segundo valor propio $\lambda_2$ es pequeño y su vector (el **vector de Fiedler**) tiene un signo en cada comunidad: separa el grafo cortando pocas aristas.
+
+</Section>
+
+<Section kind="formal">
+
+Sea un grafo no dirigido con $n$ nodos y un conjunto de aristas $E$.
+
+<Formula label="Adyacencia, grados y laplaciano" tex="A_{ij} = \begin{cases}1 & \text{si } (i, j) \in E\\ 0 & \text{si no}\end{cases},\qquad D = \operatorname{diag}(A\,\mathbf{1}),\qquad L = D - A" reading="A sub i j vale 1 si la arista i j pertenece a E y 0 si no; D es la matriz diagonal con los grados, A por el vector de unos; y el laplaciano L es igual a D menos A">
+  $A\mathbf{1}$ suma cada fila de $A$: el grado de cada nodo. $A$, $D$ y $L$ son simétricas.
+</Formula>
+
+<Formula label="La energía del laplaciano" tex="x^TL\,x = \sum_{(i,j) \in E} (x_i - x_j)^2 \;\ge\; 0" reading="x transpuesta por L por x es igual a la sumatoria, sobre las aristas i j de E, de x sub i menos x sub j al cuadrado, y es mayor o igual que cero">
+  Es una suma de cuadrados, así que $L$ es **semidefinida positiva**: todos sus valores propios son $\ge 0$. Mide cuánto «cambia» $x$ a lo largo de las aristas.
+</Formula>
+
+<Formula label="Componentes conexas" tex="L\,\mathbf{1} = \mathbf{0},\qquad \dim\ker(L) = \text{número de componentes conexas}" reading="L por el vector de unos es igual al vector cero; y la dimensión del núcleo de L es igual al número de componentes conexas del grafo">
+  Un vector constante en cada componente no «cambia» por ninguna arista. Por eso la multiplicidad del valor propio 0 cuenta las componentes.
+</Formula>
+
+<Formula label="Vector de Fiedler" tex="0 = \lambda_1 \le \lambda_2 \le \cdots \le \lambda_n,\qquad v_2 = \arg\min_{x \,\perp\, \mathbf{1},\ \|x\|_2 = 1} x^TL\,x" reading="los valores propios de L, ordenados, empiezan en lambda sub 1 igual a cero; y el vector de Fiedler v sub 2 es el vector unitario, perpendicular al vector de unos, que hace mínima x transpuesta por L por x">
+  $\lambda_2$ es la **conectividad algebraica**: vale 0 si y solo si el grafo está desconectado. El signo de cada componente de $v_2$ reparte los nodos en dos grupos con pocas aristas entre ellos.
+</Formula>
+
+</Section>
+
+<Section kind="example">
+
+<WorkedExample>
+<Problem>
+Calcula el laplaciano del camino de 4 nodos 1 — 2 — 3 — 4, sus valores propios y su vector de Fiedler. ¿Cómo divide el grafo?
+</Problem>
+<Step>
+Adyacencia y grados (los extremos tienen un vecino y los nodos centrales, dos):
+
+$$
+A = \begin{bmatrix}0&1&0&0\\1&0&1&0\\0&1&0&1\\0&0&1&0\end{bmatrix},\qquad D = \begin{bmatrix}1&0&0&0\\0&2&0&0\\0&0&2&0\\0&0&0&1\end{bmatrix}
+$$
+</Step>
+<Step>
+Laplaciano y comprobación de que sus filas suman 0:
+
+$$
+L = D - A = \begin{bmatrix}1&-1&0&0\\-1&2&-1&0\\0&-1&2&-1\\0&0&-1&1\end{bmatrix},\qquad L\begin{bmatrix}1\\1\\1\\1\end{bmatrix} = \begin{bmatrix}0\\0\\0\\0\end{bmatrix}
+$$
+</Step>
+<Step>
+Energía de la partición $x = (1, 1, -1, -1)$: solo cuenta la arista que cruza entre los grupos.
+
+$$
+x^TL\,x = (1-1)^2 + (1-(-1))^2 + (-1-(-1))^2 = 0 + 4 + 0 = 4
+$$
+</Step>
+<Step>
+Valores propios (con NumPy, o con la fórmula del camino $2 - 2\cos\frac{k\pi}{4}$):
+
+$$
+\lambda = 0,\quad 2 - \sqrt2 \approx 0.586,\quad 2,\quad 2 + \sqrt2 \approx 3.414
+$$
+
+Solo hay un valor propio nulo: el grafo es conexo.
+</Step>
+<Step>
+Vector de Fiedler (el del valor propio $0.586$):
+
+$$
+v_2 \approx \begin{bmatrix}0.653\\0.271\\-0.271\\-0.653\end{bmatrix} \;\Rightarrow\; \text{grupo A} = \{1, 2\},\quad \text{grupo B} = \{3, 4\}
+$$
+
+Corta el camino por la mitad, la división que deja menos aristas entre los grupos.
+</Step>
+</WorkedExample>
+
+</Section>
+
+<Section kind="lab">
+
+<PyCell title="Adyacencia, grados y laplaciano" code={laplaciano} />
+<PyCell title="Valores propios y vector de Fiedler" code={fiedler} />
+<PyCell title="Componentes conexas" code={componentes} />
+<PyCell title="El club de karate de Zachary (networkx)" code={karate} hint="Un club que se dividió en dos: el signo del vector de Fiedler acierta el bando de casi todos los miembros." />
+
+</Section>
+
+<Section kind="quiz">
+
+<Quiz questions={quiz} />
+
+</Section>
+
+<Section kind="ml">
+
+**Clustering espectral.** Para agrupar datos que no forman un grafo de partida:
+
+1. Se construye un grafo de vecinos (cada punto se une a sus $k$ vecinos más cercanos).
+2. Se calcula su laplaciano y los vectores propios de los valores propios más pequeños.
+3. Se usan esos vectores como nuevas coordenadas de cada punto y se aplica k-means en ellas.
+
+Así se separan grupos con formas arbitrarias, que k-means directo no puede separar con fronteras rectas.
+
+<PyCell title="Clustering espectral frente a k-means" code={espectral} />
+
+**Redes neuronales de grafos.** Una capa de una GCN multiplica las características de los nodos por la adyacencia normalizada, $\hat{A}XW$: cada nodo combina su información con la de sus vecinos. Es álgebra lineal pura, más una función no lineal.
+
+<PyCell title="Una capa de red neuronal de grafos" code={gnn} />
+
+<KeyTakeaways>
+- Un grafo se describe con su adyacencia $A$, sus grados $D$ y su laplaciano $L = D - A$.
+- $x^TLx = \sum (x_i - x_j)^2 \ge 0$: el laplaciano es semidefinido positivo y mide cuánto cambia $x$ por las aristas.
+- El número de valores propios nulos de $L$ es el número de componentes conexas.
+- El vector de Fiedler (de $\lambda_2$) divide el grafo en comunidades; es la base del clustering espectral.
+</KeyTakeaways>
+
+</Section>
+
+<Section kind="extensions">
+
+1. Calcula el laplaciano normalizado $I - D^{-1/2}AD^{-1/2}$ del club de karate y compara su vector de Fiedler con el del laplaciano normal.
+2. Construye un grafo con tres comunidades y usa los vectores propios de los tres valores propios más pequeños con k-means para recuperarlas.
+3. Comprueba con `networkx` que la conectividad algebraica (`nx.algebraic_connectivity`) coincide con $\lambda_2$.
+
+</Section>

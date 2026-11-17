@@ -14,6 +14,7 @@ function trackErrors(page: Page) {
 }
 
 test('todas las etapas cargan sin errores', async ({ page }) => {
+  test.setTimeout(5 * 60_000)
   const errors = trackErrors(page)
   await page.goto('/')
   const hrefs = await page.locator('a[href^="#/etapa/"]').evaluateAll((as) =>
