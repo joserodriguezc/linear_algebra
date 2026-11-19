@@ -117,6 +117,13 @@ describe('detectNotation', () => {
     expect(symbols('\\asterisk')).not.toContain('\\ast')
   })
 
+  it('matriz aumentada y flecha con texto (Gauss-Jordan)', () => {
+    const m = meanings('\\big[\\,A \\mid I\\,\\big] \\;\\xrightarrow{\\text{operaciones de fila}}\\; \\big[\\,I \\mid A^{-1}\\,\\big]')
+    expect(m.some((x) => /matriz aumentada/.test(x))).toBe(true)
+    expect(m.some((x) => /flecha con texto/.test(x))).toBe(true)
+    expect(meanings('\\tilde{x} = x - \\bar{x}\\,\\mathbf{1}')[0]).toMatch(/centrada/)
+  })
+
   it('devuelve en orden de aparición y sin duplicados', () => {
     const s = symbols('\\sum_i a_i \\le \\sum_j b_j')
     expect(s[0]).toBe('\\sum')

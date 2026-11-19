@@ -56,4 +56,16 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: 'La euclídea ($L^2$) es la norma por defecto. Para las otras: `norm(a, 1)` y `norm(a, inf)`.',
   },
+  {
+    type: 'choice',
+    prompt: 'En cada iteración de k-means, ¿a qué grupo se asigna un punto?',
+    options: [
+      'Al grupo con más puntos',
+      'Al centroide más cercano en distancia L², $\\arg\\min_j \\|x_i - c_j\\|_2$',
+      'Al centroide con mayor producto punto',
+      'Al azar',
+    ],
+    answer: 1,
+    explanation: 'Después, cada centroide pasa a ser la media de los puntos asignados. Se repite hasta que nada cambia.',
+  },
 ]

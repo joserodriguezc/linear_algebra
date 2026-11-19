@@ -11,6 +11,7 @@ import recomendador from '../snippets/svd/09_recomendador.py?raw'
 import normas from '../snippets/svd/10_normas_condicion.py?raw'
 import condicion from '../snippets/svd/11_condicion_error.py?raw'
 import eckart from '../snippets/svd/12_eckart_young.py?raw'
+import ruido from '../snippets/svd/13_ruido.py?raw'
 
 <Section kind="why">
 
@@ -141,6 +142,7 @@ Comprobaciones: $u_1 \cdot u_2 = \tfrac{1}{10}(-3 + 3) = 0$ ✓ y $\sigma_1\sigm
 <PyCell title="Normas de matrices y número de condición" code={normas} />
 <PyCell title="Cómo amplifica κ los errores" code={condicion} hint="Las matrices de Hilbert tienen κ enorme: un error de 1e-10 en b se convierte en errores gigantescos en x." />
 <PyCell title="Eckart–Young: el error es lo que se descarta" code={eckart} />
+<PyCell title="Eliminar ruido con la SVD truncada" code={ruido} hint="La señal ocupa unos pocos valores singulares grandes; el ruido se reparte en muchos pequeños. Truncar en el «codo» quita gran parte del ruido." />
 <PyCell title="Comprimir una imagen" code={imagen} />
 
 </Section>

@@ -7,6 +7,7 @@ import cholesky from '../snippets/descomposiciones/05_cholesky.py?raw'
 import choleskyError from '../snippets/descomposiciones/06_cholesky_error.py?raw'
 import sympyLu from '../snippets/descomposiciones/07_sympy_lu.py?raw'
 import regresionQr from '../snippets/descomposiciones/08_regresion_qr.py?raw'
+import gaussJordan from '../snippets/descomposiciones/09_gauss_jordan.py?raw'
 
 <Section kind="why">
 
@@ -46,6 +47,10 @@ Casi ningún programa de ML calcula una inversa de forma directa. Por dentro, Nu
 
 <Formula label="Un paso de eliminación" tex="\ell_{ik} = \frac{u_{ik}}{u_{kk}},\qquad F_i \leftarrow F_i - \ell_{ik}\,F_k" reading="ele sub i k es igual a u sub i k dividido entre u sub k k (el pivote); y la fila i se reemplaza por la fila i menos ele sub i k veces la fila k">
   $F_i$ es la fila $i$ de la matriz que se está triangulando. El multiplicador se guarda en la posición $(i, k)$ de $L$.
+</Formula>
+
+<Formula label="Inversa por Gauss-Jordan" tex="\big[\,A \mid I\,\big] \;\xrightarrow{\text{operaciones de fila}}\; \big[\,I \mid A^{-1}\,\big]" reading="la matriz aumentada formada por A y la identidad se transforma, mediante operaciones de fila, en la matriz aumentada formada por la identidad y la inversa de A">
+  Gauss-Jordan continúa la eliminación: además de hacer ceros **debajo** de cada pivote, los hace **encima** y divide cada fila entre su pivote. Las mismas operaciones aplicadas a $I$ construyen $A^{-1}$ (<StageRef slug="operaciones-matriciales" />). Si en algún momento no hay pivote, $A$ es singular.
 </Formula>
 
 <Formula label="Resolver un sistema con LU" tex="Ax = b \iff L\,(Ux) = b:\qquad Ly = b,\quad Ux = y" reading="A por x igual a b equivale a L por U por x igual a b; se resuelve primero L por y igual a b (sustitución hacia adelante) y después U por x igual a y (sustitución hacia atrás)" />
@@ -118,6 +123,40 @@ $$
 </Step>
 </WorkedExample>
 
+<WorkedExample>
+<Problem>
+Calcula la inversa de $A = \begin{bmatrix}2&1\\5&3\end{bmatrix}$ con Gauss-Jordan.
+</Problem>
+<Step>
+Se escribe la matriz aumentada $[A \mid I]$ y se divide la fila 1 entre su pivote, 2:
+
+$$
+\left[\begin{array}{cc|cc}2&1&1&0\\5&3&0&1\end{array}\right] \xrightarrow{F_1 \leftarrow \frac12 F_1} \left[\begin{array}{cc|cc}1&\frac12&\frac12&0\\5&3&0&1\end{array}\right]
+$$
+</Step>
+<Step>
+Cero debajo del pivote y pivote de la fila 2 igual a 1:
+
+$$
+\xrightarrow{F_2 \leftarrow F_2 - 5F_1} \left[\begin{array}{cc|cc}1&\frac12&\frac12&0\\0&\frac12&-\frac52&1\end{array}\right] \xrightarrow{F_2 \leftarrow 2F_2} \left[\begin{array}{cc|cc}1&\frac12&\frac12&0\\0&1&-5&2\end{array}\right]
+$$
+</Step>
+<Step>
+Cero **encima** del segundo pivote:
+
+$$
+\xrightarrow{F_1 \leftarrow F_1 - \frac12 F_2} \left[\begin{array}{cc|cc}1&0&3&-1\\0&1&-5&2\end{array}\right] \;\Rightarrow\; A^{-1} = \begin{bmatrix}3&-1\\-5&2\end{bmatrix}
+$$
+</Step>
+<Step>
+Comprobación:
+
+$$
+AA^{-1} = \begin{bmatrix}2&1\\5&3\end{bmatrix}\begin{bmatrix}3&-1\\-5&2\end{bmatrix} = \begin{bmatrix}6-5&-2+2\\15-15&-5+6\end{bmatrix} = \begin{bmatrix}1&0\\0&1\end{bmatrix}
+$$
+</Step>
+</WorkedExample>
+
 </Section>
 
 <Section kind="lab">
@@ -129,6 +168,7 @@ $$
 <PyCell title="QR reducida y columnas ortonormales" code={qrReducida} />
 <PyCell title="Cholesky" code={cholesky} />
 <PyCell title="Cholesky necesita una matriz definida positiva" code={choleskyError} />
+<PyCell title="Inversa por Gauss-Jordan" code={gaussJordan} />
 
 </Section>
 

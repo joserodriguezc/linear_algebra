@@ -75,4 +75,22 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: 'Cada fila de $X^T$ es una columna de $X$; que el producto sea cero dice que el residuo es ortogonal al espacio columna.',
   },
+  {
+    type: 'choice',
+    prompt: 'Ajustar $\\hat{y} = b_0 + b_1x + b_2x^2$ por mínimos cuadrados…',
+    options: [
+      'no es posible con álgebra lineal porque el modelo no es lineal',
+      'es una regresión lineal con columnas $1$, $x$ y $x^2$: el modelo es lineal en los coeficientes',
+      'exige descenso de gradiente',
+    ],
+    answer: 1,
+    explanation: 'La matriz de diseño es de Vandermonde y se resuelve igual: $\\min_b \\|y - Xb\\|_2^2$.',
+  },
+  {
+    type: 'choice',
+    prompt: 'Si los valores propios de $X^TX$ son $0.0001$ y $50$, ¿cuáles son los de $X^TX + \\alpha I$ con $\\alpha = 1$?',
+    options: ['$0.0001$ y $50$', '$1.0001$ y $51$', '$1$ y $1$', '$0.0001$ y $51$'],
+    answer: 1,
+    explanation: 'Sumar $\\alpha I$ suma $\\alpha$ a cada valor propio. El número de condición pasa de $500\\,000$ a unos $51$.',
+  },
 ]

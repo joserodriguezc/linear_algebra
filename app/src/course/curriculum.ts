@@ -135,6 +135,7 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Calcular las normas L1, L2 y max',
       'Relacionar cada norma con una forma de medir distancias',
       'Entender su papel en la regularización',
+      'Implementar k-means con distancias y broadcasting',
     ],
   },
   {
@@ -169,6 +170,7 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Calcular transpuesta, inversa y traza',
       'Interpretar el determinante como factor de área',
       'Entender el rango como dimensión del espacio generado',
+      'Aplicar las reglas del rango y reconocer que AᵀA es simétrica',
     ],
   },
   {
@@ -237,6 +239,7 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Calcular e interpretar la descomposición LU',
       'Entender QR como ortogonalización',
       'Saber cuándo aplicar Cholesky',
+      'Calcular una inversa por Gauss-Jordan',
     ],
   },
   {
@@ -249,6 +252,7 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Calcular eigenvalores y eigenvectores',
       'Reconstruir la matriz original',
       'Usar el cociente de Rayleigh y reconocer una forma cuadrática definida positiva',
+      'Plantear un problema de valores propios generalizado',
     ],
   },
   {
@@ -261,6 +265,7 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Calcular la pseudoinversa',
       'Reducir dimensionalidad con SVD truncada',
       'Calcular las normas de Frobenius, espectral y nuclear, y el número de condición',
+      'Eliminar ruido con la SVD truncada',
     ],
   },
   {
@@ -283,28 +288,31 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Calcular media, varianza y desviación estándar con NumPy',
       'Interpretar covarianza y correlación',
       'Construir e interpretar la matriz de covarianza',
+      'Ver la correlación como el coseno entre vectores centrados',
     ],
   },
   {
     slug: 'pca',
     title: 'Análisis de componentes principales (PCA)',
     part: 5,
-    summary: 'Reducir dimensiones proyectando sobre las direcciones de máxima varianza.',
+    summary: 'Reducir dimensiones proyectando sobre las direcciones de máxima varianza; LDA para separar clases.',
     objectives: [
       'Calcular PCA paso a paso con NumPy',
       'Interpretar componentes y varianza explicada',
       'Usar PCA de scikit-learn',
+      'Separar clases con LDA (valores propios generalizados)',
     ],
   },
   {
     slug: 'regresion-lineal',
     title: 'Regresión lineal',
     part: 5,
-    summary: 'Mínimos cuadrados en forma matricial: inversa, QR, SVD y lstsq.',
+    summary: 'Mínimos cuadrados en forma matricial: inversa, QR, SVD y lstsq; regresión polinómica y Ridge.',
     objectives: [
       'Escribir la regresión lineal como y = Xb',
       'Resolver por ecuación normal, QR y pseudoinversa',
       'Comparar la estabilidad numérica de cada método',
+      'Ajustar curvas con regresión polinómica y estabilizar con Ridge',
     ],
   },
 ]

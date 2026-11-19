@@ -84,4 +84,16 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: 'Vale el menor valor propio en su vector propio y el mayor en el suyo, y nunca sale de ese intervalo. PCA busca el $x$ que lo maximiza.',
   },
+  {
+    type: 'choice',
+    prompt: '¿Por qué los valores propios de $A^TA$ nunca son negativos?',
+    options: [
+      'Porque $A^TA$ siempre es diagonal',
+      'Porque $x^TA^TAx = \\|Ax\\|_2^2 \\ge 0$ para todo $x$',
+      'Porque $A$ es cuadrada',
+      'Sí pueden ser negativos',
+    ],
+    answer: 1,
+    explanation: 'Si $A^TAv = \\lambda v$ con $\\|v\\|_2 = 1$, entonces $\\lambda = v^TA^TAv = \\|Av\\|_2^2 \\ge 0$.',
+  },
 ]

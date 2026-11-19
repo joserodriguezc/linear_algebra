@@ -77,4 +77,11 @@ export const quiz: Question[] = [
     answer: 2.5,
     explanation: '$\\kappa = \\sigma_{\\max}/\\sigma_{\\min} = 5/2 = 2.5$. Un $\\kappa$ enorme avisa de que resolver $Ax = b$ amplifica los errores.',
   },
+  {
+    type: 'choice',
+    prompt: 'Una matriz de rango 3 con ruido tiene valores singulares $59, 48, 46, 6.9, 6.7, 6.2, \\dots$ ¿Qué $k$ elegirías para quitar el ruido con la SVD truncada?',
+    options: ['$k = 1$', '$k = 3$', '$k = 6$', 'Todos'],
+    answer: 1,
+    explanation: 'Tras el tercero hay un salto (el «codo»): los demás son del tamaño del ruido.',
+  },
 ]
