@@ -70,10 +70,10 @@ El curso se organiza en 23 **etapas** agrupadas en cinco partes, desde los array
 | | 19 · SVD | Geometría de la SVD, normas y número de condición, compresión de imágenes |
 | | 20 · Grafos, laplaciano y clustering espectral | Grafo editable con su laplaciano, valores propios y vector de Fiedler |
 | **V. Estadística** | 21 · Estadística multivariada | Covarianza como promedio de productos, elipse de covarianza |
-| | 22 · PCA | Varianza de la proyección y error de reconstrucción |
-| | 23 · Regresión lineal | Ajuste por mínimos cuadrados, la regresión como proyección |
+| | 22 · PCA | Varianza de la proyección y error de reconstrucción, PCA frente a LDA |
+| | 23 · Regresión lineal | Ajuste por mínimos cuadrados, la regresión como proyección, regresión polinómica y Ridge |
 
-En total: 23 etapas, 35 visualizaciones interactivas, 161 celdas de Python y 180 preguntas de autoevaluación.
+En total: 23 etapas, 37 visualizaciones interactivas, 170 celdas de Python y 191 preguntas de autoevaluación.
 
 ## Inicio rápido
 
@@ -144,7 +144,7 @@ uv run pytest && cd app && npm test && npm run test:e2e
 | Gráficos | Componentes SVG propios, sin librerías de gráficos |
 | Editor | CodeMirror 6 |
 | Python en el navegador | Pyodide 314 en un Web Worker |
-| Herramientas Python | uv, NumPy, SciPy, scikit-learn, SymPy, pandas, matplotlib, Pillow |
+| Herramientas Python | uv, NumPy, SciPy, scikit-learn, SymPy, pandas, networkx, matplotlib, Pillow |
 | Build y pruebas | Vite 8, Vitest, Playwright, pytest, Ruff, oxlint |
 
 No hay backend: la app es un sitio estático y todo el cómputo ocurre en el navegador.

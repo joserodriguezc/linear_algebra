@@ -63,4 +63,16 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: 'Una fila y una columna por variable. Sin el `.T`, NumPy interpretaría cada muestra como una variable y devolvería `(100, 100)`.',
   },
+  {
+    type: 'choice',
+    prompt: 'La correlación de Pearson entre $x$ e $y$ es…',
+    options: [
+      'el coseno del ángulo entre $x$ e $y$',
+      'el coseno del ángulo entre los vectores **centrados** $x - \\bar{x}$ e $y - \\bar{y}$',
+      'el producto punto $x \\cdot y$',
+      'la distancia entre $x$ e $y$',
+    ],
+    answer: 1,
+    explanation: 'Al centrar, sumar una constante a los datos no cambia el resultado. Sin centrar, el coseno sí cambiaría.',
+  },
 ]

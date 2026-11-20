@@ -8,6 +8,7 @@ import correlacion from '../snippets/estadistica-multivariada/06_correlacion.py?
 import matrizCov from '../snippets/estadistica-multivariada/07_matriz_covarianza.py?raw'
 import covMatricial from '../snippets/estadistica-multivariada/08_covarianza_matricial.py?raw'
 import iris from '../snippets/estadistica-multivariada/09_iris.py?raw'
+import coseno from '../snippets/estadistica-multivariada/10_coseno_correlacion.py?raw'
 
 <Section kind="why">
 
@@ -52,6 +53,10 @@ Sean $x = (x_1, \dots, x_n)$ e $y = (y_1, \dots, y_n)$ dos variables medidas sob
 
 <Formula label="Correlación de Pearson" tex="r = \frac{\operatorname{cov}(x, y)}{s_x\, s_y},\qquad -1 \le r \le 1" reading="r es igual a la covarianza entre x e y dividida entre el producto de la desviación estándar de x por la de y; r está entre menos uno y uno">
   $r = 1$: relación lineal creciente perfecta; $r = -1$: decreciente perfecta; $r = 0$: ninguna relación **lineal**.
+</Formula>
+
+<Formula label="La correlación es un coseno" tex="r = \frac{\tilde{x} \cdot \tilde{y}}{\|\tilde{x}\|_2\, \|\tilde{y}\|_2} = \cos\theta,\qquad \tilde{x} = x - \bar{x}\,\mathbf{1}" reading="r es igual al producto punto de x tilde e y tilde dividido entre el producto de sus normas, que es el coseno del ángulo theta entre ellos; donde x tilde es x menos su media por el vector de unos">
+  $\tilde{x}$ es el vector **centrado** (a cada valor se le resta la media). La correlación es la similitud coseno (<StageRef slug="vectores" />) de los vectores centrados: por eso está entre $-1$ y $1$. Sin centrar, el coseno cambia si se suma una constante a los datos; la correlación no.
 </Formula>
 
 <Formula label="Matriz de covarianza" tex="\Sigma = \frac{1}{n-1}\,X_c^T X_c,\qquad \Sigma_{jk} = \operatorname{cov}(x_j, x_k)" reading="sigma mayúscula es igual a uno entre n menos uno por X sub c transpuesta por X sub c; y su elemento j k es la covarianza entre la variable j y la variable k">
@@ -119,6 +124,7 @@ En la diagonal están las varianzas y fuera de ella, la covarianza.
 <PyCell title="Varianza de una matriz" code={varianzaMatriz} />
 <PyCell title="Covarianza" code={covarianza} />
 <PyCell title="Correlación" code={correlacion} />
+<PyCell title="Correlación frente a similitud coseno" code={coseno} />
 <PyCell title="Matriz de covarianza de un dataset" code={matrizCov} />
 <PyCell title="Matriz de covarianza con álgebra lineal" code={covMatricial} />
 

@@ -26,7 +26,9 @@ test('todas las etapas cargan sin errores', async ({ page }) => {
     await expect(page.locator('h1')).toBeVisible()
     await expect(page.getByText('Cargando etapa…')).toHaveCount(0, { timeout: 20_000 })
     // Revela todos los pasos de los ejemplos resueltos y comprueba que no hay LaTeX mal formado
-    for (const btn of await page.getByRole('button', { name: 'Mostrar todo' }).all()) await btn.click()
+    // Cada botón desaparece al pulsarlo: se pulsa siempre el primero que quede (puede haber varios ejemplos)
+    const reveal = page.getByRole('button', { name: 'Mostrar todo' })
+    while ((await reveal.count()) > 0) await reveal.first().click()
     const bad = await page.locator('.katex-error').allTextContents()
     expect(bad, `LaTeX con errores en ${href}`).toEqual([])
   }

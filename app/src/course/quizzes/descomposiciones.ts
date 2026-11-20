@@ -65,4 +65,10 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: 'Factorizar cuesta $O(n^3)$; después, cada resolución con dos sistemas triangulares solo cuesta $O(n^2)$.',
   },
+  {
+    type: 'matrix',
+    prompt: 'Usa Gauss-Jordan para calcular la inversa de $\\begin{bmatrix}1&2\\\\0&1\\end{bmatrix}$.',
+    answer: [[1, -2], [0, 1]],
+    explanation: 'En $[A \\mid I]$, la fila 2 ya es $(0, 1 \\mid 0, 1)$. Con $F_1 \\leftarrow F_1 - 2F_2$ queda $(1, 0 \\mid 1, -2)$.',
+  },
 ]

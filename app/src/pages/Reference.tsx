@@ -114,7 +114,12 @@ const CHEATSHEET: { title: string; stage: string[]; rows: [string, string][] }[]
       ['mean(X, axis=0), var(v, ddof=1), std(v, ddof=1)', 'media por columnas, varianza y desviación muestrales'],
       ['cov(X.T), corrcoef(x, y)', 'matriz de covarianza y correlación'],
       ['PCA(k).fit_transform(X)', 'PCA (sklearn.decomposition)'],
+      ['LinearDiscriminantAnalysis(n_components=k)', 'LDA (sklearn.discriminant_analysis)'],
+      ['eigh(S, T)', 'valores propios generalizados S v = λ T v (scipy.linalg)'],
+      ['KMeans(n_clusters=k, n_init=10)', 'k-means (sklearn.cluster)'],
       ['b, *_ = lstsq(X, y, rcond=None)', 'mínimos cuadrados'],
+      ['vander(x, d + 1, increasing=True)', 'matriz de Vandermonde (regresión polinómica)'],
+      ['solve(X.T @ X + a * eye(p), X.T @ y)', 'Ridge en forma cerrada'],
     ],
   },
 ]

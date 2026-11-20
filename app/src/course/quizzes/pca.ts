@@ -69,4 +69,23 @@ export const quiz: Question[] = [
     answer: 3,
     explanation: 'El error de reconstrucción es proporcional a $\\lambda_2 + \\lambda_3 = 2 + 1 = 3$: la varianza de las direcciones descartadas.',
   },
+  {
+    type: 'choice',
+    prompt: '¿Qué diferencia principal hay entre PCA y LDA?',
+    options: [
+      'Ninguna: dan siempre la misma dirección',
+      'PCA maximiza la varianza sin usar etiquetas; LDA usa las etiquetas para maximizar la separación entre clases',
+      'LDA no usa álgebra lineal',
+      'PCA solo funciona con dos clases',
+    ],
+    answer: 1,
+    explanation: 'PCA resuelve $\\Sigma v = \\lambda v$; LDA resuelve el problema generalizado $S_Bw = \\lambda S_Ww$.',
+  },
+  {
+    type: 'numeric',
+    prompt: 'Con LDA sobre un dataset de 4 clases y 10 características, ¿cuántas direcciones discriminantes útiles hay como máximo?',
+    answer: 3,
+    tolerance: 0,
+    explanation: '$S_B$ es suma de $C$ matrices de rango 1 ligadas por la media global: tiene rango como mucho $C - 1 = 3$.',
+  },
 ]

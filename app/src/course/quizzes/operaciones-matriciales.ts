@@ -64,4 +64,23 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: 'Un área nula significa que el plano colapsa a una recta (o a un punto), y ese colapso no se puede deshacer.',
   },
+  {
+    type: 'numeric',
+    prompt: '$A$ es de $5\\times4$ con rango 3 y $B$ es de $4\\times6$ con rango 2. ¿Cuál es el **máximo** rango posible de $AB$?',
+    answer: 2,
+    tolerance: 0,
+    explanation: '$\\operatorname{rank}(AB) \\le \\min(\\operatorname{rank}(A), \\operatorname{rank}(B)) = \\min(3, 2) = 2$.',
+  },
+  {
+    type: 'choice',
+    prompt: '¿Cuándo es invertible $X^TX$ (con $X$ de $n\\times p$)?',
+    options: [
+      'Siempre, porque es cuadrada y simétrica',
+      'Cuando las $p$ columnas de $X$ son linealmente independientes',
+      'Cuando $n = p$',
+      'Nunca',
+    ],
+    answer: 1,
+    explanation: '$\\operatorname{rank}(X^TX) = \\operatorname{rank}(X)$: es $p$ (rango completo) solo si las columnas de $X$ son independientes.',
+  },
 ]

@@ -10,6 +10,7 @@ import pagerank from '../snippets/eigendescomposicion/08_pagerank.py?raw'
 import cambioBase from '../snippets/eigendescomposicion/09_cambio_base.py?raw'
 import definida from '../snippets/eigendescomposicion/10_definida_positiva.py?raw'
 import rayleigh from '../snippets/eigendescomposicion/11_rayleigh.py?raw'
+import generalizado from '../snippets/eigendescomposicion/12_generalizado.py?raw'
 
 <Section kind="why">
 
@@ -68,7 +69,11 @@ Lo que conviene notar:
   Se aplica a matrices simétricas. Si solo se cumple $x^TAx \ge 0$ (con $\lambda_i \ge 0$), la matriz es **semidefinida positiva**: toda matriz de covarianza lo es. Ser definida positiva es lo que exige la descomposición de Cholesky (<StageRef slug="descomposiciones" />) y garantiza que $A$ sea invertible.
 </Formula>
 
-<Formula label="Cociente de Rayleigh" tex="R(x) = \frac{x^TSx}{x^Tx},\qquad \lambda_{\min} \le R(x) \le \lambda_{\max}" reading="R de x es igual a x transpuesta por S por x dividido entre x transpuesta por x; y siempre está entre el menor y el mayor valor propio de S">
+<Formula label="AᵀA es semidefinida positiva" tex="x^T(A^TA)\,x = (Ax)^T(Ax) = \|Ax\|_2^2 \ge 0" reading="x transpuesta por A transpuesta por A por x es igual a A por x transpuesto por A por x, que es la norma de A por x al cuadrado, y es mayor o igual que cero">
+  Para **cualquier** matriz $A$, $A^TA$ es simétrica con valores propios $\ge 0$; es definida positiva si las columnas de $A$ son independientes. Por eso toda matriz de covarianza, $\frac{1}{n-1}X_c^TX_c$, es semidefinida positiva, y por eso la ecuación normal admite Cholesky (<StageRef slug="descomposiciones" />).
+</Formula>
+
+<Formula label="Cociente de Rayleigh\" tex="R(x) = \frac{x^TSx}{x^Tx},\qquad \lambda_{\min} \le R(x) \le \lambda_{\max}" reading="R de x es igual a x transpuesta por S por x dividido entre x transpuesta por x; y siempre está entre el menor y el mayor valor propio de S">
   Para $S$ simétrica, $R$ alcanza $\lambda_{\max}$ en su vector propio y $\lambda_{\min}$ en el suyo. Maximizar $R$ es lo que hace PCA (<StageRef slug="pca" />) para encontrar la primera componente, y el método de la potencia lo usa para estimar el valor propio dominante.
 </Formula>
 
@@ -77,6 +82,10 @@ La «energía» $x^TSx$ tiene una forma geométrica que resume todo lo anterior:
 <Figure title="La forma cuadrática xᵀSx">
   <QuadraticFormExplorer />
 </Figure>
+
+<Formula label="Problema de valores propios generalizado" tex="S\,v = \lambda\,T\,v \iff T^{-1}S\,v = \lambda\,v" reading="S por v es igual a lambda por T por v, si y solo si T inversa por S por v es igual a lambda por v">
+  Con $T = I$ es el problema de siempre. Si $S$ y $T$ son simétricas y $T$ es definida positiva, los $\lambda$ son reales y `scipy.linalg.eigh(S, T)` los calcula de forma estable. Maximiza el cociente $\frac{v^TSv}{v^TTv}$, un Rayleigh «relativo a $T$»: es exactamente lo que resuelve el análisis discriminante lineal (LDA) en la <StageRef slug="pca" />.
+</Formula>
 
 </Section>
 
@@ -135,6 +144,7 @@ $A$ estira por 3 a lo largo de la diagonal $(1, 1)$ y deja intacta la dirección
 <PyCell title="Diagonalizar es cambiar de base" code={cambioBase} />
 <PyCell title="¿Es definida positiva?" code={definida} hint="Con un solo valor propio negativo basta para que xᵀAx sea negativo en alguna dirección." />
 <PyCell title="Cociente de Rayleigh" code={rayleigh} />
+<PyCell title="Valores propios generalizados y AᵀA" code={generalizado} />
 
 </Section>
 

@@ -215,7 +215,15 @@ const RULES: Rule[] = [
   { re: /\\mathbf\{0\}/, explain: () => ({ tex: '\\mathbf{0}', meaning: 'el vector cero: todas sus componentes valen 0' }) },
   {
     re: /\\tilde\{?(\w)\}?/,
-    explain: (m) => ({ tex: `\\tilde{${m[1]}}`, meaning: `«${m[1]} tilde»: una aproximación o reconstrucción de ${m[1]} (por ejemplo, su proyección)` }),
+    explain: (m) => ({
+      tex: `\\tilde{${m[1]}}`,
+      meaning: `«${m[1]} tilde»: una versión transformada de ${m[1]} (centrada, aproximada o proyectada; la explicación de la fórmula dice cuál)`,
+    }),
+  },
+  { re: /\\mid/, explain: () => ({ tex: '[A \\mid I]', meaning: 'barra vertical: separa las dos partes de una matriz aumentada, que se operan juntas fila a fila' }) },
+  {
+    re: /\\xrightarrow/,
+    explain: () => ({ tex: '\\xrightarrow{\\text{paso}}', meaning: 'flecha con texto: se pasa de lo de la izquierda a lo de la derecha aplicando lo que indica la flecha' }),
   },
   { re: /\\mathbf\{1\}/, explain: () => ({ tex: '\\mathbf{1}', meaning: 'vector de unos: (1, 1, …, 1)' }) },
   { re: /\\alpha/, explain: () => ({ tex: '\\alpha', meaning: 'alfa: un parámetro que se fija a mano (aquí, la fuerza de la regularización)' }) },
@@ -330,6 +338,7 @@ const SAMPLES = [
   'U^\\perp',
   '\\kappa(A) = \\sigma_1 / \\sigma_n,\\ y = k \\ast x',
   'u \\perp v',
+  '[A \\mid I] \\xrightarrow{\\text{filas}} [I \\mid A^{-1}]',
 ]
 
 /** Glosario completo y sin duplicados, en orden alfabético por significado. */

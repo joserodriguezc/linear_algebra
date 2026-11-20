@@ -4,6 +4,7 @@ import l2 from '../snippets/normas/02_l2.py?raw'
 import lmax from '../snippets/normas/03_max.py?raw'
 import distancias from '../snippets/normas/04_distancias.py?raw'
 import regularizacion from '../snippets/normas/05_regularizacion.py?raw'
+import kmeans from '../snippets/normas/06_kmeans.py?raw'
 
 <Section kind="why">
 
@@ -120,6 +121,17 @@ $$
 En el siguiente ejemplo solo 3 de las 6 características influyen de verdad. Observa qué hace cada penalización con los pesos de las características irrelevantes:
 
 <PyCell title="Ridge (L²) frente a Lasso (L¹)" code={regularizacion} hint="Lasso pone a exactamente 0 los pesos de las características irrelevantes; Ridge solo los hace pequeños." />
+
+Cómo resuelve Ridge el sistema con álgebra lineal, sumando $\alpha I$ a $X^TX$, se ve en la <StageRef slug="regresion-lineal" />.
+
+**k-means** agrupa los datos en $k$ grupos usando solo distancias L². Repite dos pasos hasta que nada cambia:
+
+1. **Asignar**: cada punto va al centroide más cercano, $\arg\min_j \|x_i - c_j\|_2$.
+2. **Actualizar**: cada centroide pasa a ser la media de sus puntos.
+
+Con broadcasting (<StageRef slug="broadcasting" />) se calculan todas las distancias punto–centroide de una vez, sin bucles:
+
+<PyCell title="k-means desde cero con NumPy" code={kmeans} hint="Un mal arranque puede dejar dos centroides en el mismo grupo; por eso se prueban varios y se elige el de menor inercia, igual que n_init en scikit-learn." />
 
 <KeyTakeaways>
 - Una norma mide la magnitud de un vector; la distancia es la norma de una diferencia.

@@ -7,6 +7,7 @@ import traza from '../snippets/operaciones-matriciales/05_traza.py?raw'
 import determinante from '../snippets/operaciones-matriciales/06_determinante.py?raw'
 import rango from '../snippets/operaciones-matriciales/07_rango.py?raw'
 import resolver from '../snippets/operaciones-matriciales/08_resolver.py?raw'
+import reglasRango from '../snippets/operaciones-matriciales/09_reglas_rango.py?raw'
 
 <Section kind="why">
 
@@ -54,6 +55,14 @@ Pensando en la matriz como transformación del plano:
   Una matriz cuadrada $n\times n$ es invertible si y solo si tiene rango completo $n$, es decir, si $\det A \ne 0$. Qué significa exactamente «linealmente independientes» se desarrolla en la <StageRef slug="independencia-lineal" />.
 </Formula>
 
+<Formula label="Reglas del rango" tex="\operatorname{rank}(AB) \le \min\big(\operatorname{rank}(A), \operatorname{rank}(B)\big),\qquad \operatorname{rank}(A + B) \le \operatorname{rank}(A) + \operatorname{rank}(B),\qquad \operatorname{rank}(A^TA) = \operatorname{rank}(A)" reading="el rango de A por B es menor o igual que el mínimo de los rangos de A y de B; el rango de A más B es menor o igual que la suma de sus rangos; y el rango de A transpuesta por A es igual al rango de A">
+  Multiplicar nunca crea información nueva: el producto no puede tener más rango que su factor más pobre. La última regla explica por qué $X^TX$ es invertible **si y solo si** las columnas de $X$ son linealmente independientes, la condición que necesita la regresión lineal (<StageRef slug="regresion-lineal" />).
+</Formula>
+
+<Formula label="Matrices simétricas a partir de cualquier matriz" tex="(A^TA)^T = A^T(A^T)^T = A^TA,\qquad \left(\tfrac12(A + A^T)\right)^T = \tfrac12(A + A^T)" reading="la transpuesta de A transpuesta por A es A transpuesta por A, así que es simétrica; y un medio de A más su transpuesta también es igual a su transpuesta">
+  Usa la regla $(AB)^T = B^TA^T$. $A^TA$ (de $n\times n$) y $AA^T$ (de $m\times m$) son simétricas para **cualquier** $A$, aunque no sea cuadrada: así aparecen la matriz de covarianza y la ecuación normal.
+</Formula>
+
 </Section>
 
 <Section kind="example">
@@ -99,6 +108,7 @@ Rango: como $\det A \ne 0$, las dos columnas son independientes y $\operatorname
 <PyCell title="Determinante" code={determinante} />
 <PyCell title="Rango" code={rango} />
 <PyCell title="Resolver Ax = b" code={resolver} />
+<PyCell title="Reglas del rango y AᵀA" code={reglasRango} />
 
 </Section>
 
