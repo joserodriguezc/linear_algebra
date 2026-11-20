@@ -134,6 +134,13 @@ describe('detectNotation', () => {
     expect(meanings('\\theta').some((x) => /tasa de aprendizaje/.test(x))).toBe(false)
   })
 
+  it('distribución estacionaria y gamma', () => {
+    expect(meanings('P\\,\\pi = \\pi').some((x) => /estacionaria/.test(x))).toBe(true)
+    expect(meanings('\\gamma = \\frac{p}{n}').some((x) => /gamma/.test(x))).toBe(true)
+    // \pi no se confunde con \pm ni con \perp
+    expect(meanings('a \\pm b,\\ u \\perp v').some((x) => /estacionaria/.test(x))).toBe(false)
+  })
+
   it('devuelve en orden de aparición y sin duplicados', () => {
     const s = symbols('\\sum_i a_i \\le \\sum_j b_j')
     expect(s[0]).toBe('\\sum')

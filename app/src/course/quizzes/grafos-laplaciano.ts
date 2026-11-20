@@ -64,4 +64,10 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: 'k-means divide el espacio con fronteras rectas entre centros. El laplaciano del grafo de vecinos sigue la forma de cada grupo.',
   },
+  {
+    type: 'numeric',
+    prompt: 'En un triángulo (3 nodos, todos unidos entre sí), ¿cuántos caminos de longitud 2 van del nodo 1 al nodo 2? Es decir, ¿cuánto vale $(A^2)_{12}$?',
+    answer: 1,
+    explanation: '$(A^2)_{12} = \\sum_m A_{1m}A_{m2}$: el único nodo intermedio vecino de los dos es el 3 (camino 1 → 3 → 2).',
+  },
 ]

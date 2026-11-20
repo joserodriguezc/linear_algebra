@@ -117,4 +117,11 @@ export const quiz: Question[] = [
     answer: 30,
     explanation: '$G = \\partial L/\\partial Z$ es $64 \\times 3$, así que $X^TG$ es $(10 \\times 64)(64 \\times 3) = 10 \\times 3$: 30 elementos, uno por peso.',
   },
+  {
+    type: 'choice',
+    prompt: 'Si $S$ es simétrica, ¿cuál es el gradiente de $f(b) = b^TS\\,b$?',
+    options: ['$S\\,b$', '$2S\\,b$', '$b^TS$', '$2\\,b$'],
+    answer: 1,
+    explanation: 'En general es $(S + S^T)b$, que con $S = S^T$ queda $2Sb$: la versión matricial de $\\frac{d}{dx}(sx^2) = 2sx$.',
+  },
 ]

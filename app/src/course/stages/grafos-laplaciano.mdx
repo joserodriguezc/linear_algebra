@@ -5,6 +5,7 @@ import componentes from '../snippets/grafos-laplaciano/03_componentes.py?raw'
 import karate from '../snippets/grafos-laplaciano/04_karate.py?raw'
 import espectral from '../snippets/grafos-laplaciano/05_clustering_espectral.py?raw'
 import gnn from '../snippets/grafos-laplaciano/06_gnn.py?raw'
+import massey from '../snippets/grafos-laplaciano/07_caminos_massey.py?raw'
 
 <Section kind="why">
 
@@ -43,6 +44,10 @@ Sea un grafo no dirigido con $n$ nodos y un conjunto de aristas $E$.
 
 <Formula label="Adyacencia, grados y laplaciano" tex="A_{ij} = \begin{cases}1 & \text{si } (i, j) \in E\\ 0 & \text{si no}\end{cases},\qquad D = \operatorname{diag}(A\,\mathbf{1}),\qquad L = D - A" reading="A sub i j vale 1 si la arista i j pertenece a E y 0 si no; D es la matriz diagonal con los grados, A por el vector de unos; y el laplaciano L es igual a D menos A">
   $A\mathbf{1}$ suma cada fila de $A$: el grado de cada nodo. $A$, $D$ y $L$ son simétricas.
+</Formula>
+
+<Formula label="Las potencias de la adyacencia cuentan caminos" tex="(A^k)_{ij} = \text{número de caminos de longitud } k \text{ del nodo } i \text{ al nodo } j" reading="el elemento i j de A a la k es igual al número de caminos de longitud k que van del nodo i al nodo j">
+  Para $k = 2$: $(A^2)_{ij} = \sum_m A_{im}A_{mj}$ cuenta los nodos intermedios $m$ vecinos de los dos. En la diagonal, $(A^2)_{ii}$ es el grado de $i$. Como $A^k = Q\Lambda^kQ^T$ (<StageRef slug="eigendescomposicion" />), para $k$ grande el número de caminos crece como $\lambda_{\max}^k$, y el vector propio dominante de $A$ mide cuán conectado está cada nodo (la **centralidad de vector propio**).
 </Formula>
 
 <Formula label="La energía del laplaciano" tex="x^TL\,x = \sum_{(i,j) \in E} (x_i - x_j)^2 \;\ge\; 0" reading="x transpuesta por L por x es igual a la sumatoria, sobre las aristas i j de E, de x sub i menos x sub j al cuadrado, y es mayor o igual que cero">
@@ -139,11 +144,20 @@ Así se separan grupos con formas arbitrarias, que k-means directo no puede sepa
 
 <PyCell title="Una capa de red neuronal de grafos" code={gnn} />
 
+**Clasificar a partir de comparaciones.** Con los resultados de partidos (o de comparaciones «A es mejor que B», como las que se usan para ajustar modelos con preferencias humanas) se puede dar una puntuación $r$ a cada equipo. El **método de Massey** plantea una ecuación por partido, $r_{\text{ganador}} - r_{\text{perdedor}} \approx$ diferencia de puntos, y la resuelve por mínimos cuadrados (<StageRef slug="regresion-lineal" />):
+
+<Formula label="Método de Massey" tex="X\,r \approx y,\qquad X^TX = L_{\text{partidos}},\qquad r = X^+y" reading="X por r es aproximadamente y; X transpuesta por X es el laplaciano del grafo de partidos; y r es igual a la pseudoinversa de X por y">
+  Cada fila de $X$ tiene un $+1$ en el ganador y un $-1$ en el perdedor, como una arista con sentido. Por eso $X^TX$ es el **laplaciano** del grafo de partidos: el grado de cada equipo en la diagonal y $-1$ por cada partido entre dos equipos. Como $L\mathbf{1} = \mathbf{0}$, el sistema es singular (sumar una constante a todos no cambia nada); la pseudoinversa elige la solución que suma 0.
+</Formula>
+
+<PyCell title="Caminos con Aᵏ y clasificación de Massey" code={massey} hint="Con todos contra todos, XᵀX es el laplaciano del grafo completo: 3 en la diagonal y −1 fuera." />
+
 <KeyTakeaways>
 - Un grafo se describe con su adyacencia $A$, sus grados $D$ y su laplaciano $L = D - A$.
 - $x^TLx = \sum (x_i - x_j)^2 \ge 0$: el laplaciano es semidefinido positivo y mide cuánto cambia $x$ por las aristas.
 - El número de valores propios nulos de $L$ es el número de componentes conexas.
 - El vector de Fiedler (de $\lambda_2$) divide el grafo en comunidades; es la base del clustering espectral.
+- $(A^k)_{ij}$ cuenta los caminos de longitud $k$; el laplaciano aparece también al clasificar por comparaciones (Massey).
 </KeyTakeaways>
 
 </Section>

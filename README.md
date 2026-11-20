@@ -66,14 +66,14 @@ El curso se organiza en 23 **etapas** agrupadas en cinco partes, desde los array
 | | 15 · Tensores | Tensor 3D en capas con indexado |
 | | 16 · La convolución como matriz | Convolución 1D como matriz de Toeplitz o circulante, filtros 2D sobre un dígito |
 | **IV. Factorización** | 17 · LU, QR y Cholesky | Eliminación gaussiana paso a paso, Gram-Schmidt |
-| | 18 · Eigendescomposición | Búsqueda interactiva de vectores propios, forma cuadrática y cociente de Rayleigh |
+| | 18 · Eigendescomposición | Búsqueda interactiva de vectores propios, forma cuadrática, cociente de Rayleigh y cadena de Markov |
 | | 19 · SVD | Geometría de la SVD, normas y número de condición, compresión de imágenes |
 | | 20 · Grafos, laplaciano y clustering espectral | Grafo editable con su laplaciano, valores propios y vector de Fiedler |
 | **V. Estadística** | 21 · Estadística multivariada | Covarianza como promedio de productos, elipse de covarianza |
 | | 22 · PCA | Varianza de la proyección y error de reconstrucción, PCA frente a LDA |
 | | 23 · Regresión lineal | Ajuste por mínimos cuadrados, la regresión como proyección, regresión polinómica, Ridge, descenso de gradiente y retropropagación |
 
-En total: 23 etapas, 38 visualizaciones interactivas, 173 celdas de Python y 194 preguntas de autoevaluación.
+En total: 23 etapas, 39 visualizaciones interactivas, 176 celdas de Python y 199 preguntas de autoevaluación.
 
 ## Inicio rápido
 

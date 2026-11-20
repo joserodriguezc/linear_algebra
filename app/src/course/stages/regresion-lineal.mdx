@@ -79,6 +79,10 @@ Con $n$ observaciones y $p$ características, $X$ es la matriz $n \times p$ de e
 
 **Resolver o entrenar.** Las fórmulas anteriores **resuelven** el problema de una vez. Pero casi todos los modelos de ML (redes neuronales incluidas) no tienen fórmula cerrada y se **entrenan**: se parte de unos coeficientes cualesquiera y se mejoran paso a paso en la dirección en la que el error baja más rápido. En la regresión lineal podemos ver ese proceso con todo detalle, porque sabemos dónde está el mínimo.
 
+<Formula label="Reglas de cálculo matricial" tex="\nabla_b\,(a^Tb) = a,\qquad \nabla_b\,(b^TA\,b) = (A + A^T)\,b = 2A\,b \ \text{ si } A = A^T" reading="el gradiente respecto de b de a transpuesta por b es a; y el gradiente respecto de b de b transpuesta por A por b es A más A transpuesta, por b, que es igual a dos A por b si A es simétrica">
+  Son las versiones vectoriales de $\frac{d}{dx}(ax) = a$ y $\frac{d}{dx}(ax^2) = 2ax$. Basta desarrollar el error: $\|y - Xb\|_2^2 = y^Ty - 2\,(X^Ty)^Tb + b^T(X^TX)\,b$. El primer término no depende de $b$; el segundo da $-2X^Ty$ con la primera regla; el tercero da $2X^TXb$ con la segunda, porque $X^TX$ es simétrica. En total, $\nabla_b\|y - Xb\|_2^2 = 2X^T(Xb - y)$, y al igualarlo a cero sale la ecuación normal.
+</Formula>
+
 <Formula label="Gradiente del error cuadrático medio" tex="\text{ECM}(b) = \tfrac{1}{n}\,\|y - Xb\|_2^2,\qquad \nabla_b\,\text{ECM}(b) = \tfrac{2}{n}\,X^T(Xb - y)" reading="el ECM de b es uno entre n por la norma dos al cuadrado de y menos X por b; y el gradiente del ECM respecto de b es dos entre n por X transpuesta por X por b menos y">
   El gradiente es un vector de $p$ números reales, uno por coeficiente: cuánto sube el error al aumentar ese coeficiente. Se calcula con dos productos matriz-vector: los residuos $Xb - y$ y luego $X^T$ por ellos. Igualarlo a cero da exactamente la ecuación normal $X^TXb = X^Ty$.
 </Formula>

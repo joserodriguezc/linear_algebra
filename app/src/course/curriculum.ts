@@ -246,13 +246,14 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
     slug: 'eigendescomposicion',
     title: 'Eigendescomposición',
     part: 4,
-    summary: 'Vectores y valores propios: las direcciones que una matriz solo estira.',
+    summary: 'Vectores y valores propios: las direcciones que una matriz solo estira; potencias y cadenas de Markov.',
     objectives: [
       'Entender geométricamente un vector propio',
       'Calcular eigenvalores y eigenvectores',
       'Reconstruir la matriz original',
       'Usar el cociente de Rayleigh y reconocer una forma cuadrática definida positiva',
       'Plantear un problema de valores propios generalizado',
+      'Calcular potencias Aᵏ = QΛᵏQ⁻¹ y el estado estacionario de una cadena de Markov',
     ],
   },
   {
@@ -277,6 +278,7 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Construir la adyacencia, los grados y el laplaciano de un grafo',
       'Contar componentes conexas con los valores propios nulos',
       'Dividir un grafo con el vector de Fiedler y aplicar clustering espectral',
+      'Contar caminos con potencias de la adyacencia y clasificar por comparaciones (Massey)',
     ],
   },
   {
@@ -301,6 +303,7 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Interpretar componentes y varianza explicada',
       'Usar PCA de scikit-learn',
       'Separar clases con LDA (valores propios generalizados)',
+      'Distinguir componentes de señal y de ruido con la ley de Marchenko-Pastur',
     ],
   },
   {
@@ -313,6 +316,7 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
       'Resolver por ecuación normal, QR y pseudoinversa',
       'Comparar la estabilidad numérica de cada método',
       'Ajustar curvas con regresión polinómica y estabilizar con Ridge',
+      'Derivar el gradiente del error con las reglas del cálculo matricial',
       'Entrenar con descenso de gradiente y mini-lotes, y relacionar su velocidad con el número de condición',
       'Calcular los gradientes de una red neuronal con productos por matrices traspuestas',
     ],

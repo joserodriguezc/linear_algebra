@@ -96,4 +96,21 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: 'Si $A^TAv = \\lambda v$ con $\\|v\\|_2 = 1$, entonces $\\lambda = v^TA^TAv = \\|Av\\|_2^2 \\ge 0$.',
   },
+  {
+    type: 'numeric',
+    prompt: 'Una matriz $A$ tiene valores propios $2$ y $0.5$. ¿Cuál es el mayor valor propio de $A^3$?',
+    answer: 8,
+    explanation: '$A^3 = Q\\Lambda^3Q^{-1}$: los valores propios de $A^3$ son $2^3 = 8$ y $0.5^3 = 0.125$.',
+  },
+  {
+    type: 'choice',
+    prompt: 'En una cadena de Markov $x_{k+1} = Px_k$, el estado estacionario $\\pi$ es…',
+    options: [
+      'la primera columna de $P$',
+      'el vector propio de $P$ de valor propio 1, normalizado para que sume 1',
+      'el vector propio del menor valor propio de $P$',
+    ],
+    answer: 1,
+    explanation: 'Si $P\\pi = \\pi$, un paso más no cambia la distribución. La velocidad con la que se llega a $\\pi$ la marca $|\\lambda_2|$.',
+  },
 ]

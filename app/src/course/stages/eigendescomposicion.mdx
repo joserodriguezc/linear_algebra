@@ -11,6 +11,7 @@ import cambioBase from '../snippets/eigendescomposicion/09_cambio_base.py?raw'
 import definida from '../snippets/eigendescomposicion/10_definida_positiva.py?raw'
 import rayleigh from '../snippets/eigendescomposicion/11_rayleigh.py?raw'
 import generalizado from '../snippets/eigendescomposicion/12_generalizado.py?raw'
+import markov from '../snippets/eigendescomposicion/13_markov.py?raw'
 
 <Section kind="why">
 
@@ -63,6 +64,14 @@ Lo que conviene notar:
 
 <Formula label="Diagonalizar es cambiar de base" tex="A\,x = Q\,\Lambda\,\underbrace{Q^{-1}x}_{c}" reading="A por x es igual a Q por lambda mayúscula por c, donde c es la inversa de Q por x">
   Se lee de derecha a izquierda (<StageRef slug="independencia-lineal" />): $c = Q^{-1}x$ son las coordenadas de $x$ en la base de vectores propios; en esa base, $\Lambda$ solo multiplica cada coordenada por su $\lambda_i$; y $Q$ devuelve el resultado a la base estándar. Por eso una matriz diagonalizable es «una matriz diagonal vista desde otra base».
+</Formula>
+
+<Formula label="Potencias de una matriz" tex="A^k = Q\,\Lambda^k\,Q^{-1},\qquad A^k x = c_1\lambda_1^k\,q_1 + c_2\lambda_2^k\,q_2 + \cdots + c_n\lambda_n^k\,q_n" reading="A a la k es igual a Q por lambda mayúscula a la k por la inversa de Q; y A a la k por x es igual a c sub 1 por lambda sub 1 a la k por q sub 1, más c sub 2 por lambda sub 2 a la k por q sub 2, y así hasta c sub n por lambda sub n a la k por q sub n">
+  Entre cada $A$ y la siguiente, $Q^{-1}Q = I$ se cancela, así que aplicar $A$ $k$ veces solo eleva cada valor propio a $k$. Los $c_i$ son las coordenadas de $x$ en la base de vectores propios. Al crecer $k$, domina el término con mayor $|\lambda_i|$: los $|\lambda| > 1$ explotan, los $|\lambda| < 1$ se apagan. Así funciona el método de la potencia, y por eso los valores propios deciden la estabilidad de una red recurrente.
+</Formula>
+
+<Formula label="Cadena de Markov y estado estacionario" tex="x_{k+1} = P\,x_k,\qquad x_k = P^k x_0 \to \pi,\qquad P\,\pi = \pi" reading="x sub k más uno es igual a P por x sub k; x sub k, que es P a la k por x sub 0, tiende a pi; y P por pi es igual a pi">
+  $x_k$ guarda las probabilidades de cada estado en el paso $k$, y la columna $j$ de $P$ las de pasar desde el estado $j$ (cada columna suma 1). El **estado estacionario** $\pi$ es el vector propio de valor propio $\lambda_1 = 1$, normalizado para sumar 1. El teorema de Perron-Frobenius garantiza que existe cuando las probabilidades son positivas. La distancia a $\pi$ se reduce como $|\lambda_2|^k$: cuanto más cerca de 1 está el segundo valor propio, más lenta es la convergencia.
 </Formula>
 
 <Formula label="Matriz definida positiva" tex="x^TAx > 0 \ \ \text{para todo } x \neq \mathbf{0} \iff \lambda_i > 0 \ \text{para todo } i" reading="x transpuesta por A por x es mayor que cero para todo x distinto del vector cero, si y solo si todos los valores propios lambda sub i son mayores que cero">
@@ -156,7 +165,15 @@ $A$ estira por 3 a lo largo de la diagonal $(1, 1)$ y deja intacta la dirección
 
 <Section kind="ml">
 
-El **PageRank** original de Google modela a un internauta que salta de página en página siguiendo enlaces. La proporción de tiempo que pasa en cada página es el vector propio de valor propio 1 de la matriz de transición:
+Una **cadena de Markov** modela un sistema que salta entre estados al azar: el clima de cada día, las palabras de un texto o las páginas que visita un usuario. Sus potencias $P^k$ son una aplicación directa de la eigendescomposición:
+
+<Figure title="Una cadena de Markov converge a su vector propio">
+  <MarkovChain />
+</Figure>
+
+<PyCell title="Cadena de Markov: potencias y estado estacionario" code={markov} hint="La distancia a π se divide por |λ₂| ≈ 0.46 en cada paso, como predice Pᵏ = QΛᵏQ⁻¹." />
+
+El **PageRank** original de Google es una cadena de Markov: modela a un internauta que salta de página en página siguiendo enlaces. La proporción de tiempo que pasa en cada página es el vector propio de valor propio 1 de la matriz de transición:
 
 <PyCell title="PageRank como vector propio" code={pagerank} />
 
@@ -167,6 +184,7 @@ En la <StageRef slug="pca" /> aplicaremos la eigendescomposición a la **matriz 
 - Se obtienen de $\det(A - \lambda I) = 0$; en la práctica, con `eig` (o `eigh` si $A$ es simétrica).
 - $A = Q\Lambda Q^{-1}$; si $A$ es simétrica, $A = Q\Lambda Q^T$ con $Q$ ortogonal.
 - La suma de los valores propios es la traza y su producto, el determinante.
+- $A^k = Q\Lambda^kQ^{-1}$: a la larga domina el mayor $|\lambda|$. Una cadena de Markov converge al vector propio de $\lambda = 1$ a la velocidad de $|\lambda_2|^k$.
 </KeyTakeaways>
 
 </Section>
