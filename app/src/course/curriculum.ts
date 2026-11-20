@@ -307,12 +307,14 @@ const STAGE_DEFS: Omit<Stage, 'n'>[] = [
     slug: 'regresion-lineal',
     title: 'Regresión lineal',
     part: 5,
-    summary: 'Mínimos cuadrados en forma matricial: inversa, QR, SVD y lstsq; regresión polinómica y Ridge.',
+    summary: 'Mínimos cuadrados en forma matricial: inversa, QR, SVD y lstsq; regresión polinómica, Ridge, descenso de gradiente y retropropagación.',
     objectives: [
       'Escribir la regresión lineal como y = Xb',
       'Resolver por ecuación normal, QR y pseudoinversa',
       'Comparar la estabilidad numérica de cada método',
       'Ajustar curvas con regresión polinómica y estabilizar con Ridge',
+      'Entrenar con descenso de gradiente y mini-lotes, y relacionar su velocidad con el número de condición',
+      'Calcular los gradientes de una red neuronal con productos por matrices traspuestas',
     ],
   },
 ]

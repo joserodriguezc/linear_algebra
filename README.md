@@ -71,9 +71,9 @@ El curso se organiza en 23 **etapas** agrupadas en cinco partes, desde los array
 | | 20 · Grafos, laplaciano y clustering espectral | Grafo editable con su laplaciano, valores propios y vector de Fiedler |
 | **V. Estadística** | 21 · Estadística multivariada | Covarianza como promedio de productos, elipse de covarianza |
 | | 22 · PCA | Varianza de la proyección y error de reconstrucción, PCA frente a LDA |
-| | 23 · Regresión lineal | Ajuste por mínimos cuadrados, la regresión como proyección, regresión polinómica y Ridge |
+| | 23 · Regresión lineal | Ajuste por mínimos cuadrados, la regresión como proyección, regresión polinómica, Ridge, descenso de gradiente y retropropagación |
 
-En total: 23 etapas, 37 visualizaciones interactivas, 170 celdas de Python y 191 preguntas de autoevaluación.
+En total: 23 etapas, 38 visualizaciones interactivas, 173 celdas de Python y 194 preguntas de autoevaluación.
 
 ## Inicio rápido
 

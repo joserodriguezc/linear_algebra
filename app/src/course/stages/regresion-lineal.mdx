@@ -11,6 +11,9 @@ import multiple from '../snippets/regresion-lineal/09_multiple.py?raw'
 import proyeccion from '../snippets/regresion-lineal/10_proyeccion.py?raw'
 import polinomica from '../snippets/regresion-lineal/11_polinomica.py?raw'
 import ridge from '../snippets/regresion-lineal/12_ridge.py?raw'
+import descenso from '../snippets/regresion-lineal/13_descenso_gradiente.py?raw'
+import minilotes from '../snippets/regresion-lineal/14_minilotes.py?raw'
+import retropropagacion from '../snippets/regresion-lineal/15_retropropagacion.py?raw'
 
 <Section kind="why">
 
@@ -74,6 +77,28 @@ Con $n$ observaciones y $p$ características, $X$ es la matriz $n \times p$ de e
   Sumar $\alpha I$ suma $\alpha$ a cada valor propio de $X^TX$: los que eran 0 o casi 0 pasan a valer al menos $\alpha$. Así la matriz es invertible **siempre** (para $\alpha > 0$) y su número de condición (<StageRef slug="svd" />) baja mucho. Es la cura algebraica de la multicolinealidad, a cambio de encoger los coeficientes (<StageRef slug="normas" />).
 </Formula>
 
+**Resolver o entrenar.** Las fórmulas anteriores **resuelven** el problema de una vez. Pero casi todos los modelos de ML (redes neuronales incluidas) no tienen fórmula cerrada y se **entrenan**: se parte de unos coeficientes cualesquiera y se mejoran paso a paso en la dirección en la que el error baja más rápido. En la regresión lineal podemos ver ese proceso con todo detalle, porque sabemos dónde está el mínimo.
+
+<Formula label="Gradiente del error cuadrático medio" tex="\text{ECM}(b) = \tfrac{1}{n}\,\|y - Xb\|_2^2,\qquad \nabla_b\,\text{ECM}(b) = \tfrac{2}{n}\,X^T(Xb - y)" reading="el ECM de b es uno entre n por la norma dos al cuadrado de y menos X por b; y el gradiente del ECM respecto de b es dos entre n por X transpuesta por X por b menos y">
+  El gradiente es un vector de $p$ números reales, uno por coeficiente: cuánto sube el error al aumentar ese coeficiente. Se calcula con dos productos matriz-vector: los residuos $Xb - y$ y luego $X^T$ por ellos. Igualarlo a cero da exactamente la ecuación normal $X^TXb = X^Ty$.
+</Formula>
+
+<Formula label="Descenso de gradiente" tex="b_{k+1} = b_k - \eta\,\nabla_b\,\text{ECM}(b_k)" reading="b sub k más uno es igual a b sub k menos eta por el gradiente del ECM evaluado en b sub k">
+  $\eta$ es la **tasa de aprendizaje**. Cada paso cuesta unas $2np$ operaciones (dos productos con $X$), frente a las $np^2 + p^3$ de formar e invertir $X^TX$. Con muchas características, o cuando no existe fórmula cerrada, se repiten pasos baratos en lugar de resolver un sistema grande.
+</Formula>
+
+<Formula label="Convergencia y número de condición" tex="b_{k+1} - b^* = \left(I - \tfrac{2\eta}{n}\,X^TX\right)(b_k - b^*),\qquad \text{converge si } 0 < \eta < \frac{n}{\lambda_{\max}(X^TX)}" reading="b sub k más uno menos b estrella es igual a la identidad menos dos eta entre n por X transpuesta por X, multiplicada por b sub k menos b estrella; y converge si eta está entre cero y n dividido por el mayor valor propio de X transpuesta por X">
+  $b^*$ es la solución de mínimos cuadrados. En la dirección de cada vector propio de $X^TX$ (<StageRef slug="eigendescomposicion" />), la distancia al mínimo se multiplica en cada paso por $1 - 2\eta\lambda_i/n$. Si $\eta$ es demasiado grande, el factor de $\lambda_{\max}$ pasa de $-1$ y el error **explota**. Si $\eta$ es seguro para $\lambda_{\max}$, la dirección de $\lambda_{\min}$ avanza muy despacio. Por eso la velocidad depende del **número de condición** $\kappa = \lambda_{\max}/\lambda_{\min}$, y **estandarizar las características** (restar la media y dividir por la desviación) lo acerca a 1.
+</Formula>
+
+<Figure title="Descenso de gradiente sobre las curvas de nivel del error" caption="Cambia entre x sin escalar y estandarizada con el mismo paso η, y sube η por encima del límite para ver cómo diverge.">
+  <GradientDescentPath />
+</Figure>
+
+<Formula label="Descenso estocástico por mini-lotes" tex="\nabla_b\,\text{ECM}(b) \approx \tfrac{2}{m}\,X_B^T(X_Bb - y_B)" reading="el gradiente del ECM en b es aproximadamente dos entre m por X sub B transpuesta por X sub B por b menos y sub B">
+  $X_B$ son $m$ filas de $X$ elegidas al azar (un **mini-lote**) e $y_B$ sus salidas. Cada paso cuesta unas $2mp$ operaciones en lugar de $2np$: el camino es más ruidoso, pero se dan muchos más pasos con el mismo cálculo. Así se entrenan las redes neuronales.
+</Formula>
+
 </Section>
 
 <Section kind="example">
@@ -124,6 +149,11 @@ Los cuatro métodos con un dataset de 5 puntos (sin término independiente):
 <PyCell title="La regresión como proyección" code={proyeccion} hint="Mismos datos que el ejemplo resuelto: P y da las mismas predicciones." />
 <PyCell title="Estabilidad numérica" code={estabilidad} hint={<>Con columnas casi dependientes, la ecuación normal pierde unos 8 dígitos de precisión frente a QR y lstsq: formar XᵀX eleva al cuadrado el número de condición (<StageRef slug="svd" />).</>} />
 
+Entrenar en lugar de resolver: el descenso de gradiente llega al mismo $b$ que `lstsq`.
+
+<PyCell title="Descenso de gradiente" code={descenso} hint="Mismo modelo y mismo mínimo: con x estandarizada, κ ≈ 1 y hacen falta unas 15 veces menos pasos. Con η por encima del límite, el error explota." />
+<PyCell title="Mini-lotes" code={minilotes} hint="Cada paso usa 32 filas de las 10 000. En pocas épocas el resultado se parece mucho al de lstsq." />
+
 </Section>
 
 <Section kind="quiz">
@@ -148,8 +178,16 @@ Los cuatro métodos con un dataset de 5 puntos (sin término independiente):
 <PyCell title="Regresión polinómica con np.vander" code={polinomica} hint="El error de entrenamiento siempre baja con el grado; el de validación no. Fíjate también en cómo crece κ(X)." />
 <PyCell title="Ridge arregla la multicolinealidad" code={ridge} hint="XᵀX tiene un valor propio casi 0; al sumar αI pasa a valer α y la matriz deja de ser casi singular." />
 
+**De la regresión a la red neuronal.** Una red apila capas densas $H = f(XW + b)$ (<StageRef slug="ejemplos-en-ml" />) y se entrena con el mismo descenso de gradiente. Lo único nuevo es calcular el gradiente de cada matriz de pesos, y la **retropropagación** lo hace con productos por matrices traspuestas:
+
+<Formula label="Retropropagación en una capa densa" tex="Z = XW + \mathbf{1}\,b^T,\quad G = \frac{\partial L}{\partial Z}\;\Rightarrow\;\frac{\partial L}{\partial W} = X^T G,\quad \frac{\partial L}{\partial b} = G^T\mathbf{1},\quad \frac{\partial L}{\partial X} = G\,W^T" reading="Z es igual a X por W más el vector de unos por b transpuesta; si G es la derivada parcial de la pérdida L respecto de Z, entonces la derivada de L respecto de W es X transpuesta por G, la derivada respecto de b es G transpuesta por el vector de unos, y la derivada respecto de X es G por W transpuesta">
+  Si $X$ es $n \times d$ y $W$ es $d \times h$, entonces $G$ es $n \times h$ y $X^TG$ es $d \times h$, la misma forma que $W$: las dimensiones solo encajan con la traspuesta. $G^T\mathbf{1}$ suma las filas de $G$. El término $GW^T$ lleva el error a la capa anterior, donde se multiplica elemento a elemento por la derivada de la activación: $G_{\text{anterior}} = (G\,W^T) \circ f'(Z_{\text{anterior}})$. Con una sola capa sin activación y $L = \text{ECM}$, $G = \tfrac{2}{n}(Xb - y)$ y $X^TG$ es exactamente el gradiente de la regresión.
+</Formula>
+
+<PyCell title="Una red de dos capas con NumPy" code={retropropagacion} hint="El gradiente calculado con traspuestas coincide con el de diferencias finitas. La red ajusta la curva con un ECM unas 10 veces menor que el de una recta." />
+
 <Callout kind="ml" title="De aquí en adelante">
-Ya viste que una penalización $\alpha\|b\|_2^2$ da **Ridge**, $b = (X^TX + \alpha I)^{-1}X^Ty$. Si aplicas una función sigmoide a $Xb$, obtienes la **regresión logística**. Y si apilas capas de $XW + b$ con funciones no lineales entre ellas, obtienes una **red neuronal**. Todo descansa sobre el álgebra lineal de este curso.
+Ya viste que una penalización $\alpha\|b\|_2^2$ da **Ridge**, $b = (X^TX + \alpha I)^{-1}X^Ty$. Si aplicas una función sigmoide a $Xb$, obtienes la **regresión logística**. Y si apilas capas de $XW + b$ con funciones no lineales entre ellas y las entrenas con descenso de gradiente y retropropagación, obtienes una **red neuronal**. Todo descansa sobre el álgebra lineal de este curso.
 </Callout>
 
 <KeyTakeaways>
@@ -159,6 +197,8 @@ Ya viste que una penalización $\alpha\|b\|_2^2$ da **Ridge**, $b = (X^TX + \alp
 - La columna de unos en $X$ aporta el término independiente $b_0$.
 - La regresión polinómica es regresión lineal con columnas $1, x, x^2, \dots$ (matriz de Vandermonde).
 - Ridge suma $\alpha I$ a $X^TX$: siempre invertible, mejor condicionada y con coeficientes más pequeños.
+- El descenso de gradiente usa $\nabla_b\,\text{ECM} = \tfrac{2}{n}X^T(Xb - y)$; su velocidad depende de $\kappa(X^TX)$, y estandarizar las características la mejora.
+- Los mini-lotes estiman el gradiente con pocas filas de $X$; la retropropagación calcula los gradientes de una red con productos por traspuestas ($X^TG$, $GW^T$).
 </KeyTakeaways>
 
 </Section>

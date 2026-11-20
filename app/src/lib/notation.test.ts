@@ -124,6 +124,16 @@ describe('detectNotation', () => {
     expect(meanings('\\tilde{x} = x - \\bar{x}\\,\\mathbf{1}')[0]).toMatch(/centrada/)
   })
 
+  it('gradiente, derivada parcial, tasa de aprendizaje y óptimo', () => {
+    const m = meanings('b_{k+1} = b_k - \\eta\\,\\nabla_b\\,\\text{ECM}(b_k),\\ \\frac{\\partial L}{\\partial W} = X^TG,\\ b^*')
+    expect(m.some((x) => /gradiente/.test(x))).toBe(true)
+    expect(m.some((x) => /derivada parcial/.test(x))).toBe(true)
+    expect(m.some((x) => /tasa de aprendizaje/.test(x))).toBe(true)
+    expect(m.some((x) => /valor óptimo/.test(x))).toBe(true)
+    // \theta y \beta no se confunden con \eta
+    expect(meanings('\\theta').some((x) => /tasa de aprendizaje/.test(x))).toBe(false)
+  })
+
   it('devuelve en orden de aparición y sin duplicados', () => {
     const s = symbols('\\sum_i a_i \\le \\sum_j b_j')
     expect(s[0]).toBe('\\sum')

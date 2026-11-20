@@ -93,4 +93,28 @@ export const quiz: Question[] = [
     answer: 1,
     explanation: 'Sumar $\\alpha I$ suma $\\alpha$ a cada valor propio. El número de condición pasa de $500\\,000$ a unos $51$.',
   },
+  {
+    type: 'choice',
+    prompt: 'En el descenso de gradiente para $\\min_b \\tfrac{1}{n}\\|y - Xb\\|_2^2$, ¿qué vector se resta (multiplicado por $\\eta$) en cada paso?',
+    options: ['$\\tfrac{2}{n}X^T(Xb - y)$', '$\\tfrac{2}{n}X(Xb - y)$', '$(X^TX)^{-1}X^Ty$', '$Xb - y$'],
+    answer: 0,
+    explanation: 'Es el gradiente del ECM. Los residuos $Xb - y$ tienen $n$ componentes; multiplicarlos por $X^T$ da un vector de $p$ componentes, uno por coeficiente.',
+  },
+  {
+    type: 'choice',
+    prompt: 'Una característica toma valores entre 0 y 1000 y otra entre 0 y 1. ¿Por qué el descenso de gradiente converge despacio, y qué lo arregla?',
+    options: [
+      'Porque $X^TX$ no es invertible; se arregla con más datos',
+      'Porque $\\kappa(X^TX)$ es enorme: las curvas de nivel son elipses muy alargadas. Estandarizar las características acerca $\\kappa$ a 1',
+      'Porque $\\eta$ es demasiado pequeño; basta con multiplicarlo por 1000',
+    ],
+    answer: 1,
+    explanation: 'El paso seguro lo limita $\\lambda_{\\max}$, y con él la dirección de $\\lambda_{\\min}$ apenas avanza. Subir $\\eta$ hace diverger la otra dirección.',
+  },
+  {
+    type: 'numeric',
+    prompt: 'En una capa densa $Z = XW$, $X$ es $64 \\times 10$ y $W$ es $10 \\times 3$. El gradiente $\\partial L/\\partial W = X^TG$ tiene la misma forma que $W$. ¿Cuántos elementos tiene?',
+    answer: 30,
+    explanation: '$G = \\partial L/\\partial Z$ es $64 \\times 3$, así que $X^TG$ es $(10 \\times 64)(64 \\times 3) = 10 \\times 3$: 30 elementos, uno por peso.',
+  },
 ]

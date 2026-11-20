@@ -120,6 +120,8 @@ const CHEATSHEET: { title: string; stage: string[]; rows: [string, string][] }[]
       ['b, *_ = lstsq(X, y, rcond=None)', 'mínimos cuadrados'],
       ['vander(x, d + 1, increasing=True)', 'matriz de Vandermonde (regresión polinómica)'],
       ['solve(X.T @ X + a * eye(p), X.T @ y)', 'Ridge en forma cerrada'],
+      ['b -= eta * 2 / n * X.T @ (X @ b - y)', 'un paso de descenso de gradiente'],
+      ['dW = X.T @ G;  G_prev = G @ W.T', 'retropropagación en una capa densa'],
     ],
   },
 ]
