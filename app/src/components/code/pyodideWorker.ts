@@ -52,6 +52,8 @@ os.environ["MPLBACKEND"] = "AGG"
 # Avisos internos de las librerías que no aportan nada al alumno
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", message=".*deprecated.*")
+# plt.show() con el backend AGG avisa de que no puede abrir una ventana; las figuras se muestran igual bajo la celda
+warnings.filterwarnings("ignore", message=".*non-interactive.*")
 
 def __show_result(x):
     # Como en Jupyter, se muestra el valor de la última expresión, salvo los objetos de matplotlib

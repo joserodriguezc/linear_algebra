@@ -91,6 +91,7 @@ const CHEATSHEET: { title: string; stage: string[]; rows: [string, string][] }[]
       ['P, L, U = lu(A)', 'LU (scipy.linalg)'],
       ['Q, R = qr(A), L = cholesky(A)', 'QR y Cholesky'],
       ['values, vectors = eig(A)  /  eigh(S)', 'eigendescomposición (eigh si S es simétrica)'],
+      ['matrix_power(A, k)', 'potencia Aᵏ (= Q Λᵏ Q⁻¹); cadenas de Markov, caminos en un grafo'],
       ['U, s, VT = svd(A), pinv(A)', 'SVD y pseudoinversa'],
       ["norm(A, 'fro' | 2 | 'nuc')", 'normas de Frobenius, espectral y nuclear'],
       ['cond(A)', 'número de condición: σ máximo / σ mínimo'],
@@ -105,6 +106,7 @@ const CHEATSHEET: { title: string; stage: string[]; rows: [string, string][] }[]
       ["convolve2d(X, K, mode='valid'), correlate2d(X, K)", 'convolución y correlación 2D (scipy.signal)'],
       ['nx.laplacian_matrix(G).toarray()', 'laplaciano L = D − A de un grafo (networkx)'],
       ['SpectralClustering(k, affinity=\'nearest_neighbors\')', 'clustering espectral (sklearn.cluster)'],
+      ['r = lstsq(X, y)[0]  (X: +1 ganador, −1 perdedor)', 'clasificación de Massey por mínimos cuadrados'],
     ],
   },
   {
@@ -117,9 +119,12 @@ const CHEATSHEET: { title: string; stage: string[]; rows: [string, string][] }[]
       ['LinearDiscriminantAnalysis(n_components=k)', 'LDA (sklearn.discriminant_analysis)'],
       ['eigh(S, T)', 'valores propios generalizados S v = λ T v (scipy.linalg)'],
       ['KMeans(n_clusters=k, n_init=10)', 'k-means (sklearn.cluster)'],
+      ['(1 + sqrt(p / n)) ** 2 * s2', 'borde de Marchenko-Pastur: valores propios por encima son señal'],
       ['b, *_ = lstsq(X, y, rcond=None)', 'mínimos cuadrados'],
       ['vander(x, d + 1, increasing=True)', 'matriz de Vandermonde (regresión polinómica)'],
       ['solve(X.T @ X + a * eye(p), X.T @ y)', 'Ridge en forma cerrada'],
+      ['b -= eta * 2 / n * X.T @ (X @ b - y)', 'un paso de descenso de gradiente'],
+      ['dW = X.T @ G;  G_prev = G @ W.T', 'retropropagación en una capa densa'],
     ],
   },
 ]

@@ -230,6 +230,18 @@ const RULES: Rule[] = [
   { re: /\\leftarrow/, explain: () => ({ tex: '\\leftarrow', meaning: '«se reemplaza por»: lo de la izquierda pasa a valer lo de la derecha' }) },
   { re: /\\iff/, explain: () => ({ tex: '\\iff', meaning: '«si y solo si»: ambas afirmaciones son equivalentes' }) },
   {
+    re: /\\nabla/,
+    explain: () => ({ tex: '\\nabla', meaning: 'nabla: el gradiente, el vector de derivadas parciales; apunta hacia donde la función crece más rápido' }),
+  },
+  {
+    re: /\\partial/,
+    explain: () => ({ tex: '\\partial', meaning: 'derivada parcial: cuánto cambia la función al mover solo esa variable (∂L/∂W es una matriz de la forma de W)' }),
+  },
+  { re: /\\gamma/, explain: () => ({ tex: '\\gamma', meaning: 'gamma: un parámetro auxiliar que la propia fórmula define (en Marchenko-Pastur, variables por muestra, p/n)' }) },
+  { re: /\\pi(?![a-z])/, explain: () => ({ tex: '\\pi', meaning: 'pi: en una cadena de Markov, la distribución estacionaria (las probabilidades a largo plazo), no el número 3.14…' }) },
+  { re: /\\eta(?![a-z])/, explain: () => ({ tex: '\\eta', meaning: 'eta: la tasa de aprendizaje, el tamaño de cada paso del descenso de gradiente' }) },
+  { re: /\^\{?\*\}?/, explain: () => ({ tex: 'b^*', meaning: '«b estrella»: el valor óptimo, el que hace mínima la función' }) },
+  {
     re: /\\ell(?:_(?:\{(\w+)\}|(\w)))?/,
     explain: (m) => {
       const sub = m[1] ?? m[2]
@@ -339,6 +351,7 @@ const SAMPLES = [
   '\\kappa(A) = \\sigma_1 / \\sigma_n,\\ y = k \\ast x',
   'u \\perp v',
   '[A \\mid I] \\xrightarrow{\\text{filas}} [I \\mid A^{-1}]',
+  'b_{k+1} = b_k - \\eta\\,\\nabla_b L,\\ \\frac{\\partial L}{\\partial W},\\ b^*,\\ P\\pi = \\pi,\\ \\gamma = p/n',
 ]
 
 /** Glosario completo y sin duplicados, en orden alfabético por significado. */

@@ -88,4 +88,11 @@ export const quiz: Question[] = [
     tolerance: 0,
     explanation: '$S_B$ es suma de $C$ matrices de rango 1 ligadas por la media global: tiene rango como mucho $C - 1 = 3$.',
   },
+  {
+    type: 'numeric',
+    prompt: 'Datos de puro ruido con varianza $\\sigma^2 = 1$, $p = 100$ variables y $n = 400$ muestras. Según Marchenko-Pastur, ¿hasta qué valor llegan los valores propios de la covarianza? ($\\lambda_+$)',
+    answer: 2.25,
+    tolerance: 0.01,
+    explanation: '$\\gamma = 100/400 = 0.25$ y $\\lambda_+ = (1 + \\sqrt{0.25})^2 = 1.5^2 = 2.25$. Un valor propio de 1.8 en esos datos no sería señal.',
+  },
 ]
