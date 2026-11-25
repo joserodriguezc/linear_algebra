@@ -4,6 +4,8 @@
 
 El curso se organiza en 23 **etapas** agrupadas en cinco partes, desde los arrays de NumPy hasta PCA y la regresión lineal.
 
+**Úsalo en línea, sin instalar nada:** <https://joserodriguezc.github.io/linear_algebra/>
+
 ![Página de inicio con el mapa del curso](.github/images/inicio.png)
 
 ## Contenido
@@ -100,6 +102,12 @@ cd app
 npm run build           # genera app/dist/
 npm run preview
 ```
+
+### Despliegue en GitHub Pages
+
+Cada push a `main` ejecuta [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml): instala las dependencias, pasa los tests unitarios, genera el build y lo publica en GitHub Pages. También se puede lanzar a mano desde la pestaña *Actions* («Run workflow»).
+
+El build usa rutas relativas (`base: './'` en `app/vite.config.ts`) y el router usa la URL con `#`, así que el sitio funciona en cualquier subruta sin configurar nada. La primera vez hay que activar Pages en el repositorio: *Settings → Pages → Source: GitHub Actions*.
 
 ## Comandos
 
