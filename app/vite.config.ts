@@ -7,6 +7,9 @@ import remarkMath from 'remark-math'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
+  // Rutas relativas: la app funciona en GitHub Pages (/linear_algebra/) y en cualquier otra subruta.
+  // Con HashRouter, la URL de la página nunca cambia, así que './' siempre apunta a la raíz de la app.
+  base: './',
   plugins: [
     {
       enforce: 'pre',
